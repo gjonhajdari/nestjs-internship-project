@@ -14,6 +14,7 @@ export const config = {
   migrations: [process.env.TYPEORM_MIGRATIONS],
   logging: process.env.NODE_ENV === 'localhost',
   seeds: process.env.TYPEORM_SEEDING_SEEDS,
+  uuidExtension: 'pgcrypto',
 };
 
 export const configNoEntities = {
@@ -28,4 +29,5 @@ export const configNoEntities = {
   migrations: [process.env.TYPEORM_MIGRATIONS],
   logging: process.env.NODE_ENV === 'localhost',
   seeds: process.env.TYPEORM_SEEDING_SEEDS,
+  uuidExtension: 'pgcrypto',
 };
