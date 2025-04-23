@@ -11,9 +11,8 @@ pipelines:
         - step:
             name: Code linting
             script:
-              - npm install eslint
-              - npx eslint .
-              - npx eslint --fix
+              - npm install
+              - npx biome ci
             caches:
               - node
         - step:
