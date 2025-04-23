@@ -1,0 +1,71 @@
+version: '3.7'
+services:
+  server:
+    build:
+      context: ./
+      target: development-build-starter
+    ports:
+      - '${APP_PORT:-3000}:3000'
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    restart: 'unless-stopped'
+    networks:
+      - backend
+    depends_on:
+      - pgsql
+      # - redis
+  pgsql:
+    container_name: ${TYPEORM_HOST}
+    image: 'postgres:15.1'
+    ports:
+      - "${DOCKER_DB_PORT}:5432"
+    expose:
+        - "5432"
+    environment:
+      POSTGRES_DB: '${TYPEORM_NAME}'
+      POSTGRES_USER: '${TYPEORM_USER}'
+      POSTGRES_PASSWORD: '${TYPEORM_PASSWORD}'
+    volumes:
+      - 'backendpgsql:/var/lib/postgresql/data'
+    networks:
+      - "backend"
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'pg_isready',
+          '-q',
+          '-d',
+          '${TYPEORM_NAME}',
+          '-U',
+          '${TYPEORM_USER}',
+        ]
+      retries: 3
+      timeout: 5s
+  pgadmin:
+    container_name: ${PROJECT:-kutia}_pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-kutia@dev.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-secret}
+    volumes:
+      - backendpgsql:/root/.pgadmin
+    ports:
+      - '${PGADMIN_PORT:-5050}:80'
+    networks:
+      - backend
+    restart: unless-stopped
+  mailhog:
+    image: 'mailhog/mailhog:latest'
+    ports:
+      - '${FORWARD_MAILHOG_PORT:-1025}:1025'
+      - '${FORWARD_MAILHOG_DASHBOARD_PORT:-8025}:8025'
+    networks:
+      - backend
+networks:
+  backend:
+    driver: bridge
+volumes:
+  backendpgsql:
+    driver: local

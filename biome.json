@@ -1,0 +1,31 @@
+{
+	"javascript": {
+		"parser": {
+			"unsafeParameterDecoratorsEnabled": true
+		}
+	},
+	"linter": {
+		"rules": {
+			"style": {
+				"useImportType": "off",
+				"noParameterAssign": "off"
+			},
+			"correctness": {
+				"noUnusedImports": "error"
+			}
+		}
+	},
+	"formatter": {
+		"lineWidth": 95
+	},
+	"files": {
+		"ignore": [
+			"**/node_modules/**",
+			"dist/**",
+			"docs",
+			"coverage/",
+			"./migrations",
+			"./test/db-test.sqlite"
+		]
+	}
+}
