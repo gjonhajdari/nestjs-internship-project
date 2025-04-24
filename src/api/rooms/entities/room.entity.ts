@@ -2,7 +2,7 @@ import { AuditEntity } from "src/common/db/customBaseEntites/AuditEntity";
 import { Column, Entity } from "typeorm";
 
 @Entity("rooms")
-export class Rooms extends AuditEntity {
+export class Room extends AuditEntity {
   @Column({ nullable: false })
   title: string;
 
