@@ -7,20 +7,26 @@ import { UpdateUserDto } from "../dtos/update-user.dto";
 import { User } from "../entities/user.entity";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface IUserService {
+export interface IUsersController {
+  getHello(user: User): Promise<string>;
+
   create(createUserDto: CreateUserDto): Promise<User>;
+
+  getMe(user: User): Promise<User>;
 
   findOne(userId: string): Promise<User>;
 
   findAll(): Promise<User[]>;
 
-  update(userId: string, updateUserDto: UpdateUserDto): Promise<User>;
+  updateMe(user: User, updateUserDto: UpdateUserDto): Promise<User>;
+
+  updateUser(userId: string, updateUserDto: UpdateUserDto): Promise<User>;
 
   remove(userId: string): Promise<void>;
 
-  addPermission(userId: string, permissionDto: PermissinDto): Promise<void>;
+  addPermission(userId: string, permission: PermissinDto): Promise<void>;
 
-  removePermission(userId: string, permissionDto: PermissinDto): Promise<void>;
+  removePermission(userId: string, permission: PermissinDto): Promise<void>;
   forgotPassword(forgotPassword: ForgotPasswordDto): Promise<void>;
   resetPassword(token: string, resetPasswordDto: ResetPasswordDto): Promise<void>;
 }

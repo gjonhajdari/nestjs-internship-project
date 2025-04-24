@@ -2,16 +2,16 @@ import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { CustomRepositoryModule } from "../../common/db/CustomRepository.module";
 import { PasswordReset } from "./entities/reset-password.entity";
-import { UserRepository } from "./repository/user.repository";
-import { UserController } from "./user.controller";
-import { UserService } from "./user.service";
+import { UsersRepository } from "./repository/users.repository";
+import { UsersController } from "./users.controller";
+import { UsersService } from "./users.service";
 
 @Module({
   imports: [
-    CustomRepositoryModule.forCustomRepository([UserRepository]),
+    CustomRepositoryModule.forCustomRepository([UsersRepository]),
     TypeOrmModule.forFeature([PasswordReset]),
   ],
-  providers: [UserService],
-  controllers: [UserController],
+  providers: [UsersService],
+  controllers: [UsersController],
 })
 export class UserModule {}
