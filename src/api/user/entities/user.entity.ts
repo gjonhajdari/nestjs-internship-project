@@ -1,5 +1,6 @@
 import { Exclude } from "class-transformer";
-import { Column, Entity, Index } from "typeorm";
+import { Comment } from "src/api/comments/entities/comment.entity";
+import { Column, Entity, Index, OneToMany } from "typeorm";
 import { AuditEntity } from "../../../common/db/customBaseEntites/AuditEntity";
 import { UserRoles } from "../enums/roles.enum";
 import { UserGender } from "../enums/userGender.enum";
@@ -52,4 +53,10 @@ export class User extends AuditEntity {
 
   @Column({ nullable: true })
   timezone: string;
+
+  @OneToMany(
+    () => Comment,
+    (comment) => comment.user,
+  )
+  comments: Comment[];
 }

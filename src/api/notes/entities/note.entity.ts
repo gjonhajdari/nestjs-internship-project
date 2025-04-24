@@ -1,6 +1,7 @@
+import { Comment } from "src/api/comments/entities/comment.entity";
 import { User } from "src/api/user/entities/user.entity";
 import { AuditEntity } from "src/common/db/customBaseEntites/AuditEntity";
-import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 
 @Entity({ name: "notes" })
 export class Note extends AuditEntity {
@@ -25,4 +26,10 @@ export class Note extends AuditEntity {
 
   @Column({ type: "int", nullable: false })
   yAxis: number;
+
+  @OneToMany(
+    () => Comment,
+    (comment) => comment.note,
+  )
+  comments: Comment[];
 }
