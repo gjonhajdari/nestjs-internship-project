@@ -1,19 +1,16 @@
 import {
-  registerDecorator,
   ValidationArguments,
   ValidationOptions,
   ValidatorConstraint,
   ValidatorConstraintInterface,
-} from 'class-validator';
-import AppDataSource from '../db/dataSource/data-source.initialize';
+  registerDecorator,
+} from "class-validator";
+import AppDataSource from "../db/dataSource/data-source.initialize";
 
-export function SameAs(
-  property: string,
-  validationOptions?: ValidationOptions,
-) {
+export function SameAs(property: string, validationOptions?: ValidationOptions) {
   return (object: object, propertyName: string) => {
     registerDecorator({
-      name: 'SameAs',
+      name: "SameAs",
       target: object.constructor,
       propertyName: propertyName,
       constraints: [property],
@@ -28,7 +25,7 @@ export function SameAs(
   };
 }
 
-@ValidatorConstraint({ name: 'customIsUnique', async: false })
+@ValidatorConstraint({ name: "customIsUnique", async: false })
 export class IsUnique implements ValidatorConstraintInterface {
   async validate(field: string, args: ValidationArguments) {
     const entity = args.constraints[0];
@@ -39,7 +36,7 @@ export class IsUnique implements ValidatorConstraintInterface {
     if (count === 0) return true;
     return false;
   }
-  defaultMessage(args: ValidationArguments) {
-    return '$property already exists';
+  defaultMessage(_args: ValidationArguments) {
+    return "$property already exists";
   }
 }

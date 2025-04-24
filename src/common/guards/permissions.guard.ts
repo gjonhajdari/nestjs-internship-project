@@ -1,6 +1,6 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import checkPermissionsUtil from '../../utils/checkPermissions.util';
+import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
+import { Reflector } from "@nestjs/core";
+import checkPermissionsUtil from "../../utils/checkPermissions.util";
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {
@@ -8,10 +8,7 @@ export class PermissionsGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     // await super.canActivate(context);
-    const permission = this.reflector.get<string[]>(
-      'permission',
-      context.getHandler(),
-    );
+    const permission = this.reflector.get<string[]>("permission", context.getHandler());
 
     if (!permission) {
       return true;

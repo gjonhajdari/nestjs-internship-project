@@ -1,16 +1,10 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
-import {
-  IsEmail,
-  IsEnum,
-  IsOptional,
-  IsString,
-  Validate,
-} from 'class-validator';
-import { IsUnique } from '../../../common/decorators/validation.decorator';
-import { User } from '../entities/user.entity';
-import { UserRoles } from '../enums/roles.enum';
-import { UserGender } from '../enums/userGender.enum';
+import { ApiProperty } from "@nestjs/swagger";
+import { Transform } from "class-transformer";
+import { IsEmail, IsEnum, IsOptional, IsString, Validate } from "class-validator";
+import { IsUnique } from "../../../common/decorators/validation.decorator";
+import { User } from "../entities/user.entity";
+import { UserRoles } from "../enums/roles.enum";
+import { UserGender } from "../enums/userGender.enum";
 
 export class CreateUserDto {
   @IsString()
@@ -23,13 +17,13 @@ export class CreateUserDto {
 
   @IsEmail()
   @Validate(IsUnique, [User])
-  @Transform(({ value }) => value.toLowerCase().replace(/\s/g, ''))
+  @Transform(({ value }) => value.toLowerCase().replace(/\s/g, ""))
   @ApiProperty()
   email: string;
 
   @IsString()
   @Validate(IsUnique, [User])
-  @Transform(({ value }) => value.toLowerCase().replace(/\s/g, ''))
+  @Transform(({ value }) => value.toLowerCase().replace(/\s/g, ""))
   @ApiProperty()
   username: string;
 

@@ -1,11 +1,9 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { MailerService } from '@nestjs-modules/mailer';
+import { MailerService } from "@nestjs-modules/mailer";
+import { Inject, Injectable } from "@nestjs/common";
 
 @Injectable()
 export class MailService {
-  constructor(
-    @Inject(MailerService) private readonly mailerService: MailerService,
-  ) {}
+  constructor(@Inject(MailerService) private readonly mailerService: MailerService) {}
 
   readonly fromEmail: string = process.env.SENDER_MAIL;
   readonly FRONT_APP_URL: string = process.env.APP_URL;
@@ -15,8 +13,8 @@ export class MailService {
       .sendMail({
         to: userToken.user,
         from: this.getFromEmail(),
-        subject: this.getSubject(`Reset Password`),
-        template: this.getEmailTemplatePath('forgotPassword'),
+        subject: this.getSubject("Reset Password"),
+        template: this.getEmailTemplatePath("forgotPassword"),
         context: {
           user: userToken.user,
           link: `${this.FRONT_APP_URL}/user/reset/${userToken.token}`,

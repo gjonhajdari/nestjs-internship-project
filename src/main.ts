@@ -1,10 +1,10 @@
-import { RequestMethod, ValidationPipe } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { apiReference } from '@scalar/nestjs-api-reference';
-import { WinstonModule } from 'nest-winston';
-import { AppModule } from './app.module';
-import loggerInstance from './services/logger/winstonLogger';
+import { RequestMethod, ValidationPipe } from "@nestjs/common";
+import { NestFactory } from "@nestjs/core";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { apiReference } from "@scalar/nestjs-api-reference";
+import { WinstonModule } from "nest-winston";
+import { AppModule } from "./app.module";
+import loggerInstance from "./services/logger/winstonLogger";
 
 const port = process.env.PORT || 3000;
 
@@ -20,25 +20,25 @@ async function bootstrap() {
       transformOptions: { enableImplicitConversion: true },
     }),
   );
-  app.setGlobalPrefix('api', {
-    exclude: [{ path: '/', method: RequestMethod.GET }],
+  app.setGlobalPrefix("api", {
+    exclude: [{ path: "/", method: RequestMethod.GET }],
   });
 
-  if (process.env.NODE_ENV !== 'production') {
+  if (process.env.NODE_ENV !== "production") {
     const config = new DocumentBuilder()
-      .setTitle('Nestjs Node v18 Starter')
-      .setDescription('Nestjs Node v18 Starter API Documentation')
-      .setVersion('1.0')
-      .addTag('Node v18')
+      .setTitle("Nestjs Node v18 Starter")
+      .setDescription("Nestjs Node v18 Starter API Documentation")
+      .setVersion("1.0")
+      .addTag("Node v18")
       .addBearerAuth()
       .addBasicAuth()
 
       .build();
     const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('docs', app, document);
+    SwaggerModule.setup("docs", app, document);
 
     app.use(
-      '/docs-scalar',
+      "/docs-scalar",
       apiReference({
         spec: {
           content: document,

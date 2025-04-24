@@ -1,6 +1,6 @@
-import { RegisterDTO } from '../dtos/register.dto';
-import { Tokens } from '../types/tokens.types';
-import { LoginDto } from '../dtos/login.dto';
+import { LoginDto } from "../dtos/login.dto";
+import { RegisterDTO } from "../dtos/register.dto";
+import { Tokens } from "../types/tokens.types";
 
 export interface IAuthService {
   signup: (body: RegisterDTO) => Promise<Tokens>;

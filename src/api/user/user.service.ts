@@ -1,20 +1,20 @@
-import { Injectable } from '@nestjs/common';
-import checkPermissionsUtil from '../../utils/checkPermissions.util';
-import { CreateUserDto } from './dtos/create-user.dto';
-import { UpdateUserDto } from './dtos/update-user.dto';
-import { User } from './entities/user.entity';
-import { IUserService } from './interfaces/user.service.interface';
-import { PermissinDto } from './dtos/permission.dto';
-import { UnprocessableEntityException } from '@nestjs/common/exceptions';
-import { ForgotPasswordDto, ResetPasswordDto } from './dtos/password-reset.dto';
-import { PasswordReset } from './entities/reset-password.entity';
-import { hashDataBrypt } from '../../services/providers';
-import { randomBytes } from 'crypto';
-import { UserRepository } from './repository/user.repository';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { InjectEventEmitter } from 'nest-emitter';
-import EventEmitter from 'events';
+import { randomBytes } from "node:crypto";
+import EventEmitter from "node:events";
+import { Injectable } from "@nestjs/common";
+import { UnprocessableEntityException } from "@nestjs/common/exceptions";
+import { InjectRepository } from "@nestjs/typeorm";
+import { InjectEventEmitter } from "nest-emitter";
+import { Repository } from "typeorm";
+import { hashDataBrypt } from "../../services/providers";
+import checkPermissionsUtil from "../../utils/checkPermissions.util";
+import { CreateUserDto } from "./dtos/create-user.dto";
+import { ForgotPasswordDto, ResetPasswordDto } from "./dtos/password-reset.dto";
+import { PermissinDto } from "./dtos/permission.dto";
+import { UpdateUserDto } from "./dtos/update-user.dto";
+import { PasswordReset } from "./entities/reset-password.entity";
+import { User } from "./entities/user.entity";
+import { IUserService } from "./interfaces/user.service.interface";
+import { UserRepository } from "./repository/user.repository";
 
 @Injectable()
 export class UserService implements IUserService {
@@ -26,15 +26,13 @@ export class UserService implements IUserService {
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    return await this.userRepository.save(
-      this.userRepository.create(createUserDto),
-    );
+    return await this.userRepository.save(this.userRepository.create(createUserDto));
   }
 
   async findOne(userId: string): Promise<User> {
     const user = await this.userRepository.findOneBy({ uuid: userId });
     if (!user) {
-      throw new UnprocessableEntityException('This user does not exist!');
+      throw new UnprocessableEntityException("This user does not exist!");
     }
     return user;
   }
@@ -54,35 +52,23 @@ export class UserService implements IUserService {
     await this.userRepository.remove(user);
   }
 
-  async addPermission(
-    userId: string,
-    permissionDto: PermissinDto,
-  ): Promise<void> {
+  async addPermission(userId: string, permissionDto: PermissinDto): Promise<void> {
     const user = await this.findOne(userId);
 
-    const permissionExist = checkPermissionsUtil(
-      user.permissions,
-      permissionDto.permission,
-    );
+    const permissionExist = checkPermissionsUtil(user.permissions, permissionDto.permission);
     if (permissionExist) {
-      throw new UnprocessableEntityException('Permission was already added!');
+      throw new UnprocessableEntityException("Permission was already added!");
     }
     user.permissions += permissionDto.permission;
     await this.userRepository.save(user);
   }
 
-  async removePermission(
-    userId: string,
-    permissionDto: PermissinDto,
-  ): Promise<void> {
+  async removePermission(userId: string, permissionDto: PermissinDto): Promise<void> {
     const user = await this.findOne(userId);
 
-    const permissionExist = checkPermissionsUtil(
-      user.permissions,
-      permissionDto.permission,
-    );
+    const permissionExist = checkPermissionsUtil(user.permissions, permissionDto.permission);
     if (!permissionExist) {
-      throw new UnprocessableEntityException('Permission was already removed');
+      throw new UnprocessableEntityException("Permission was already removed");
     }
     user.permissions -= permissionDto.permission;
     await this.userRepository.save(user);
@@ -94,7 +80,7 @@ export class UserService implements IUserService {
     });
 
     if (!user) {
-      throw new UnprocessableEntityException('This user does not exist!');
+      throw new UnprocessableEntityException("This user does not exist!");
     }
 
     const count = await this.passwordRepository.count({
@@ -105,14 +91,14 @@ export class UserService implements IUserService {
       await this.passwordRepository.delete({ user: user });
     }
 
-    const token = randomBytes(16).toString('hex');
+    const token = randomBytes(16).toString("hex");
 
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 1);
 
     /**Send Email for forgotPassword*/
     const emailDetails = { user: user.email, token: token };
-    this.emitter.emit('forgotPasswordMail', emailDetails);
+    this.emitter.emit("forgotPasswordMail", emailDetails);
 
     await this.passwordRepository.save({
       token,
@@ -121,19 +107,14 @@ export class UserService implements IUserService {
     });
   }
 
-  async resetPassword(
-    token: string,
-    resetPassworDto: ResetPasswordDto,
-  ): Promise<void> {
+  async resetPassword(token: string, resetPassworDto: ResetPasswordDto): Promise<void> {
     const passwordReset = await this.passwordRepository.findOne({
       where: { token },
-      relations: ['user'],
+      relations: ["user"],
     });
 
     if (!passwordReset?.expiresAt || passwordReset.expiresAt < new Date()) {
-      throw new UnprocessableEntityException(
-        'Invalid token for password reset!',
-      );
+      throw new UnprocessableEntityException("Invalid token for password reset!");
     }
 
     const { user } = passwordReset;

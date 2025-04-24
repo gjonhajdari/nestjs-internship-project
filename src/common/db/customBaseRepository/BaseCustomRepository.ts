@@ -1,6 +1,6 @@
-import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
-import { AuditEntity } from '../customBaseEntites/AuditEntity';
-import { IBaseCustomRepository } from './interfaces/BaseCustomRepository.interface';
+import { FindManyOptions, FindOneOptions, Repository } from "typeorm";
+import { AuditEntity } from "../customBaseEntites/AuditEntity";
+import { IBaseCustomRepository } from "./interfaces/BaseCustomRepository.interface";
 
 export abstract class BaseCustomRepository<T extends AuditEntity>
   extends Repository<T>

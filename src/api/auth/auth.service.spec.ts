@@ -1,29 +1,29 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { JwtService } from '@nestjs/jwt';
-import { User } from '../user/entities/user.entity';
-import { RegisterDTO } from './dtos/register.dto';
-import { AuthService } from './auth.service';
-import { HttpException } from '@nestjs/common';
-import { UserGender } from '../user/enums/userGender.enum';
-import { UserRoles } from '../user/enums/roles.enum';
+import { HttpException } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { Test, TestingModule } from "@nestjs/testing";
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { User } from "../user/entities/user.entity";
+import { UserRoles } from "../user/enums/roles.enum";
+import { UserGender } from "../user/enums/userGender.enum";
+import { AuthService } from "./auth.service";
+import { RegisterDTO } from "./dtos/register.dto";
 
-jest.mock('@nestjs/jwt', () => ({
+jest.mock("@nestjs/jwt", () => ({
   JwtService: jest.fn().mockImplementation(() => ({
-    signAsync: jest.fn().mockResolvedValue('token'),
+    signAsync: jest.fn().mockResolvedValue("token"),
   })),
 }));
 
-jest.mock('../../services/providers', () => ({
-  hashDataBrypt: jest.fn().mockResolvedValue('hashed-password'),
+jest.mock("../../services/providers", () => ({
+  hashDataBrypt: jest.fn().mockResolvedValue("hashed-password"),
   compareHashedDataBcrypt: jest.fn().mockResolvedValue(true),
-  hashDataArgon: jest.fn().mockResolvedValue('hashed-refresh-token'),
+  hashDataArgon: jest.fn().mockResolvedValue("hashed-refresh-token"),
   compareHashedDataArgon: jest.fn().mockResolvedValue(true),
 }));
 
-describe('AuthService', () => {
+describe("AuthService", () => {
   let authService: AuthService;
-  let jwtService: JwtService;
+  // let jwtService: JwtService;
   let userRepository: any;
 
   beforeEach(async () => {
@@ -43,53 +43,51 @@ describe('AuthService', () => {
     }).compile();
 
     authService = module.get<AuthService>(AuthService);
-    jwtService = module.get<JwtService>(JwtService);
+    // jwtService = module.get<JwtService>(JwtService);
     userRepository = module.get(getRepositoryToken(User));
   });
 
-  describe('signup', () => {
-    it('should return tokens if signup is successful', async () => {
+  describe("signup", () => {
+    it("should return tokens if signup is successful", async () => {
       const user: RegisterDTO = {
-        firstName: 'Test',
-        lastName: 'User',
-        email: 'test@test.com',
-        username: 'testuser',
-        password: 'password',
-        passwordConfirm: 'password',
+        firstName: "Test",
+        lastName: "User",
+        email: "test@test.com",
+        username: "testuser",
+        password: "password",
+        passwordConfirm: "password",
         gender: UserGender.MALE,
-        phone: '',
-        timezone: '',
+        phone: "",
+        timezone: "",
         role: UserRoles.USER,
       };
 
       const token = {
-        accessToken: 'token',
-        refreshToken: 'token',
+        accessToken: "token",
+        refreshToken: "token",
       };
 
-      jest
-        .spyOn(authService, 'signup')
-        .mockImplementation(() => Promise.resolve(token));
+      jest.spyOn(authService, "signup").mockImplementation(() => Promise.resolve(token));
 
       const tokens = await authService.signup(user);
       expect(tokens).toBe(token);
     });
 
-    it('should throw HttpException if signup fails', async () => {
+    it("should throw HttpException if signup fails", async () => {
       const user: RegisterDTO = {
-        firstName: 'Test',
-        lastName: 'User',
-        email: 'test@test.com',
-        username: 'testuser',
-        password: 'password',
-        passwordConfirm: 'password',
+        firstName: "Test",
+        lastName: "User",
+        email: "test@test.com",
+        username: "testuser",
+        password: "password",
+        passwordConfirm: "password",
         gender: UserGender.MALE,
-        phone: '',
-        timezone: '',
+        phone: "",
+        timezone: "",
         role: UserRoles.USER,
       };
 
-      jest.spyOn(userRepository, 'save').mockImplementationOnce(() => {
+      jest.spyOn(userRepository, "save").mockImplementationOnce(() => {
         return Promise.reject(new Error());
       });
 
@@ -98,7 +96,7 @@ describe('AuthService', () => {
         fail();
       } catch (error) {
         expect(error).toBeInstanceOf(HttpException);
-        expect(error.message).toEqual('User registration failed');
+        expect(error.message).toEqual("User registration failed");
       }
     });
   });

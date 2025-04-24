@@ -1,31 +1,53 @@
 {
-	"javascript": {
-		"parser": {
-			"unsafeParameterDecoratorsEnabled": true
-		}
-	},
-	"linter": {
-		"rules": {
-			"style": {
-				"useImportType": "off",
-				"noParameterAssign": "off"
-			},
-			"correctness": {
-				"noUnusedImports": "error"
-			}
-		}
-	},
-	"formatter": {
-		"lineWidth": 95
-	},
-	"files": {
-		"ignore": [
-			"**/node_modules/**",
-			"dist/**",
-			"docs",
-			"coverage/",
-			"./migrations",
-			"./test/db-test.sqlite"
-		]
-	}
+  "$schema": "https://biomejs.dev/schemas/1.6.0/schema.json",
+  "organizeImports": {
+    "enabled": true
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "style": {
+        "useImportType": "off",
+        "noParameterAssign": "off"
+      },
+      "correctness": {
+        "noUnusedVariables": "error"
+      },
+      "suspicious": {
+        "noExplicitAny": "off",
+        "noConsoleLog": "off"
+      },
+      "complexity": {
+        "recommended": true,
+        "noStaticOnlyClass": "off",
+        "noUselessConstructor": "off",
+        "useLiteralKeys": "off"
+      },
+      "performance": {
+        "noDelete": "off"
+      }
+    }
+  },
+  "formatter": {
+    "enabled": true,
+    "lineWidth": 95,
+    "indentWidth": 2,
+    "indentStyle": "space",
+    "lineEnding": "lf"
+  },
+  "javascript": {
+    "parser": {
+      "unsafeParameterDecoratorsEnabled": true
+    },
+    "formatter": {
+      "bracketSpacing": true,
+      "semicolons": "always",
+      "quoteStyle": "double"
+    }
+  },
+  "files": {
+    "ignore": ["**/node_modules/**", "dist/**", "docs", "coverage/", "./migrations"],
+    "include": ["./src/**/*.ts", "./test/**/*.ts"]
+  }
 }

@@ -1,8 +1,8 @@
-import { BaseEntity } from '../../../common/db/customBaseEntites/BaseEntity';
-import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
-import { User } from './user.entity';
+import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
+import { BaseEntity } from "../../../common/db/customBaseEntites/BaseEntity";
+import { User } from "./user.entity";
 
-@Entity('password-reset')
+@Entity("password-reset")
 export class PasswordReset extends BaseEntity {
   @Column({ unique: true })
   token: string;

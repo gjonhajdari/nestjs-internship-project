@@ -1,6 +1,9 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-
-npx --no -- commitlint --edit "$1" && echo "Nje commit i bukur. Vazhdojme
-tutje 😃😎"  || (echo "Ka je nis o jarano 🤬. Kqyr seri cka je ka don me bo commit 🤯" && exit 1)
+if npx --no -- commitlint --edit "$1"; then
+  echo "Nje commit i bukur. Vazhdojme tutje 😃😎"
+else
+  echo "Ka je nis o jarano 🤬. Kqyr prap cka je ka don me bo commit 🤯"
+  exit 1
+fi

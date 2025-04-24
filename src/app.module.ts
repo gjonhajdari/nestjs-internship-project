@@ -1,25 +1,25 @@
-import { Logger, Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { DataSourceOptions } from 'typeorm';
-import { ConfigModule } from '@nestjs/config';
-import { AuthModule } from './api/auth/auth.module';
-import { UserModule } from './api/user/user.module';
-import { NestEmitterModule } from 'nest-emitter';
-import { APP_GUARD } from '@nestjs/core';
-import { AtGuard } from './common/guards/at.guard';
-import { config } from './common/db/dataSource/data-source.config';
-import { EventEmitter } from 'stream';
-import { MailService } from './services/mail/mail.service';
-import { MailerModule } from '@nestjs-modules/mailer';
-import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { EventEmitter } from "node:stream";
+import { MailerModule } from "@nestjs-modules/mailer";
+import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
+import { Logger, Module } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
+import { APP_GUARD } from "@nestjs/core";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { NestEmitterModule } from "nest-emitter";
+import { DataSourceOptions } from "typeorm";
+import { AuthModule } from "./api/auth/auth.module";
+import { UserModule } from "./api/user/user.module";
+import { AppController } from "./app.controller";
+import { AppService } from "./app.service";
+import { config } from "./common/db/dataSource/data-source.config";
+import { AtGuard } from "./common/guards/at.guard";
+import { MailService } from "./services/mail/mail.service";
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(config as DataSourceOptions),
     ConfigModule.forRoot({
-      envFilePath: ['.env'],
+      envFilePath: [".env"],
     }),
     MailerModule.forRoot({
       transport: {
@@ -34,7 +34,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
         from: process.env.SENDER_MAIL,
       },
       template: {
-        dir: __dirname + '/../templates',
+        dir: `${__dirname}/../templates`,
         adapter: new HandlebarsAdapter(),
         options: {
           strict: true,
@@ -46,11 +46,6 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
     UserModule,
   ],
   controllers: [AppController],
-  providers: [
-    { provide: APP_GUARD, useClass: AtGuard },
-    AppService,
-    MailService,
-    Logger,
-  ],
+  providers: [{ provide: APP_GUARD, useClass: AtGuard }, AppService, MailService, Logger],
 })
 export class AppModule {}

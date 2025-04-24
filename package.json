@@ -7,7 +7,6 @@
 	"license": "UNLICENSED",
 	"scripts": {
 		"build": "nest build",
-		"format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
 		"seed": "node dist/common/db/seeds/seeder",
 		"seed:user": "node dist/common/db/seeds/users/create-users.seed",
 		"seed:refresh": "node dist/common/db/seeds/seeder --refresh",
@@ -16,7 +15,9 @@
 		"start:dev": "nest start --watch",
 		"start:debug": "nest start --debug --watch",
 		"start:prod": "npm run build && node dist/main.js",
-		"lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+		"lint": "biome lint ./src",
+    "format": "biome format --write ./src",
+    "check": "biome check ./src",
 		"test": "jest",
 		"test:watch": "jest --watch",
 		"test:cov": "jest --coverage",
@@ -88,7 +89,7 @@
 		"typescript": "^4.7.4"
 	},
 	"lint-staged": {
-		"*.{js,jsx,ts,tsx}": "eslint --fix"
+		"*.{js,jsx,ts,tsx}": "biome check --apply"
 	},
 	"jest": {
 		"moduleFileExtensions": ["js", "json", "ts"],

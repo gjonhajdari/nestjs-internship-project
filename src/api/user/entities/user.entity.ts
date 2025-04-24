@@ -1,13 +1,13 @@
-import { Exclude } from 'class-transformer';
-import { Column, Entity, Index } from 'typeorm';
-import { UserGender } from '../enums/userGender.enum';
-import { UserRoles } from '../enums/roles.enum';
-import { AuditEntity } from '../../../common/db/customBaseEntites/AuditEntity';
+import { Exclude } from "class-transformer";
+import { Column, Entity, Index } from "typeorm";
+import { AuditEntity } from "../../../common/db/customBaseEntites/AuditEntity";
+import { UserRoles } from "../enums/roles.enum";
+import { UserGender } from "../enums/userGender.enum";
 
-@Entity('users')
+@Entity("users")
 export class User extends AuditEntity {
   @Column({
-    type: 'enum',
+    type: "enum",
     default: UserRoles.USER,
     enum: UserRoles,
   })
@@ -15,7 +15,7 @@ export class User extends AuditEntity {
   @Column({ default: false })
   isRoleOverridden: boolean;
 
-  @Column({ type: 'integer', default: 1 })
+  @Column({ type: "integer", default: 1 })
   permissions: number;
 
   @Column({ nullable: true })
@@ -40,7 +40,7 @@ export class User extends AuditEntity {
   hashedRt: string;
 
   @Column({
-    type: 'enum',
+    type: "enum",
     nullable: false,
     enum: UserGender,
     default: UserGender.OTHER,
