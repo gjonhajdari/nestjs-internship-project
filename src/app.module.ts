@@ -9,7 +9,7 @@ import { NestEmitterModule } from "nest-emitter";
 import { DataSourceOptions } from "typeorm";
 import { AuthModule } from "./api/auth/auth.module";
 import { RoomsModule } from "./api/rooms/rooms.module";
-import { UserModule } from "./api/user/user.module";
+import { UserModule } from "./api/user/users.module";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { config } from "./common/db/dataSource/data-source.config";

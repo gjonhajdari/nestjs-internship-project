@@ -1,8 +1,8 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { PasswordReset } from "./entities/reset-password.entity";
-import { UserRepository } from "./repository/user.repository";
-import { UserService } from "./user.service";
+import { UserRepository } from "./repository/users.repository";
+import { UserService } from "./users.service";
 
 // example test
 describe("UserService", () => {

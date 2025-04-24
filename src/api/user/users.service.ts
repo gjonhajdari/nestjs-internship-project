@@ -13,13 +13,13 @@ import { PermissinDto } from "./dtos/permission.dto";
 import { UpdateUserDto } from "./dtos/update-user.dto";
 import { PasswordReset } from "./entities/reset-password.entity";
 import { User } from "./entities/user.entity";
-import { IUserService } from "./interfaces/user.service.interface";
-import { UserRepository } from "./repository/user.repository";
+import { IUsersService } from "./interfaces/users.service.interface";
+import { UsersRepository } from "./repository/users.repository";
 
 @Injectable()
-export class UserService implements IUserService {
+export class UsersService implements IUsersService {
   constructor(
-    private userRepository: UserRepository,
+    private userRepository: UsersRepository,
     @InjectRepository(PasswordReset)
     private passwordRepository: Repository<PasswordReset>,
     @InjectEventEmitter() private readonly emitter: EventEmitter,

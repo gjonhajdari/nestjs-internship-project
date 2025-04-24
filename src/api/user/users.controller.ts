@@ -27,8 +27,8 @@ import { UpdateUserDto } from "./dtos/update-user.dto";
 import { User } from "./entities/user.entity";
 import { UserPermissions } from "./enums/permissions.enum";
 import { UserRoles } from "./enums/roles.enum";
-import { IUserController } from "./interfaces/user.controller.interface";
-import { UserService } from "./user.service";
+import { IUsersController } from "./interfaces/users.controller.interface";
+import { UsersService } from "./users.service";
 
 @Controller("user")
 @ApiBearerAuth()
@@ -37,8 +37,8 @@ import { UserService } from "./user.service";
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(PermissionsGuard)
 @UseGuards(RolesGuard)
-export class UserController implements IUserController {
-  constructor(private readonly usersService: UserService) {}
+export class UsersController implements IUsersController {
+  constructor(private readonly usersService: UsersService) {}
 
   //example how permissions work
   @Permission(UserPermissions.CAN_ACCESS_HELLO_METHOD)
