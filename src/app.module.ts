@@ -12,7 +12,7 @@ import { UserModule } from "./api/user/user.module";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { config } from "./common/db/dataSource/data-source.config";
-import { AtGuard } from "./common/guards/at.guard";
+import { AccessTokenGuard } from "./common/guards/access-token.guard";
 import { MailService } from "./services/mail/mail.service";
 
 @Module({
@@ -46,6 +46,11 @@ import { MailService } from "./services/mail/mail.service";
     UserModule,
   ],
   controllers: [AppController],
-  providers: [{ provide: APP_GUARD, useClass: AtGuard }, AppService, MailService, Logger],
+  providers: [
+    { provide: APP_GUARD, useClass: AccessTokenGuard },
+    AppService,
+    MailService,
+    Logger,
+  ],
 })
 export class AppModule {}
