@@ -14,8 +14,8 @@ import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { GetCurrentUserId } from "../../common/decorators/get-current-user-id.decorator";
 import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
 import { Public } from "../../common/decorators/public.decorator";
-import { AtGuard } from "../../common/guards/at.guard";
-import { RtGuard } from "../../common/guards/rt.guard";
+import { AccessTokenGuard } from "../../common/guards/access-token.guard";
+import { RefreshTokenGuard } from "../../common/guards/refresh-token.guard";
 import { AuthService } from "./auth.service";
 import { LoginDto } from "./dtos/login.dto";
 import { RegisterDTO } from "./dtos/register.dto";
@@ -45,7 +45,7 @@ export class AuthController implements IAuthController {
     return this.authService.login(loginDto);
   }
 
-  @UseGuards(AtGuard)
+  @UseGuards(AccessTokenGuard)
   @Post("logout")
   @HttpCode(HttpStatus.OK)
   async logout(@GetCurrentUserId() userId: string): Promise<void> {
@@ -53,7 +53,7 @@ export class AuthController implements IAuthController {
   }
 
   @Public()
-  @UseGuards(RtGuard)
+  @UseGuards(RefreshTokenGuard)
   @Post("token")
   @HttpCode(HttpStatus.OK)
   async refreshToken(@GetCurrentUser() user: TGetCurrentUser): Promise<Tokens> {

@@ -6,11 +6,11 @@ import { jwtConstants } from "../constants/constants";
 import { JwtPayload } from "../interfaces/jwt-payload.inteface";
 
 @Injectable()
-export class RtStrategy extends PassportStrategy(Strategy, "jwt-refresh") {
+export class RefreshTokenStrategy extends PassportStrategy(Strategy, "jwt-refresh") {
   constructor() {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: jwtConstants.rt_secret,
+      secretOrKey: jwtConstants.refresh_token_secret,
       passReqToCallback: true,
     });
   }

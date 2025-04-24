@@ -5,15 +5,15 @@ import { User } from "../user/entities/user.entity";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
 import { jwtConstants } from "./constants/constants";
-import { AtStrategy } from "./strategies/at.strategy";
-import { RtStrategy } from "./strategies/rt.strategy";
+import { AccessTokenStrategy } from "./strategies/access-token.strategy";
+import { RefreshTokenStrategy } from "./strategies/refresh-token.strategy";
 
 @Module({
   imports: [
-    JwtModule.register({ secret: jwtConstants.at_secret }),
+    JwtModule.register({ secret: jwtConstants.access_token_secret }),
     TypeOrmModule.forFeature([User]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, RtStrategy, AtStrategy],
+  providers: [AuthService, RefreshTokenStrategy, AccessTokenStrategy],
 })
 export class AuthModule {}
