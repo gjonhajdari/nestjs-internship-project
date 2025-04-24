@@ -11,28 +11,28 @@ import {
   UseInterceptors,
   UsePipes,
   ValidationPipe,
-} from '@nestjs/common';
-import { IUserController } from './interfaces/user.controller.interface';
-import { PermissionsGuard } from '../../common/guards/permissions.guard';
-import { Permission } from '../../common/decorators/permissions.decorator';
-import { UserPermissions } from './enums/permissions.enum';
-import { GetCurrentUser } from '../../common/decorators/get-current-user.decorator';
-import { User } from './entities/user.entity';
-import { UserService } from './user.service';
-import { CreateUserDto } from './dtos/create-user.dto';
-import { UpdateUserDto } from './dtos/update-user.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { PermissinDto } from './dtos/permission.dto';
-import { Roles } from '../../common/decorators/roles.decorator';
-import { UserRoles } from './enums/roles.enum';
-import { PaginationInterceptor } from '../../common/interceptors/pagination.interceptor';
-import { ForgotPasswordDto, ResetPasswordDto } from './dtos/password-reset.dto';
-import { Public } from '../../common/decorators/public.decorator';
-import { RolesGuard } from '../../common/guards/roles.guard';
+} from "@nestjs/common";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
+import { Permission } from "../../common/decorators/permissions.decorator";
+import { Public } from "../../common/decorators/public.decorator";
+import { Roles } from "../../common/decorators/roles.decorator";
+import { PermissionsGuard } from "../../common/guards/permissions.guard";
+import { RolesGuard } from "../../common/guards/roles.guard";
+import { PaginationInterceptor } from "../../common/interceptors/pagination.interceptor";
+import { CreateUserDto } from "./dtos/create-user.dto";
+import { ForgotPasswordDto, ResetPasswordDto } from "./dtos/password-reset.dto";
+import { PermissinDto } from "./dtos/permission.dto";
+import { UpdateUserDto } from "./dtos/update-user.dto";
+import { User } from "./entities/user.entity";
+import { UserPermissions } from "./enums/permissions.enum";
+import { UserRoles } from "./enums/roles.enum";
+import { IUserController } from "./interfaces/user.controller.interface";
+import { UserService } from "./user.service";
 
-@Controller('user')
+@Controller("user")
 @ApiBearerAuth()
-@ApiTags('User')
+@ApiTags("User")
 @UsePipes(new ValidationPipe())
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(PermissionsGuard)
@@ -42,9 +42,9 @@ export class UserController implements IUserController {
 
   //example how permissions work
   @Permission(UserPermissions.CAN_ACCESS_HELLO_METHOD)
-  @Get('hello')
+  @Get("hello")
   async getHello() {
-    return `Hello from Hello Method`;
+    return "Hello from Hello Method";
   }
 
   @Roles(UserRoles.SUPER_ADMIN)
@@ -53,15 +53,15 @@ export class UserController implements IUserController {
     return await this.usersService.create(createUserDto);
   }
 
-  @Get('me')
+  @Get("me")
   async getMe(@GetCurrentUser() user: User): Promise<User> {
     return await this.usersService.findOne(user.uuid);
   }
 
   // example how roles work
   @Roles(UserRoles.SUPER_ADMIN)
-  @Get(':userId')
-  async findOne(@Param('userId') userId: string): Promise<User> {
+  @Get(":userId")
+  async findOne(@Param("userId") userId: string): Promise<User> {
     return await this.usersService.findOne(userId);
   }
 
@@ -72,59 +72,54 @@ export class UserController implements IUserController {
     return await this.usersService.findAll();
   }
 
-  @Patch('me')
-  async updateMe(
-    @GetCurrentUser() user: User,
-    @Body() updateUserDto: UpdateUserDto,
-  ) {
+  @Patch("me")
+  async updateMe(@GetCurrentUser() user: User, @Body() updateUserDto: UpdateUserDto) {
     return await this.usersService.update(user.uuid, updateUserDto);
   }
 
   @Roles(UserRoles.SUPER_ADMIN)
-  @Patch(':userId')
+  @Patch(":userId")
   async updateUser(
-    @Param('userId') userId: string,
+    @Param("userId") userId: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<User> {
     return await this.usersService.update(userId, updateUserDto);
   }
 
   @Roles(UserRoles.SUPER_ADMIN)
-  @Delete(':userId')
-  async remove(@Param('userId') userId: string): Promise<void> {
+  @Delete(":userId")
+  async remove(@Param("userId") userId: string): Promise<void> {
     return await this.usersService.remove(userId);
   }
 
   @Roles(UserRoles.SUPER_ADMIN)
-  @Post('add-permission/:userId')
+  @Post("add-permission/:userId")
   async addPermission(
-    @Param('userId') userId: string,
+    @Param("userId") userId: string,
     @Body() permission: PermissinDto,
   ): Promise<void> {
     return this.usersService.addPermission(userId, permission);
   }
 
   @Roles(UserRoles.SUPER_ADMIN)
-  @Post('remove-permission/:userId')
+  @Post("remove-permission/:userId")
   async removePermission(
-    @Param('userId') userId: string,
+    @Param("userId") userId: string,
     @Body() permission: PermissinDto,
   ): Promise<void> {
     return this.usersService.removePermission(userId, permission);
   }
 
   @Public()
-  @Post('forgot')
-  async forgotPassword(
-    @Body() forgotPassword: ForgotPasswordDto,
-  ): Promise<void> {
+  @Post("forgot")
+  async forgotPassword(@Body() forgotPassword: ForgotPasswordDto): Promise<void> {
     return await this.usersService.forgotPassword(forgotPassword);
   }
 
   @Public()
-  @Post('reset/:token')
+  @Post("reset/:token")
   async resetPassword(
-    @Param('token') token: string,
+    @Param("token") token: string,
     @Body() resetPasswordDto: ResetPasswordDto,
   ): Promise<void> {
     return await this.usersService.resetPassword(token, resetPasswordDto);

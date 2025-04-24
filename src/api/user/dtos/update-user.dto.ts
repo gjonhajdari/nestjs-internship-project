@@ -1,15 +1,9 @@
-import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsEmail,
-  IsEnum,
-  IsOptional,
-  IsString,
-  Validate,
-} from 'class-validator';
-import { IsUnique } from '../../../common/decorators/validation.decorator';
-import { User } from '../entities/user.entity';
-import { UserRoles } from '../enums/roles.enum';
-import { UserGender } from '../enums/userGender.enum';
+import { ApiProperty } from "@nestjs/swagger";
+import { IsEmail, IsEnum, IsOptional, IsString, Validate } from "class-validator";
+import { IsUnique } from "../../../common/decorators/validation.decorator";
+import { User } from "../entities/user.entity";
+import { UserRoles } from "../enums/roles.enum";
+import { UserGender } from "../enums/userGender.enum";
 
 export class UpdateUserDto {
   @IsString()

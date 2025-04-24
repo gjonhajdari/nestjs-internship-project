@@ -1,5 +1,5 @@
-import { FindManyOptions, FindOneOptions } from 'typeorm';
-import { AuditEntity } from '../../customBaseEntites/AuditEntity';
+import { FindManyOptions, FindOneOptions } from "typeorm";
+import { AuditEntity } from "../../customBaseEntites/AuditEntity";
 
 export interface IBaseCustomRepository<T extends AuditEntity> {
   findOne(options: FindOneOptions<T>): Promise<T>;

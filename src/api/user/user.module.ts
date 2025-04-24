@@ -1,10 +1,10 @@
-import { Module } from '@nestjs/common';
-import { UserService } from './user.service';
-import { UserController } from './user.controller';
-import { CustomRepositoryModule } from '../../common/db/CustomRepository.module';
-import { UserRepository } from './repository/user.repository';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { PasswordReset } from './entities/reset-password.entity';
+import { Module } from "@nestjs/common";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { CustomRepositoryModule } from "../../common/db/CustomRepository.module";
+import { PasswordReset } from "./entities/reset-password.entity";
+import { UserRepository } from "./repository/user.repository";
+import { UserController } from "./user.controller";
+import { UserService } from "./user.service";
 
 @Module({
   imports: [

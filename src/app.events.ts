@@ -1,6 +1,6 @@
-import Events from 'events';
+import Events from "node:events";
 
-import { StrictEventEmitter } from 'nest-emitter';
+import { StrictEventEmitter } from "nest-emitter";
 
 interface AppEvents {
   forgotPasswordMail: (userToken: any) => void;

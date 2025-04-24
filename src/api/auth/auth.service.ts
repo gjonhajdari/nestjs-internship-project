@@ -4,25 +4,25 @@ import {
   Injectable,
   InternalServerErrorException,
   UnauthorizedException,
-} from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+} from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
 import {
   compareHashedDataArgon,
   compareHashedDataBcrypt,
   hashDataArgon,
   hashDataBrypt,
-} from '../../services/providers';
-import { User } from '../user/entities/user.entity';
-import { RolePermissions, UserRoles } from '../user/enums/roles.enum';
-import { jwtConstants } from './constants/constants';
-import { LoginDto } from './dtos/login.dto';
-import { RegisterDTO } from './dtos/register.dto';
-import { IAuthService } from './interfaces/auth.service.interface';
-import { JwtPayload } from './interfaces/jwt-payload.inteface';
-import { Tokens } from './types/tokens.types';
-import { TTokensUser } from './types/user-tokens.type';
+} from "../../services/providers";
+import { User } from "../user/entities/user.entity";
+import { RolePermissions, UserRoles } from "../user/enums/roles.enum";
+import { jwtConstants } from "./constants/constants";
+import { LoginDto } from "./dtos/login.dto";
+import { RegisterDTO } from "./dtos/register.dto";
+import { IAuthService } from "./interfaces/auth.service.interface";
+import { JwtPayload } from "./interfaces/jwt-payload.inteface";
+import { Tokens } from "./types/tokens.types";
+import { TTokensUser } from "./types/user-tokens.type";
 
 @Injectable()
 export class AuthService implements IAuthService {
@@ -49,8 +49,8 @@ export class AuthService implements IAuthService {
       const tokens = await this.getTokens(user.uuid);
       await this.updateRtHash(user.uuid, tokens.refreshToken);
       return tokens;
-    } catch (error) {
-      throw new InternalServerErrorException('User registration failed');
+    } catch (_error) {
+      throw new InternalServerErrorException("User registration failed");
     }
   }
 
@@ -59,16 +59,13 @@ export class AuthService implements IAuthService {
       email: loginDto.email,
     });
     if (!user) {
-      throw new BadRequestException('Wrong credentials!');
+      throw new BadRequestException("Wrong credentials!");
     }
 
-    const isMatch = await compareHashedDataBcrypt(
-      loginDto.password,
-      user.password,
-    );
+    const isMatch = await compareHashedDataBcrypt(loginDto.password, user.password);
 
     if (!isMatch) {
-      throw new BadRequestException('Wrong credentials!');
+      throw new BadRequestException("Wrong credentials!");
     }
 
     const tokens = await this.getTokens(user.uuid);

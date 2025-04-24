@@ -1,8 +1,8 @@
-import { extname } from 'path';
-import { existsSync, mkdirSync } from 'fs';
-import { diskStorage } from 'multer';
-import { v4 as uuid } from 'uuid';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { existsSync, mkdirSync } from "node:fs";
+import { extname } from "node:path";
+import { HttpException, HttpStatus } from "@nestjs/common";
+import { diskStorage } from "multer";
+import { v4 as uuid } from "uuid";
 
 // Multer configuration
 export const multerConfig = {
@@ -16,7 +16,7 @@ export const multerOptions = {
     fileSize: +process.env.MAX_FILE_SIZE,
   },
   // Check the mimetypes to allow for upload
-  fileFilter: (req: any, file: any, cb: any) => {
+  fileFilter: (_req: any, file: any, cb: any) => {
     if (file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
       // Allow storage of file
       cb(null, true);
@@ -34,7 +34,7 @@ export const multerOptions = {
   // Storage properties
   storage: diskStorage({
     // Destination storage path details
-    destination: (req: any, file: any, cb: any) => {
+    destination: (_req: any, _file: any, cb: any) => {
       const uploadPath = multerConfig.dest;
       // Create folder if doesn't exist
       if (!existsSync(uploadPath)) {
@@ -43,7 +43,7 @@ export const multerOptions = {
       cb(null, uploadPath);
     },
     // File modification details
-    filename: (req: any, file: any, cb: any) => {
+    filename: (_req: any, file: any, cb: any) => {
       // Calling the callback passing the random name generated with the original extension name
       cb(null, `${uuid()}${extname(file.originalname)}`);
     },

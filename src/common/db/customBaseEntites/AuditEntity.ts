@@ -1,6 +1,6 @@
-import { CreateDateColumn, DeleteDateColumn, UpdateDateColumn } from 'typeorm';
-import { BaseEntity } from './BaseEntity';
-import { IAuditEntity } from './interfaces/auditEntity.interface';
+import { CreateDateColumn, DeleteDateColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity } from "./BaseEntity";
+import { IAuditEntity } from "./interfaces/auditEntity.interface";
 
 export abstract class AuditEntity extends BaseEntity implements IAuditEntity {
   @CreateDateColumn()

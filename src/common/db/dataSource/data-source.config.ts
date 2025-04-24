@@ -1,7 +1,7 @@
-import 'dotenv/config';
+import "dotenv/config";
 
 export const config = {
-  name: 'default',
+  name: "default",
   type: process.env.TYPEORM_TYPE,
   host: process.env.TYPEORM_HOST,
   port: process.env.TYPEORM_PORT || 5432,
@@ -12,13 +12,13 @@ export const config = {
   dropSchema: false,
   entities: [process.env.TYPEORM_ENTITIES],
   migrations: [process.env.TYPEORM_MIGRATIONS],
-  logging: process.env.NODE_ENV === 'localhost',
+  logging: process.env.NODE_ENV === "localhost",
   seeds: process.env.TYPEORM_SEEDING_SEEDS,
-  uuidExtension: 'pgcrypto',
+  uuidExtension: "pgcrypto",
 };
 
 export const configNoEntities = {
-  name: 'default',
+  name: "default",
   type: process.env.TYPEORM_TYPE,
   host: process.env.TYPEORM_HOST,
   port: process.env.TYPEORM_PORT || 5432,
@@ -27,7 +27,7 @@ export const configNoEntities = {
   entities: [process.env.TYPEORM_ENTITIES],
   database: process.env.TYPEORM_NAME,
   migrations: [process.env.TYPEORM_MIGRATIONS],
-  logging: process.env.NODE_ENV === 'localhost',
+  logging: process.env.NODE_ENV === "localhost",
   seeds: process.env.TYPEORM_SEEDING_SEEDS,
-  uuidExtension: 'pgcrypto',
+  uuidExtension: "pgcrypto",
 };

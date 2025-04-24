@@ -1,7 +1,7 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
-import { EventEmitter } from 'stream';
-import { InjectEventEmitter } from 'nest-emitter';
-import { MailService } from './services/mail/mail.service';
+import { EventEmitter } from "node:stream";
+import { Injectable, OnModuleInit } from "@nestjs/common";
+import { InjectEventEmitter } from "nest-emitter";
+import { MailService } from "./services/mail/mail.service";
 
 @Injectable()
 export class AppService implements OnModuleInit {
@@ -11,12 +11,12 @@ export class AppService implements OnModuleInit {
   ) {}
 
   getHello(): string {
-    return 'Hello World!';
+    return "Hello World!";
   }
 
   onModuleInit(): any {
     this.emitter.on(
-      'forgotPasswordMail',
+      "forgotPasswordMail",
       async (userToken) => await this.onForgotPasswordMail(userToken),
     );
   }

@@ -1,4 +1,4 @@
-import * as argon from 'argon2';
+import * as argon from "argon2";
 
 export const hashDataArgon = async (dataToHash: string): Promise<string> => {
   return await argon.hash(dataToHash);
