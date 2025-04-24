@@ -1,4 +1,9 @@
-import { RequestMethod, ValidationPipe } from "@nestjs/common";
+import {
+  RequestMethod,
+  VERSION_NEUTRAL,
+  ValidationPipe,
+  VersioningType,
+} from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { apiReference } from "@scalar/nestjs-api-reference";
@@ -22,6 +27,10 @@ async function bootstrap() {
   );
   app.setGlobalPrefix("api", {
     exclude: [{ path: "/", method: RequestMethod.GET }],
+  });
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: VERSION_NEUTRAL,
   });
 
   if (process.env.NODE_ENV !== "production") {
