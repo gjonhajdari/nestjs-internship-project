@@ -8,6 +8,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { NestEmitterModule } from "nest-emitter";
 import { DataSourceOptions } from "typeorm";
 import { AuthModule } from "./api/auth/auth.module";
+import { CommentsModule } from "./api/comments/comments.module";
 import { NotesModule } from "./api/notes/notes.module";
 import { RoomsModule } from "./api/rooms/rooms.module";
 import { UserModule } from "./api/user/users.module";
@@ -48,6 +49,7 @@ import { MailService } from "./services/mail/mail.service";
     UserModule,
     RoomsModule,
     NotesModule,
+    CommentsModule,
   ],
   controllers: [AppController],
   providers: [
