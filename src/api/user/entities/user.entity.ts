@@ -1,6 +1,7 @@
 import { Exclude } from "class-transformer";
 import { Comment } from "src/api/comments/entities/comment.entity";
 import { Note } from "src/api/notes/entities/note.entity";
+import { RoomUsers } from "src/api/rooms/entities/room-users.entity";
 import { Column, Entity, Index, OneToMany } from "typeorm";
 import { AuditEntity } from "../../../common/db/customBaseEntites/AuditEntity";
 import { UserRoles } from "../enums/roles.enum";
@@ -50,4 +51,10 @@ export class User extends AuditEntity {
     (comment) => comment.user,
   )
   comments: Comment[];
+
+  @OneToMany(
+    () => RoomUsers,
+    (roomUsers) => roomUsers.userId,
+  )
+  rooms: RoomUsers[];
 }
