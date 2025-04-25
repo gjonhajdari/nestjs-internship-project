@@ -25,8 +25,8 @@
 		"test:e2e": "jest --config ./test/jest-e2e.json",
 		"prepare": "husky install",
 		"typeorm": "npm run build && npx typeorm -d dist/common/db/dataSource/data-source.initialize.js",
-		"migration:generate": "npm run typeorm -- migration:generate ./src/common/db/migrations/m",
-		"migration:create": "npx typeorm migration:create ./src/common/db/migrations/${npm_config_FILE}",
+		"migration:generate": "npm run typeorm -- migration:generate ./src/common/db/migrations/migration",
+		"migration:create": "npx typeorm migration:create ./src/common/db/migrations/${npm_config_name}",
 		"migration:run": "npm run typeorm -- migration:run",
 		"migration:revert": "npm run typeorm -- migration:revert"
 	},
