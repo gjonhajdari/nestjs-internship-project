@@ -11,7 +11,7 @@ import {
 import { Roles } from "../enums/roles.enum";
 import { Room } from "./room.entity";
 
-@Entity("room-users")
+@Entity("room_users")
 export class RoomUsers {
   @Column({ type: "enum", enum: Roles, nullable: false })
   role: Roles;
