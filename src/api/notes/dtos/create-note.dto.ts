@@ -1,5 +1,5 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsInt, IsNotEmpty, IsString, IsUUID } from "class-validator";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { IsInt, IsNotEmpty, IsOptional, IsString, IsUUID, Max, Min } from "class-validator";
 
 export class CreateNoteDto {
   @IsNotEmpty()
@@ -11,24 +11,19 @@ export class CreateNoteDto {
   })
   roomId: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: "string",
-    description: "The content of the note. It should be a string with the note details.",
+    description: "The content of the note. It can be long text.",
     example: "This is a sample note content",
-    minLength: 0,
-    nullable: false,
   })
-  content: string;
-
-  //TODO: delete this
-  @IsNotEmpty()
-  @IsInt()
-  totalVotes: number;
+  content?: string;
 
   @IsNotEmpty()
   @IsInt()
+  @Min(0)
+  @Max(50000)
   @ApiProperty({
     type: "number",
     description: "The X coordinate for the note on the display. It should be an integer.",
@@ -41,6 +36,8 @@ export class CreateNoteDto {
 
   @IsNotEmpty()
   @IsInt()
+  @Min(0)
+  @Max(50000)
   @ApiProperty({
     type: "number",
     description: "The Y coordinate for the note on the display. It should be an integer.",
