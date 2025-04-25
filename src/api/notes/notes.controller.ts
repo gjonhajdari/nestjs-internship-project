@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Patch, Post } from "@nestjs/common";
+import { Controller } from "@nestjs/common";
 
 // TODO: implement INotesController interface
 @Controller("notes")

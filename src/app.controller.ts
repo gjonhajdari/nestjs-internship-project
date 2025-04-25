@@ -1,4 +1,4 @@
-import { Controller, Get, Logger, VERSION_NEUTRAL, Version } from "@nestjs/common";
+import { Controller, Get, Logger, Version } from "@nestjs/common";
 import { AppService } from "./app.service";
 import { Public } from "./common/decorators/public.decorator";
 
