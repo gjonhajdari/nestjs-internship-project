@@ -13,7 +13,6 @@ export class Note extends AuditEntity {
   @JoinColumn({ name: "author_id" })
   authorId: User;
 
-  room_id;
   @ManyToOne(
     () => Room,
     (room) => room.notes,
