@@ -27,11 +27,11 @@ export class RoomUsers {
   @JoinColumn({ name: "room_id", referencedColumnName: "uuid" })
   roomId: Room;
 
-  // @PrimaryColumn({ name: "user_id", type: "uuid" })
-  // @ManyToOne(
-  //   () => User,
-  //   (user) => user.rooms,
-  // )
-  // @JoinColumn({ name: "user_id", referencedColumnName: "uuid" })
-  // userId: User;
+  @PrimaryColumn({ name: "user_id", type: "uuid" })
+  @ManyToOne(
+    () => User,
+    (user) => user.rooms,
+  )
+  @JoinColumn({ name: "user_id", referencedColumnName: "uuid" })
+  userId: User;
 }
