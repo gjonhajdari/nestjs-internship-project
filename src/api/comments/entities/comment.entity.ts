@@ -3,7 +3,7 @@ import { User } from "src/api/user/entities/user.entity";
 import { AuditEntity } from "src/common/db/customBaseEntites/AuditEntity";
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from "typeorm";
 
-@Entity()
+@Entity("comments")
 export class Comment extends AuditEntity {
   @Column({
     type: "varchar",
