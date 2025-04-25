@@ -5,7 +5,6 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToMany,
   PrimaryColumn,
 } from "typeorm";
 import { Roles } from "../enums/roles.enum";

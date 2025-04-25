@@ -5,7 +5,6 @@ import { RoomUsers } from "src/api/rooms/entities/room-users.entity";
 import { Column, Entity, Index, OneToMany } from "typeorm";
 import { AuditEntity } from "../../../common/db/customBaseEntites/AuditEntity";
 import { UserRoles } from "../enums/roles.enum";
-import { UserGender } from "../enums/userGender.enum";
 
 @Entity("users")
 export class User extends AuditEntity {

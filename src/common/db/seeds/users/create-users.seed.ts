@@ -2,7 +2,6 @@ import { Injectable } from "@nestjs/common";
 import { Seeder } from "nestjs-seeder";
 import { In } from "typeorm";
 import { User } from "../../../../api/user/entities/user.entity";
-import { UserGender } from "../../../../api/user/enums/userGender.enum";
 import AppDataSource from "../../dataSource/data-source.initialize";
 
 @Injectable()
