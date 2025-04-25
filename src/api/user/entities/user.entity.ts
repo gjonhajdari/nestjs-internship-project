@@ -1,5 +1,6 @@
 import { Exclude } from "class-transformer";
 import { Comment } from "src/api/comments/entities/comment.entity";
+import { Note } from "src/api/notes/entities/note.entity";
 import { Column, Entity, Index, OneToMany } from "typeorm";
 import { AuditEntity } from "../../../common/db/customBaseEntites/AuditEntity";
 import { UserRoles } from "../enums/roles.enum";
@@ -13,26 +14,24 @@ export class User extends AuditEntity {
     enum: UserRoles,
   })
   role: UserRoles;
+
   @Column({ default: false })
   isRoleOverridden: boolean;
 
   @Column({ type: "integer", default: 1 })
   permissions: number;
 
-  @Column({ nullable: true })
+  @Column({ nullable: false })
   firstName: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: false })
   lastName: string;
 
-  @Column({ unique: true })
+  @Column({ unique: true, nullable: false })
   @Index()
   email: string;
 
-  @Column({ unique: true })
-  username: string;
-
-  @Column({ nullable: true })
+  @Column({ nullable: false })
   @Exclude()
   password: string;
 
@@ -40,19 +39,11 @@ export class User extends AuditEntity {
   @Exclude()
   hashedRt: string;
 
-  @Column({
-    type: "enum",
-    nullable: false,
-    enum: UserGender,
-    default: UserGender.OTHER,
-  })
-  gender: UserGender;
-
-  @Column({ nullable: true })
-  phone: string;
-
-  @Column({ nullable: true })
-  timezone: string;
+  @OneToMany(
+    () => Note,
+    (note) => note.authorId,
+  )
+  notes: Note[];
 
   @OneToMany(
     () => Comment,

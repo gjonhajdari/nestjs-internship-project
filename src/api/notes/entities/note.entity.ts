@@ -5,10 +5,12 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 
 @Entity({ name: "notes" })
 export class Note extends AuditEntity {
-  // author_id
-  // @ManyToOne(() => User, (user) => user.notes)
-  // @JoinColumn({ name: 'author_id' })
-  // authorId: User;
+  @ManyToOne(
+    () => User,
+    (user) => user.notes,
+  )
+  @JoinColumn({ name: "author_id" })
+  authorId: User;
 
   // room_id
   // @ManyToOne(() => Room, (room) => room.notes)
