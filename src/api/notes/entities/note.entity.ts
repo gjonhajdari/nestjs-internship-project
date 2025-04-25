@@ -1,4 +1,5 @@
 import { Comment } from "src/api/comments/entities/comment.entity";
+import { Room } from "src/api/rooms/entities/room.entity";
 import { User } from "src/api/user/entities/user.entity";
 import { AuditEntity } from "src/common/db/customBaseEntites/AuditEntity";
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
@@ -12,10 +13,13 @@ export class Note extends AuditEntity {
   @JoinColumn({ name: "author_id" })
   authorId: User;
 
-  // room_id
-  // @ManyToOne(() => Room, (room) => room.notes)
-  // @JoinColumn({ name: 'room_id' })
-  // roomId: Room;
+  room_id;
+  @ManyToOne(
+    () => Room,
+    (room) => room.notes,
+  )
+  @JoinColumn({ name: "room_id" })
+  room: Room;
 
   @Column({ type: "text", nullable: false })
   content: string;

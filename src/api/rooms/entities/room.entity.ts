@@ -1,3 +1,4 @@
+import { Note } from "src/api/notes/entities/note.entity";
 import { AuditEntity } from "src/common/db/customBaseEntites/AuditEntity";
 import { Column, Entity, OneToMany } from "typeorm";
 import { RoomUsers } from "./room-users.entity";
@@ -18,4 +19,10 @@ export class Room extends AuditEntity {
     (roomUsers) => roomUsers.roomId,
   )
   users: RoomUsers[];
+
+  @OneToMany(
+    () => Note,
+    (note) => note.room,
+  )
+  notes: Note[];
 }
