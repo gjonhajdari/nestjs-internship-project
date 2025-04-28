@@ -5,13 +5,13 @@ import { RoomUsers } from "./room-users.entity";
 
 @Entity("rooms")
 export class Room extends AuditEntity {
-  @Column({ nullable: false })
+  @Column({ type: "varchar", length: 100, nullable: false })
   title: string;
 
-  @Column({ unique: true })
+  @Column({ type: "varchar", length: 255, unique: true })
   slug: string;
 
-  @Column({ nullable: false, default: true })
+  @Column({ type: "boolean", nullable: false, default: true })
   is_active: boolean;
 
   @OneToMany(
