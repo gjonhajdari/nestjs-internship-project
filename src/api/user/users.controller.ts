@@ -22,7 +22,6 @@ import { RolesGuard } from "../../common/guards/roles.guard";
 import { PaginationInterceptor } from "../../common/interceptors/pagination.interceptor";
 import { CreateUserDto } from "./dtos/create-user.dto";
 import { ForgotPasswordDto, ResetPasswordDto } from "./dtos/password-reset.dto";
-import { PermissinDto } from "./dtos/permission.dto";
 import { UpdateUserDto } from "./dtos/update-user.dto";
 import { User } from "./entities/user.entity";
 import { UserPermissions } from "./enums/permissions.enum";
@@ -92,23 +91,23 @@ export class UsersController implements IUsersController {
     return await this.usersService.remove(userId);
   }
 
-  @Roles(UserRoles.SUPER_ADMIN)
-  @Post("add-permission/:userId")
-  async addPermission(
-    @Param("userId") userId: string,
-    @Body() permission: PermissinDto,
-  ): Promise<void> {
-    return this.usersService.addPermission(userId, permission);
-  }
+  // @Roles(UserRoles.SUPER_ADMIN)
+  // @Post("add-permission/:userId")
+  // async addPermission(
+  //   @Param("userId") userId: string,
+  //   @Body() permission: PermissinDto,
+  // ): Promise<void> {
+  //   return this.usersService.addPermission(userId, permission);
+  // }
 
-  @Roles(UserRoles.SUPER_ADMIN)
-  @Post("remove-permission/:userId")
-  async removePermission(
-    @Param("userId") userId: string,
-    @Body() permission: PermissinDto,
-  ): Promise<void> {
-    return this.usersService.removePermission(userId, permission);
-  }
+  // @Roles(UserRoles.SUPER_ADMIN)
+  // @Post("remove-permission/:userId")
+  // async removePermission(
+  //   @Param("userId") userId: string,
+  //   @Body() permission: PermissinDto,
+  // ): Promise<void> {
+  //   return this.usersService.removePermission(userId, permission);
+  // }
 
   @Public()
   @Post("forgot")

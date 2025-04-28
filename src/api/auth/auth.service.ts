@@ -15,7 +15,7 @@ import {
   hashDataBrypt,
 } from "../../services/providers";
 import { User } from "../user/entities/user.entity";
-import { RolePermissions, UserRoles } from "../user/enums/roles.enum";
+import {} from "../user/enums/roles.enum";
 import { jwtConstants } from "./constants/constants";
 import { LoginDto } from "./dtos/login.dto";
 import { RegisterDTO } from "./dtos/register.dto";
@@ -36,14 +36,14 @@ export class AuthService implements IAuthService {
     registerDto.password = await hashDataBrypt(registerDto.password);
     delete registerDto.passwordConfirm;
 
-    const userRoleKey = UserRoles[registerDto.role];
-    const userPermissions = RolePermissions[userRoleKey];
+    // const userRoleKey = UserRoles[registerDto.role];
+    // const userPermissions = RolePermissions[userRoleKey];
 
     try {
       const user = await this.userRepository.save(
         this.userRepository.create({
           ...registerDto,
-          permissions: userPermissions,
+          // permissions: userPermissions,
         }),
       );
       const tokens = await this.getTokens(user.uuid);
@@ -75,17 +75,17 @@ export class AuthService implements IAuthService {
 
   async logout(userId: string): Promise<void> {
     const user: User = await this.validateUser(userId);
-    user.hashedRt = null;
+    user.hashedResetToken = null;
     await this.userRepository.save(user);
   }
 
   async refreshToken(userId: string, rt: string): Promise<Tokens> {
     const user: User = await this.validateUser(userId);
-    if (!user || !user.hashedRt) {
+    if (!user || !user.hashedResetToken) {
       throw new ForbiddenException();
     }
 
-    const rtMatches = await compareHashedDataArgon(rt, user.hashedRt);
+    const rtMatches = await compareHashedDataArgon(rt, user.hashedResetToken);
 
     if (!rtMatches) {
       throw new UnauthorizedException();
@@ -103,7 +103,7 @@ export class AuthService implements IAuthService {
   private async updateRtHash(userId: string, rt: string): Promise<void> {
     const newHashRt = await hashDataArgon(rt);
     const user = await this.validateUser(userId);
-    user.hashedRt = newHashRt;
+    user.hashedResetToken = newHashRt;
     await this.userRepository.save(user);
   }
 
