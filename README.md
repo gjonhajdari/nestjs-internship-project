@@ -41,8 +41,8 @@ npx typeorm migration:create ./src/common/db/migrations/[filename]
 ```
 #### Instead of :
 ```bash
-npm run migration:create --FILE=[filename]
-# Example: npm run migration:create --FILE=UpdatePost
+npm run migration:create --name=[filename]
+# Example: npm run migration:create --name=UpdatePost
 ```
 
 ### .env file
