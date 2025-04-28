@@ -6,10 +6,8 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { InjectEventEmitter } from "nest-emitter";
 import { Repository } from "typeorm";
 import { hashDataBrypt } from "../../services/providers";
-import checkPermissionsUtil from "../../utils/checkPermissions.util";
 import { CreateUserDto } from "./dtos/create-user.dto";
 import { ForgotPasswordDto, ResetPasswordDto } from "./dtos/password-reset.dto";
-import { PermissinDto } from "./dtos/permission.dto";
 import { UpdateUserDto } from "./dtos/update-user.dto";
 import { PasswordReset } from "./entities/reset-password.entity";
 import { User } from "./entities/user.entity";
@@ -52,27 +50,27 @@ export class UsersService implements IUsersService {
     await this.userRepository.remove(user);
   }
 
-  async addPermission(userId: string, permissionDto: PermissinDto): Promise<void> {
-    const user = await this.findOne(userId);
+  // async addPermission(userId: string, permissionDto: PermissinDto): Promise<void> {
+  //   const user = await this.findOne(userId);
 
-    const permissionExist = checkPermissionsUtil(user.permissions, permissionDto.permission);
-    if (permissionExist) {
-      throw new UnprocessableEntityException("Permission was already added!");
-    }
-    user.permissions += permissionDto.permission;
-    await this.userRepository.save(user);
-  }
+  //   const permissionExist = checkPermissionsUtil(user.permissions, permissionDto.permission);
+  //   if (permissionExist) {
+  //     throw new UnprocessableEntityException("Permission was already added!");
+  //   }
+  //   user.permissions += permissionDto.permission;
+  //   await this.userRepository.save(user);
+  // }
 
-  async removePermission(userId: string, permissionDto: PermissinDto): Promise<void> {
-    const user = await this.findOne(userId);
+  // async removePermission(userId: string, permissionDto: PermissinDto): Promise<void> {
+  //   const user = await this.findOne(userId);
 
-    const permissionExist = checkPermissionsUtil(user.permissions, permissionDto.permission);
-    if (!permissionExist) {
-      throw new UnprocessableEntityException("Permission was already removed");
-    }
-    user.permissions -= permissionDto.permission;
-    await this.userRepository.save(user);
-  }
+  //   const permissionExist = checkPermissionsUtil(user.permissions, permissionDto.permission);
+  //   if (!permissionExist) {
+  //     throw new UnprocessableEntityException("Permission was already removed");
+  //   }
+  //   user.permissions -= permissionDto.permission;
+  //   await this.userRepository.save(user);
+  // }
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<void> {
     const user = await this.userRepository.findOne({
