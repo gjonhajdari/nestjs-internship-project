@@ -11,8 +11,8 @@ export class Room extends AuditEntity {
   @Column({ type: "varchar", length: 255, unique: true })
   slug: string;
 
-  @Column({ type: "boolean", nullable: false, default: true })
-  is_active: boolean;
+  @Column({ name: "is_active", type: "boolean", nullable: false, default: true })
+  isActive: boolean;
 
   @OneToMany(
     () => RoomUsers,
