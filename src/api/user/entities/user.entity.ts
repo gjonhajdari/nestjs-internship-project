@@ -41,7 +41,7 @@ export class User extends AuditEntity {
 
   @OneToMany(
     () => Note,
-    (note) => note.authorId,
+    (note) => note.author,
   )
   notes: Note[];
 
