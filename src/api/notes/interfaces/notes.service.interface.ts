@@ -9,7 +9,7 @@ export interface INotesService {
 
   updateNote(noteId: string, payload: UpdateNoteDto): Promise<Note>;
 
-  removeNote(noteId: string): Promise<void>;
+  deleteNote(noteId: string): Promise<void>;
 
   addVote(noteId: string): Promise<boolean>;
 

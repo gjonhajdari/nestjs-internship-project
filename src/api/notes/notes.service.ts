@@ -35,7 +35,7 @@ export class NotesService implements INotesService {
   async updateNote(noteId: string, payload: UpdateNoteDto): Promise<Note> {
     throw new Error("Method not implemented.");
   }
-  async removeNote(noteId: string): Promise<void> {
+  async deleteNote(noteId: string): Promise<void> {
     throw new Error("Method not implemented.");
   }
   async addVote(noteId: string): Promise<boolean> {
