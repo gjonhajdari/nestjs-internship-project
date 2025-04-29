@@ -23,8 +23,8 @@ export class UsersService implements IUsersService {
     @InjectEventEmitter() private readonly emitter: EventEmitter,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    return await this.userRepository.save(this.userRepository.create(createUserDto));
+  async create(payload: CreateUserDto): Promise<User> {
+    return await this.userRepository.save(this.userRepository.create(payload));
   }
 
   async findOne(userId: string): Promise<User> {
@@ -39,9 +39,10 @@ export class UsersService implements IUsersService {
     return await this.userRepository.find();
   }
 
-  async update(userId: string, updateUserDto: UpdateUserDto): Promise<User> {
+  async update(userId: string, payload: UpdateUserDto): Promise<User> {
     const user = await this.findOne(userId);
-    await this.userRepository.update(user.id, updateUserDto);
+    await this.userRepository.update(user.id, payload);
+
     return await this.findOne(userId);
   }
 
@@ -72,9 +73,9 @@ export class UsersService implements IUsersService {
   //   await this.userRepository.save(user);
   // }
 
-  async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<void> {
+  async forgotPassword(paload: ForgotPasswordDto): Promise<void> {
     const user = await this.userRepository.findOne({
-      where: { email: forgotPasswordDto.email },
+      where: { email: paload.email },
     });
 
     if (!user) {
@@ -105,7 +106,7 @@ export class UsersService implements IUsersService {
     });
   }
 
-  async resetPassword(token: string, resetPassworDto: ResetPasswordDto): Promise<void> {
+  async resetPassword(token: string, payload: ResetPasswordDto): Promise<void> {
     const passwordReset = await this.passwordRepository.findOne({
       where: { token },
       relations: ["user"],
@@ -117,7 +118,7 @@ export class UsersService implements IUsersService {
 
     const { user } = passwordReset;
 
-    user.password = await hashDataBrypt(resetPassworDto.password);
+    user.password = await hashDataBrypt(payload.password);
 
     await this.userRepository.save(user);
     await this.passwordRepository.delete({ user: user });

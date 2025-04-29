@@ -48,8 +48,8 @@ export class UsersController implements IUsersController {
 
   @Roles(UserRoles.SUPER_ADMIN)
   @Post()
-  async create(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return await this.usersService.create(createUserDto);
+  async create(@Body() body: CreateUserDto): Promise<User> {
+    return await this.usersService.create(body);
   }
 
   @Get("me")
@@ -72,17 +72,17 @@ export class UsersController implements IUsersController {
   }
 
   @Patch("me")
-  async updateMe(@GetCurrentUser() user: User, @Body() updateUserDto: UpdateUserDto) {
-    return await this.usersService.update(user.uuid, updateUserDto);
+  async updateMe(@GetCurrentUser() user: User, @Body() body: UpdateUserDto) {
+    return await this.usersService.update(user.uuid, body);
   }
 
   @Roles(UserRoles.SUPER_ADMIN)
   @Patch(":userId")
   async updateUser(
     @Param("userId") userId: string,
-    @Body() updateUserDto: UpdateUserDto,
+    @Body() body: UpdateUserDto,
   ): Promise<User> {
-    return await this.usersService.update(userId, updateUserDto);
+    return await this.usersService.update(userId, body);
   }
 
   @Roles(UserRoles.SUPER_ADMIN)
@@ -111,16 +111,16 @@ export class UsersController implements IUsersController {
 
   @Public()
   @Post("forgot")
-  async forgotPassword(@Body() forgotPassword: ForgotPasswordDto): Promise<void> {
-    return await this.usersService.forgotPassword(forgotPassword);
+  async forgotPassword(@Body() body: ForgotPasswordDto): Promise<void> {
+    return await this.usersService.forgotPassword(body);
   }
 
   @Public()
   @Post("reset/:token")
   async resetPassword(
     @Param("token") token: string,
-    @Body() resetPasswordDto: ResetPasswordDto,
+    @Body() body: ResetPasswordDto,
   ): Promise<void> {
-    return await this.usersService.resetPassword(token, resetPasswordDto);
+    return await this.usersService.resetPassword(token, body);
   }
 }

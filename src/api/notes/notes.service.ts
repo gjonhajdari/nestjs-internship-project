@@ -24,11 +24,15 @@ export class NotesService implements INotesService {
     });
   }
 
-  async create(body: CreateNoteDto): Promise<Note> {
+  /**
+   *
+   * @param payload
+   */
+  async create(payload: CreateNoteDto): Promise<Note> {
     throw new Error("Method not implemented.");
   }
 
-  async updateNote(noteId: string, body: UpdateNoteDto): Promise<Note> {
+  async updateNote(noteId: string, payload: UpdateNoteDto): Promise<Note> {
     throw new Error("Method not implemented.");
   }
   async removeNote(noteId: string): Promise<void> {
