@@ -80,7 +80,7 @@ export class User extends AuditEntity {
 
   @OneToMany(
     () => RoomUsers,
-    (roomUsers) => roomUsers.userId,
+    (roomUsers) => roomUsers.user,
   )
   rooms: RoomUsers[];
 }

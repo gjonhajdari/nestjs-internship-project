@@ -18,19 +18,19 @@ export class RoomUsers {
   @CreateDateColumn()
   joined_at: Date;
 
-  @PrimaryColumn({ name: "room_id", type: "uuid" })
+  @PrimaryColumn({ name: "room_id", type: "integer" })
   @ManyToOne(
     () => Room,
     (room) => room.users,
   )
-  @JoinColumn({ name: "room_id", referencedColumnName: "uuid" })
-  roomId: Room;
+  @JoinColumn({ name: "room_id", referencedColumnName: "id" })
+  room: Room;
 
-  @PrimaryColumn({ name: "user_id", type: "uuid" })
+  @PrimaryColumn({ name: "user_id", type: "integer" })
   @ManyToOne(
     () => User,
     (user) => user.rooms,
   )
-  @JoinColumn({ name: "user_id", referencedColumnName: "uuid" })
-  userId: User;
+  @JoinColumn({ name: "user_id", referencedColumnName: "id" })
+  user: User;
 }
