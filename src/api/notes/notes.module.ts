@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { CustomRepositoryModule } from "src/common/db/CustomRepository.module";
 import { NotesController } from "./notes.controller";
 import { NotesService } from "./notes.service";
 import { NotesRepository } from "./repository/notes.repository";
@@ -7,7 +8,6 @@ import { NotesRepository } from "./repository/notes.repository";
   imports: [CustomRepositoryModule.forCustomRepository([NotesRepository])],
   controllers: [NotesController],
   providers: [NotesService],
-  exports: [NotesService],
   exports: [NotesService],
 })
 export class NotesModule {}
