@@ -1,14 +1,13 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
 import { CreateNoteDto } from "./dtos/create-note.dto";
 import { UpdateNoteDto } from "./dtos/update-note.dto";
 import { Note } from "./entities/note.entity";
 import { INotesService } from "./interfaces/notes.service.interface";
+import { NotesRepository } from "./repository/notes.repository";
 
 @Injectable()
 export class NotesService implements INotesService {
-  constructor(@InjectRepository(Note) private notesRepository: Repository<Note>) {}
+  constructor(private notesRepository: NotesRepository) {}
 
   async findById(noteId: string): Promise<Note> {
     const note = await this.notesRepository.findOne({ where: { uuid: noteId } });
