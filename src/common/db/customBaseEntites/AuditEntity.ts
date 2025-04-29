@@ -24,7 +24,7 @@ export abstract class AuditEntity extends BaseEntity implements IAuditEntity {
   @ApiProperty({
     type: Date,
     description: "Timestamp when record was deleted",
-    example: "2025-04-29T13:18:22.274Z",
+    example: null,
   })
   deletedAt: Date;
 }
