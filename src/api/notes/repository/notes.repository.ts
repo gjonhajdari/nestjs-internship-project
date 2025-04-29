@@ -4,4 +4,4 @@ import { Note } from "../entities/note.entity";
 import { INotesRepository } from "../interfaces/notes.repository.interface";
 
 @CustomRepository(Note)
-export class NoteRepository extends BaseCustomRepository<Note> implements INotesRepository {}
+export class NotesRepository extends BaseCustomRepository<Note> implements INotesRepository {}
