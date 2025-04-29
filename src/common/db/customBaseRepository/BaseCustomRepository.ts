@@ -11,7 +11,7 @@ export abstract class BaseCustomRepository<T extends AuditEntity>
       ...options,
       where: {
         ...options?.where,
-        deleted_at: null,
+        deletedAt: null,
       },
     });
   }
@@ -21,7 +21,7 @@ export abstract class BaseCustomRepository<T extends AuditEntity>
       ...options,
       where: {
         ...options?.where,
-        deleted_at: null,
+        deletedAt: null,
       },
     });
   }
