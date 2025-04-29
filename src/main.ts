@@ -1,9 +1,4 @@
-import {
-  RequestMethod,
-  VERSION_NEUTRAL,
-  ValidationPipe,
-  VersioningType,
-} from "@nestjs/common";
+import { RequestMethod, ValidationPipe, VersioningType } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { apiReference } from "@scalar/nestjs-api-reference";
@@ -30,7 +25,7 @@ async function bootstrap() {
   });
   app.enableVersioning({
     type: VersioningType.URI,
-    defaultVersion: VERSION_NEUTRAL,
+    defaultVersion: "1",
   });
 
   if (process.env.NODE_ENV !== "production") {
