@@ -1,14 +1,14 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
 import { CreateNoteDto } from "./dtos/create-note.dto";
 import { UpdateNoteDto } from "./dtos/update-note.dto";
 import { Note } from "./entities/note.entity";
 import { INotesService } from "./interfaces/notes.service.interface";
-import { NotesRepository } from "./repository/notes.repository";
 
-// TODO: implement INotesService interface
 @Injectable()
 export class NotesService implements INotesService {
-  constructor(private notesRepository: NotesRepository) {}
+  constructor(@InjectRepository(Note) private notesRepository: Repository<Note>) {}
 
   async findById(noteId: string): Promise<Note> {
     const note = await this.notesRepository.findOne({ where: { uuid: noteId } });
@@ -18,22 +18,27 @@ export class NotesService implements INotesService {
     return note;
   }
 
-  findAll(roomId: string): Promise<Note[]> {
+  async findAll(roomId: string): Promise<Note[]> {
+    return await this.notesRepository.find({
+      where: { room: { uuid: roomId } },
+      relations: ["room"],
+    });
+  }
+
+  async create(body: CreateNoteDto): Promise<Note> {
     throw new Error("Method not implemented.");
   }
-  create(createNoteDto: CreateNoteDto): Promise<Note> {
+
+  async updateNote(noteId: string, body: UpdateNoteDto): Promise<Note> {
     throw new Error("Method not implemented.");
   }
-  updateNote(noteId: string, updateNoteDto: UpdateNoteDto): Promise<Note> {
+  async removeNote(noteId: string): Promise<void> {
     throw new Error("Method not implemented.");
   }
-  removeNote(noteId: string): Promise<void> {
+  async addVote(noteId: string): Promise<boolean> {
     throw new Error("Method not implemented.");
   }
-  addVote(noteId: string): Promise<boolean> {
-    throw new Error("Method not implemented.");
-  }
-  removeVote(noteId: string): Promise<boolean> {
+  async removeVote(noteId: string): Promise<boolean> {
     throw new Error("Method not implemented.");
   }
 }

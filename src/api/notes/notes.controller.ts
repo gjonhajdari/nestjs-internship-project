@@ -11,15 +11,14 @@ import {
   Post,
   UseInterceptors,
 } from "@nestjs/common";
-import { INotesController } from "./interfaces/notes.controller.interface";
-
-import { Note } from "./entities/note.entity";
-
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { CreateNoteDto } from "./dtos/create-note.dto";
 import { UpdateNoteDto } from "./dtos/update-note.dto";
+import { Note } from "./entities/note.entity";
+import { INotesController } from "./interfaces/notes.controller.interface";
 import { NotesService } from "./notes.service";
 
+// TODO: sockets
 @ApiBearerAuth()
 @ApiTags("Notes")
 @UseInterceptors(ClassSerializerInterceptor)
@@ -27,17 +26,16 @@ import { NotesService } from "./notes.service";
 export class NotesController implements INotesController {
   constructor(private notesService: NotesService) {}
 
-  @Get()
+  @Get(":roomId")
   @HttpCode(HttpStatus.OK)
-  async getAllNotesFromRoom(): Promise<Note[]> {
-    return {} as Note[];
+  async getAllNotesFromRoom(@Param("roomId") roomId: string): Promise<Note[]> {
+    return await this.notesService.findAll(roomId);
   }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createNewNote(@Body() body: CreateNoteDto): Promise<Note> {
-    console.log(body);
-    return {} as Note;
+    return await this.notesService.create(body);
   }
 
   @Patch(":noteId")
@@ -46,27 +44,24 @@ export class NotesController implements INotesController {
     @Param("noteId") noteId: string,
     @Body() body: UpdateNoteDto,
   ): Promise<Note> {
-    console.log(noteId, body);
-    return {} as Note;
+    return await this.notesService.updateNote(noteId, body);
   }
 
   @Delete(":noteId")
   @HttpCode(HttpStatus.NO_CONTENT)
   async removeNote(@Param("noteId") noteId: string): Promise<void> {
-    console.log(noteId);
+    return await this.notesService.removeNote(noteId);
   }
 
   @Post(":noteId/vote")
   @HttpCode(HttpStatus.CREATED)
   async addVote(@Param("noteId") noteId: string): Promise<boolean> {
-    console.log(noteId);
-    return true;
+    return await this.notesService.addVote(noteId);
   }
 
   @Delete(":noteId/vote")
   @HttpCode(HttpStatus.NO_CONTENT)
   async removeVote(@Param("noteId") noteId: string): Promise<boolean> {
-    console.log(noteId);
-    return false;
+    return await this.notesService.removeVote(noteId);
   }
 }
