@@ -16,7 +16,7 @@ export class Room extends AuditEntity {
 
   @OneToMany(
     () => RoomUsers,
-    (roomUsers) => roomUsers.roomId,
+    (roomUsers) => roomUsers.room,
   )
   users: RoomUsers[];
 
