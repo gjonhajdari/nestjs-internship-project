@@ -34,13 +34,23 @@ $ npm run start:dev
 # production mode
 $ npm run start:prod
 ```
+
+### Seeding database for local development
+```bash
+# run the seed
+$ npm run seed
+
+# seed specific table (WIP)
+$ npm run seed:user
+```
+
 #### If you are on windows use this command for migration:
 ```bash
 npx typeorm migration:create ./src/common/db/migrations/[filename]
 # Example: npx typeorm migration:create ./src/common/db/migrations/UpdatePost
 ```
 #### Instead of :
-```bash
+```bash 
 npm run migration:create --name=[filename]
 # Example: npm run migration:create --name=UpdatePost
 ```
