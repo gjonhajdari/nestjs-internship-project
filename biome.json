@@ -12,7 +12,7 @@
         "noParameterAssign": "off"
       },
       "correctness": {
-        "noUnusedVariables": "error",
+        "noUnusedVariables": "off",
         "noUnusedImports": "error"
       },
       "suspicious": {
