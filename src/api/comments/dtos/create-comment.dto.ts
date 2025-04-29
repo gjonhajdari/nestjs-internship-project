@@ -16,7 +16,7 @@ export class CreateCommentDto {
   @MaxLength(150)
   @ApiProperty({
     type: String,
-    description: "Note contents",
+    description: "Comment contents",
     maxLength: 150,
     example: "This is a note about the importance of writing.",
   })
