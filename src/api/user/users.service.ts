@@ -27,6 +27,13 @@ export class UsersService implements IUsersService {
     return await this.userRepository.save(this.userRepository.create(payload));
   }
 
+  /**
+   * Gets a user from it's given UUID
+   *
+   * @param userId - Unique user UUID
+   * @returns Promise that resolves to the found user
+   * @throws {UnprocessableEntityException} - If no user is found with the given UUID
+   */
   async findOne(userId: string): Promise<User> {
     const user = await this.userRepository.findOneBy({ uuid: userId });
     if (!user) {
@@ -35,10 +42,23 @@ export class UsersService implements IUsersService {
     return user;
   }
 
+  /**
+   * Gets all the users in the database
+   *
+   * @returns Promise that resolves to the found users array
+   */
   async findAll(): Promise<User[]> {
     return await this.userRepository.find();
   }
 
+  /**
+   * Updates a user in the database with the new given attributes
+   *
+   * @param userId - The unique UUID of the user
+   * @param payload - Given attributes of the user to update
+   * @returns Promise that resolves to the updated user
+   * @throws {NotFoundException} - If no user is found with the given UUID
+   */
   async update(userId: string, payload: UpdateUserDto): Promise<User> {
     const user = await this.findOne(userId);
     await this.userRepository.update(user.id, payload);
@@ -46,6 +66,12 @@ export class UsersService implements IUsersService {
     return await this.findOne(userId);
   }
 
+  /**
+   * Deletes a user from the database
+   *
+   * @param userId - The unique UUID of the user
+   * @throws {NotFoundException} - If no user with the given UUID is found
+   */
   async remove(userId: string): Promise<void> {
     const user = await this.findOne(userId);
     await this.userRepository.remove(user);
@@ -73,6 +99,13 @@ export class UsersService implements IUsersService {
   //   await this.userRepository.save(user);
   // }
 
+  /**
+   * Sends an email to the user with a token to reset their password
+   *
+   * @param paload - Required attributes to send a password change request
+   * @returns Promise that resolves to void
+   * @throws {UnprocessableEntityException} - If no user is found with the given email
+   */
   async forgotPassword(paload: ForgotPasswordDto): Promise<void> {
     const user = await this.userRepository.findOne({
       where: { email: paload.email },
@@ -106,6 +139,14 @@ export class UsersService implements IUsersService {
     });
   }
 
+  /**
+   * Resets the password of a user
+   *
+   * @param token - The token sent to the user
+   * @param payload - Required attributes to reset the password
+   * @returns Promise that resolves to void
+   * @throws {UnprocessableEntityException} - If no user is found with the given token
+   */
   async resetPassword(token: string, payload: ResetPasswordDto): Promise<void> {
     const passwordReset = await this.passwordRepository.findOne({
       where: { token },
