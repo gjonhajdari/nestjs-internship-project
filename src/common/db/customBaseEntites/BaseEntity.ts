@@ -1,9 +1,11 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { Exclude } from "class-transformer";
 import { Column, Index, PrimaryGeneratedColumn } from "typeorm";
 import { IBaseEntity } from "./interfaces/baseEntity.interface";
 
 export abstract class BaseEntity implements IBaseEntity {
   @PrimaryGeneratedColumn()
+  @Exclude()
   id: number;
 
   @Column({ type: "uuid", generated: "uuid" })
