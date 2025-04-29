@@ -3,11 +3,11 @@ import { UpdateNoteDto } from "../dtos/update-note.dto";
 import { Note } from "../entities/note.entity";
 
 export interface INotesController {
-  findAll(roomId: string): Promise<Note[]>;
+  getAllNotesFromRoom(roomId: string): Promise<Note[]>;
 
-  create(createNoteDto: CreateNoteDto): Promise<Note>;
+  createNewNote(body: CreateNoteDto): Promise<Note>;
 
-  updateNote(noteId: string, updateNoteDto: UpdateNoteDto): Promise<Note>;
+  updateNote(noteId: string, body: UpdateNoteDto): Promise<Note>;
 
   removeNote(noteId: string): Promise<void>;
 
