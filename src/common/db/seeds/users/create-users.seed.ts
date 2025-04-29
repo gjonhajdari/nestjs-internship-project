@@ -14,25 +14,25 @@ export class UsersSeeder implements Seeder {
         firstName: "Argjend",
         lastName: "Reqica",
         email: "argjend@kutia.net",
-        password: "$2b$10$nwibVTEz86tgqAAmQNY2eOkppbDvlAhfae1azWUdx9wBx5vbnpwQC",
+        password: "$2a$12$y1bFqKN/3fhrSVimtXZx6ugAl0wooBSplaAjssJGrOedL2KSnLER6",
       },
       {
         firstName: "Lendrit",
         lastName: "Shala",
         email: "lendrit@kutia.net",
-        password: "$2b$10$nwibVTEz86tgqAAmQNY2eOkppbDvlAhfae1azWUdx9wBx5vbnpwQC",
+        password: "$2a$12$y1bFqKN/3fhrSVimtXZx6ugAl0wooBSplaAjssJGrOedL2KSnLER6",
       },
       {
         firstName: "Leutrim",
         lastName: "Shala",
         email: "leutrim@kutia.net",
-        password: "$2b$10$nwibVTEz86tgqAAmQNY2eOkppbDvlAhfae1azWUdx9wBx5vbnpwQC",
+        password: "$2a$12$y1bFqKN/3fhrSVimtXZx6ugAl0wooBSplaAjssJGrOedL2KSnLER6",
       },
       {
         firstName: "Blend",
         lastName: "Mehani",
         email: "blend@kutia.net",
-        password: "$2b$10$nwibVTEz86tgqAAmQNY2eOkppbDvlAhfae1azWUdx9wBx5vbnpwQC",
+        password: "$2a$12$y1bFqKN/3fhrSVimtXZx6ugAl0wooBSplaAjssJGrOedL2KSnLER6",
       },
     ]);
     await userRepository.save(users);
