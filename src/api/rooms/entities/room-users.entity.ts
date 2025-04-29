@@ -15,7 +15,7 @@ export class RoomUsers {
   @Column({ type: "enum", enum: Roles, nullable: false })
   role: Roles;
 
-  @CreateDateColumn({ default: new Date() })
+  @CreateDateColumn()
   joined_at: Date;
 
   @PrimaryColumn({ name: "room_id", type: "integer" })
