@@ -12,7 +12,7 @@ export abstract class AuditEntity extends BaseEntity implements IAuditEntity {
   })
   createdAt: Date;
 
-  @UpdateDateColumn({ name: "created_at" })
+  @UpdateDateColumn({ name: "updated_at" })
   @ApiProperty({
     type: Date,
     description: "Timestamp when record was updated",
@@ -20,7 +20,7 @@ export abstract class AuditEntity extends BaseEntity implements IAuditEntity {
   })
   updatedAt: Date;
 
-  @DeleteDateColumn({ name: "created_at" })
+  @DeleteDateColumn({ name: "deleted_at" })
   @ApiProperty({
     type: Date,
     description: "Timestamp when record was deleted",
