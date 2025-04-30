@@ -1,4 +1,5 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { RoomsService } from "../rooms/rooms.service";
 import { CreateNoteDto } from "./dtos/create-note.dto";
 import { UpdateNoteDto } from "./dtos/update-note.dto";
 import { Note } from "./entities/note.entity";
@@ -7,7 +8,10 @@ import { NotesRepository } from "./repository/notes.repository";
 
 @Injectable()
 export class NotesService implements INotesService {
-  constructor(private notesRepository: NotesRepository) {}
+  constructor(
+    private notesRepository: NotesRepository,
+    private roomsService: RoomsService,
+  ) {}
 
   /**
    * Gets a note from it's given UUID
@@ -31,7 +35,7 @@ export class NotesService implements INotesService {
    * @returns Promise that resolves to the found notes array
    * @throws {NotFoundException} - If no room is found with the given UUID
    */
-  async findAll(roomId: string): Promise<Note[]> {
+  async findNotesFromRoom(roomId: string): Promise<Note[]> {
     return await this.notesRepository.find({
       where: { room: { uuid: roomId } },
       relations: ["room"],
@@ -44,8 +48,19 @@ export class NotesService implements INotesService {
    * @param payload - The required data to create a note
    * @returns Promise that resolves to the created note
    */
-  async create(payload: CreateNoteDto): Promise<Note> {
-    throw new Error("Method not implemented.");
+  async createNote(payload: CreateNoteDto): Promise<Note> {
+    const room = await this.roomsService.findById(payload.roomId);
+
+    if (!room) throw new NotFoundException("Room does not exist");
+
+    return await this.notesRepository.save(
+      this.notesRepository.create({
+        room,
+        content: payload.content,
+        xAxis: payload.xAxis,
+        yAxis: payload.yAxis,
+      }),
+    );
   }
 
   /**
@@ -57,7 +72,10 @@ export class NotesService implements INotesService {
    * @throws {NotFoundException} - If no note is found with the given UUID
    */
   async updateNote(noteId: string, payload: UpdateNoteDto): Promise<Note> {
-    throw new Error("Method not implemented.");
+    const note = await this.findById(noteId);
+    await this.notesRepository.update(note.id, payload);
+
+    return await this.findById(noteId);
   }
 
   /**
@@ -67,7 +85,8 @@ export class NotesService implements INotesService {
    * @throws {NotFoundException} - If no note with the given UUID is found
    */
   async deleteNote(noteId: string): Promise<void> {
-    throw new Error("Method not implemented.");
+    const note = await this.findById(noteId);
+    await this.notesRepository.remove(note);
   }
 
   /**
@@ -77,7 +96,12 @@ export class NotesService implements INotesService {
    * @throws {NotFoundException} - If no note with the given UUID is found
    */
   async addVote(noteId: string): Promise<boolean> {
-    throw new Error("Method not implemented.");
+    const note = await this.findById(noteId);
+
+    note.totalVotes += 1;
+    await this.notesRepository.save(note);
+
+    return true;
   }
 
   /**
@@ -88,6 +112,15 @@ export class NotesService implements INotesService {
    * @throws {BadRequestException} - If trying to decrement while vote count is 0
    */
   async removeVote(noteId: string): Promise<boolean> {
-    throw new Error("Method not implemented.");
+    const note = await this.findById(noteId);
+
+    if (note.totalVotes === 0) {
+      throw new BadRequestException("Cannot remove vote: total votes is already 0");
+    }
+
+    note.totalVotes -= 1;
+    await this.notesRepository.save(note);
+
+    return true;
   }
 }
