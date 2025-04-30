@@ -13,7 +13,7 @@ export interface IUsersService {
 
   findAll(): Promise<User[]>;
 
-  update(userId: string, updateUserDto: UpdateUserDto): Promise<User>;
+  update(userId: string, payload: UpdateUserDto): Promise<User>;
 
   remove(userId: string): Promise<void>;
 

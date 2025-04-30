@@ -1,3 +1,4 @@
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Note } from "src/api/notes/entities/note.entity";
 import { User } from "src/api/user/entities/user.entity";
 import { AuditEntity } from "src/common/db/customBaseEntites/AuditEntity";
@@ -10,6 +11,11 @@ export class Comment extends AuditEntity {
     length: 150,
     nullable: true,
   })
+  @ApiProperty({
+    type: String,
+    description: "Comment contents",
+    example: "This is a comment about the importance of writing.",
+  })
   content: string;
 
   @ManyToOne(
@@ -17,6 +23,10 @@ export class Comment extends AuditEntity {
     (user) => user.comments,
     { nullable: false },
   )
+  @ApiProperty({
+    type: () => User,
+    description: "User who added the comment",
+  })
   user: User;
 
   @ManyToOne(
@@ -24,6 +34,10 @@ export class Comment extends AuditEntity {
     (note) => note.comments,
     { nullable: false },
   )
+  @ApiProperty({
+    type: () => Note,
+    description: "Note in which the comment is added to",
+  })
   note: Note;
 
   @ManyToOne(
@@ -31,5 +45,9 @@ export class Comment extends AuditEntity {
     (comment) => comment.id,
   )
   @JoinColumn({ name: "parent_id" })
+  @ApiPropertyOptional({
+    type: () => Comment,
+    description: "Previous comment that the current comment is replying to",
+  })
   parent: Comment;
 }

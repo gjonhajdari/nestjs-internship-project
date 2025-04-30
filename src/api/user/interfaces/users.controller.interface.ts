@@ -9,7 +9,7 @@ import { User } from "../entities/user.entity";
 export interface IUsersController {
   getHello(user: User): Promise<string>;
 
-  create(createUserDto: CreateUserDto): Promise<User>;
+  create(body: CreateUserDto): Promise<User>;
 
   getMe(user: User): Promise<User>;
 
@@ -17,16 +17,16 @@ export interface IUsersController {
 
   findAll(): Promise<User[]>;
 
-  updateMe(user: User, updateUserDto: UpdateUserDto): Promise<User>;
+  updateMe(user: User, body: UpdateUserDto): Promise<User>;
 
-  updateUser(userId: string, updateUserDto: UpdateUserDto): Promise<User>;
+  updateUser(userId: string, body: UpdateUserDto): Promise<User>;
 
   remove(userId: string): Promise<void>;
 
   // addPermission(userId: string, permission: PermissinDto): Promise<void>;
   // removePermission(userId: string, permission: PermissinDto): Promise<void>;
 
-  forgotPassword(forgotPassword: ForgotPasswordDto): Promise<void>;
+  forgotPassword(body: ForgotPasswordDto): Promise<void>;
 
-  resetPassword(token: string, resetPasswordDto: ResetPasswordDto): Promise<void>;
+  resetPassword(token: string, body: ResetPasswordDto): Promise<void>;
 }

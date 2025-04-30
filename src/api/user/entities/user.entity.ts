@@ -1,9 +1,10 @@
+import { ApiProperty } from "@nestjs/swagger";
 import { Exclude } from "class-transformer";
 import { Matches } from "class-validator";
 import { Comment } from "src/api/comments/entities/comment.entity";
 import { Note } from "src/api/notes/entities/note.entity";
 import { RoomUsers } from "src/api/rooms/entities/room-users.entity";
-import { Column, Entity, Index, OneToMany } from "typeorm";
+import { Column, Entity, OneToMany } from "typeorm";
 import { AuditEntity } from "../../../common/db/customBaseEntites/AuditEntity";
 
 @Entity("users")
@@ -27,6 +28,11 @@ export class User extends AuditEntity {
     nullable: false,
     name: "first_name",
   })
+  @ApiProperty({
+    type: String,
+    description: "Users's first name",
+    example: "John",
+  })
   firstName: string;
 
   @Column({
@@ -34,6 +40,11 @@ export class User extends AuditEntity {
     length: 50,
     nullable: false,
     name: "last_name",
+  })
+  @ApiProperty({
+    type: String,
+    description: "User's last name",
+    example: "Doe",
   })
   lastName: string;
 
@@ -46,7 +57,11 @@ export class User extends AuditEntity {
   @Matches(/^[a-zA-Z0–9._%+-]+@[a-zA-Z0–9.-]+\.[a-zA-Z]{2,}$/, {
     message: "Please use a valid email address",
   })
-  @Index()
+  @ApiProperty({
+    type: String,
+    description: "User's email address",
+    example: "johndoe@email.com",
+  })
   email: string;
 
   @Column({

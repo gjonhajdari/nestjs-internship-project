@@ -1,12 +1,11 @@
 import { Module } from "@nestjs/common";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { Room } from "../rooms/entities/room.entity";
-import { Note } from "./entities/note.entity";
+import { CustomRepositoryModule } from "src/common/db/CustomRepository.module";
 import { NotesController } from "./notes.controller";
 import { NotesService } from "./notes.service";
+import { NotesRepository } from "./repository/notes.repository";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Note, Room])],
+  imports: [CustomRepositoryModule.forCustomRepository([NotesRepository])],
   controllers: [NotesController],
   providers: [NotesService],
   exports: [NotesService],
