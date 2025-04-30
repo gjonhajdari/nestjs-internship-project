@@ -50,7 +50,7 @@ export class NotesController implements INotesController {
   @Delete(":noteId")
   @HttpCode(HttpStatus.NO_CONTENT)
   async removeNote(@Param("noteId") noteId: string): Promise<void> {
-    return await this.notesService.removeNote(noteId);
+    return await this.notesService.deleteNote(noteId);
   }
 
   @Post(":noteId/vote")

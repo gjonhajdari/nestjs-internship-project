@@ -15,7 +15,6 @@ import {
   hashDataBrypt,
 } from "../../services/providers";
 import { User } from "../user/entities/user.entity";
-import {} from "../user/enums/roles.enum";
 import { jwtConstants } from "./constants/constants";
 import { LoginDto } from "./dtos/login.dto";
 import { RegisterDTO } from "./dtos/register.dto";
@@ -27,11 +26,19 @@ import { TTokensUser } from "./types/user-tokens.type";
 @Injectable()
 export class AuthService implements IAuthService {
   constructor(
-    private jwtService: JwtService,
     @InjectRepository(User)
     private userRepository: Repository<User>,
+
+    private jwtService: JwtService,
   ) {}
 
+  /**
+   * Creates a new user, saves it in the database and returns the access and refresh tokens
+   *
+   * @param registerDto - The required data to create a user
+   * @returns Promise that resolves to the access and refresh tokens
+   * @throws {InternalServerErrorException} - If user registration fails
+   */
   async signup(registerDto: RegisterDTO): Promise<Tokens> {
     registerDto.password = await hashDataBrypt(registerDto.password);
     delete registerDto.passwordConfirm;
@@ -54,6 +61,14 @@ export class AuthService implements IAuthService {
     }
   }
 
+  /**
+   * Logs in a user and returns the tokens and user object
+   *
+   * @param loginDto - The required data to log in a user
+   * @returns Promise that resolves to the access & refresh tokens, and the user object
+   * @throws {BadRequestException} - If user does not exist
+   * @throws {BadRequestException} - If user credentials are invalid
+   */
   async login(loginDto: LoginDto): Promise<TTokensUser> {
     const user: User = await this.userRepository.findOneBy({
       email: loginDto.email,
@@ -73,12 +88,27 @@ export class AuthService implements IAuthService {
     return { ...tokens, user };
   }
 
+  /**
+   * Logs out a user by removing the refresh token from the database
+   *
+   * @param userId - The unique UUID of the user
+   * @throws {ForbiddenException} - If user does not exist
+   */
   async logout(userId: string): Promise<void> {
     const user: User = await this.validateUser(userId);
     user.hashedResetToken = null;
     await this.userRepository.save(user);
   }
 
+  /**
+   * Refreshes the access and refresh tokens for a user
+   *
+   * @param userId - The unique UUID of the user
+   * @param rt - The refresh token
+   * @returns Promise that resolves to the new access and refresh tokens
+   * @throws {ForbiddenException} - If user does not exist or is not logged in
+   * @throws {UnauthorizedException} - If refresh token is invalid
+   */
   async refreshToken(userId: string, rt: string): Promise<Tokens> {
     const user: User = await this.validateUser(userId);
     if (!user || !user.hashedResetToken) {
@@ -96,10 +126,22 @@ export class AuthService implements IAuthService {
     return tokens;
   }
 
+  /**
+   * Validates a user by checking if the user exists in the database
+   *
+   * @param userId - The unique UUID of the user
+   * @returns Promise that resolves to the found user
+   */
   private async validateUser(userId: string): Promise<User> {
     return await this.userRepository.findOneBy({ uuid: userId });
   }
 
+  /**
+   * Updates the refresh token hash for a user
+   *
+   * @param userId - The unique UUID of the user
+   * @param rt - The refresh token
+   */
   private async updateRtHash(userId: string, rt: string): Promise<void> {
     const newHashRt = await hashDataArgon(rt);
     const user = await this.validateUser(userId);
@@ -107,6 +149,12 @@ export class AuthService implements IAuthService {
     await this.userRepository.save(user);
   }
 
+  /**
+   * Generates access and refresh tokens for a user
+   *
+   * @param userId - The unique UUID of the user
+   * @returns Promise that resolves to the access and refresh tokens
+   */
   async getTokens(userId: string): Promise<Tokens> {
     const jwtPayload: JwtPayload = {
       id: userId,
