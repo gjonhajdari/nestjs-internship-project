@@ -96,7 +96,7 @@ export class AuthService implements IAuthService {
    */
   async logout(userId: string): Promise<void> {
     const user: User = await this.validateUser(userId);
-    user.hashedResetToken = null;
+    user.hashedRefreshToken = null;
     await this.userRepository.save(user);
   }
 
@@ -111,11 +111,11 @@ export class AuthService implements IAuthService {
    */
   async refreshToken(userId: string, rt: string): Promise<Tokens> {
     const user: User = await this.validateUser(userId);
-    if (!user || !user.hashedResetToken) {
+    if (!user || !user.hashedRefreshToken) {
       throw new ForbiddenException();
     }
 
-    const rtMatches = await compareHashedDataArgon(rt, user.hashedResetToken);
+    const rtMatches = await compareHashedDataArgon(rt, user.hashedRefreshToken);
 
     if (!rtMatches) {
       throw new UnauthorizedException();
@@ -145,7 +145,7 @@ export class AuthService implements IAuthService {
   private async updateRtHash(userId: string, rt: string): Promise<void> {
     const newHashRt = await hashDataArgon(rt);
     const user = await this.validateUser(userId);
-    user.hashedResetToken = newHashRt;
+    user.hashedRefreshToken = newHashRt;
     await this.userRepository.save(user);
   }
 
