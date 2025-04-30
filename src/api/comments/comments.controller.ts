@@ -1,5 +1,19 @@
-import { Controller, Get, ParseUUIDPipe, Query } from "@nestjs/common";
-import { ApiBearerAuth, ApiNotFoundResponse, ApiOkResponse, ApiTags } from "@nestjs/swagger";
+import { Controller, Delete, Get, ParseUUIDPipe, Patch, Post, Query } from "@nestjs/common";
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from "@nestjs/swagger";
+import { IDeleteStatus } from "src/common/interfaces/DeleteStatus.interface";
+import { BadRequestResponse } from "src/common/interfaces/responses/bad-request.response";
+import { DeletedResponse } from "src/common/interfaces/responses/deleted.response";
+import { NotFoundResponse } from "src/common/interfaces/responses/not-found.response";
+import { UnauthorizedResponse } from "src/common/interfaces/responses/unauthorized.response";
 import { CommentsService } from "./comments.service";
 import { CreateCommentDto } from "./dtos/create-comment.dto";
 import { UpdateCommentDto } from "./dtos/update-comment.dto";
@@ -12,26 +26,92 @@ import { ICommentsController } from "./interfaces/comments.controller.interface"
 export class CommentsController implements ICommentsController {
   constructor(private commentsService: CommentsService) {}
 
-  @Get()
+  @ApiOperation({
+    summary: "Get all comments for a note",
+    description: "Retrieves all comments associated with the specified note ID",
+  })
   @ApiOkResponse({
     description: "A 200 response if the comments are found successfully",
     type: Comment,
     isArray: true,
   })
-  @ApiNotFoundResponse({ description: "A 404 error if the note doesn't exist" })
-  findAll(@Query("noteId", new ParseUUIDPipe()) noteId: string): Promise<Comment[]> {
+  @ApiUnauthorizedResponse({
+    description: "A 401 error if no bearer token is provided",
+    type: UnauthorizedResponse,
+  })
+  @ApiNotFoundResponse({
+    description: "A 404 error if the note doesn't exist",
+    type: NotFoundResponse,
+  })
+  @Get()
+  async findAll(@Query("noteId", new ParseUUIDPipe()) noteId: string): Promise<Comment[]> {
     return this.commentsService.findComments(noteId);
   }
 
-  create(userId: string, body: CreateCommentDto): Promise<Comment> {
+  @ApiOperation({
+    summary: "Create a new comment",
+    description: "Creates a new comment associated with the specified note ID",
+  })
+  @ApiCreatedResponse({
+    description: "A 201 response if the comment is created successfully",
+    type: Comment,
+  })
+  @ApiUnauthorizedResponse({
+    description: "A 401 error if no bearer token is provided",
+    type: UnauthorizedResponse,
+  })
+  @ApiNotFoundResponse({
+    description: "A 404 error if the note doesn't exist",
+    type: NotFoundResponse,
+  })
+  @Post()
+  async create(userId: string, body: CreateCommentDto): Promise<Comment> {
     throw new Error("Method not implemented.");
   }
 
-  update(commendId: string, body: UpdateCommentDto): Promise<Comment> {
+  @ApiOperation({
+    summary: "Update a comment",
+    description: "Updates an existing comment associated with the specified comment ID",
+  })
+  @ApiOkResponse({
+    description: "A 200 response if the comment is updated successfully",
+    type: Comment,
+  })
+  @ApiUnauthorizedResponse({
+    description: "A 401 error if no bearer token is provided",
+    type: UnauthorizedResponse,
+  })
+  @ApiNotFoundResponse({
+    description: "A 404 error if the comment doesn't exist",
+    type: NotFoundResponse,
+  })
+  @ApiBadRequestResponse({
+    description: "A 400 error if the request body is invalid",
+    type: BadRequestResponse,
+  })
+  @Patch(":commentId")
+  async update(commendId: string, body: UpdateCommentDto): Promise<Comment> {
     throw new Error("Method not implemented.");
   }
 
-  delete(commentid: string): Promise<boolean> {
+  @ApiOperation({
+    summary: "Delete a comment",
+    description: "Deletes an existing comment associated with the specified comment ID",
+  })
+  @ApiOkResponse({
+    description: "A 200 response if the comment is deleted successfully",
+    type: DeletedResponse,
+  })
+  @ApiNotFoundResponse({
+    description: "A 404 error if the comment doesn't exist",
+    type: NotFoundResponse,
+  })
+  @ApiUnauthorizedResponse({
+    description: "A 401 error if no bearer token is provided",
+    type: UnauthorizedResponse,
+  })
+  @Delete(":commentId")
+  async delete(commentid: string): Promise<IDeleteStatus> {
     throw new Error("Method not implemented.");
   }
 }
