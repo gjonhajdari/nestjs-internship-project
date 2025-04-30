@@ -79,7 +79,7 @@ export class User extends AuditEntity {
     name: "hashed_reset_token",
   })
   @Exclude()
-  hashedResetToken: string;
+  hashedRefreshToken: string;
 
   @OneToMany(
     () => Note,
