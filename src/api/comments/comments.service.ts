@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
+import { IDeleteStatus } from "src/common/interfaces/DeleteStatus.interface";
 import { NotesService } from "../notes/notes.service";
 import { CreateCommentDto } from "./dtos/create-comment.dto";
 import { UpdateCommentDto } from "./dtos/update-comment.dto";
@@ -45,9 +46,14 @@ export class CommentsService implements ICommentsService {
    *
    * @param payload - The required data to create a comment
    * @returns Promise that resolves to the created comment
+   * @throws {NotFoundException} - If no note is found with the given UUID
    */
-  createComment(payload: CreateCommentDto): Promise<Comment> {
-    throw new Error("Method not implemented.");
+  async createComment(payload: CreateCommentDto): Promise<Comment> {
+    const note = await this.notesService.findById(payload.noteId);
+    const comment = this.commentsRepository.create(payload);
+    comment.note = note;
+
+    return this.commentsRepository.save(comment);
   }
 
   /**
@@ -58,8 +64,9 @@ export class CommentsService implements ICommentsService {
    * @returns Promise that resolves to the updated comment
    * @throws {NotFoundException} - If no comment is found with the given UUID
    */
-  updateComment(commentId: string, payload: UpdateCommentDto): Promise<Comment> {
-    throw new Error("Method not implemented.");
+  async updateComment(commentId: string, payload: UpdateCommentDto): Promise<Comment> {
+    const comment = await this.findById(commentId);
+    return this.commentsRepository.save({ ...comment, ...payload });
   }
 
   /**
@@ -68,7 +75,16 @@ export class CommentsService implements ICommentsService {
    * @param commentId - The unique UUID of the comment
    * @throws {NotFoundException} - If no comment with the given UUID is found
    */
-  deleteComment(commentId: string): Promise<boolean> {
-    throw new Error("Method not implemented.");
+  async deleteComment(commentId: string): Promise<IDeleteStatus> {
+    const comment = await this.findById(commentId);
+    await this.commentsRepository.remove(comment);
+
+    return {
+      success: true,
+      resourceType: "comment",
+      resourceId: comment.uuid,
+      message: "Comment deleted successfully",
+      timestamp: new Date(),
+    };
   }
 }
