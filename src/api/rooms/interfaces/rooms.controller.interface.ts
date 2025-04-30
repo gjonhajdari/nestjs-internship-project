@@ -9,9 +9,9 @@ export interface IRoomsController {
 
   findRooms(): Promise<Room[]>;
 
-  create(payload: CreateRoomDto, userID: string): Room;
+  create(body: CreateRoomDto, userId: string): Promise<Room>;
 
-  update(roomId: string, payload: UpdateRoomDto): Promise<Room>;
+  update(roomId: string, body: UpdateRoomDto): Promise<Room>;
 
   delete(roomId: string): Promise<IDeleteStatus>;
 

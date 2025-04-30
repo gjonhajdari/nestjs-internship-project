@@ -9,7 +9,7 @@ export interface IRoomsService {
 
   findRooms(): Promise<Room[]>;
 
-  createRoom(payload: CreateRoomDto, userID: string): Room;
+  createRoom(payload: CreateRoomDto, userId: string): Promise<Room>;
 
   updateRoom(roomId: string, payload: UpdateRoomDto): Promise<Room>;
 
