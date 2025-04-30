@@ -1,6 +1,7 @@
 import { Note } from "src/api/notes/entities/note.entity";
 import { AuditEntity } from "src/common/db/customBaseEntites/AuditEntity";
-import { Column, Entity, OneToMany } from "typeorm";
+import { slug } from "src/utils/slug";
+import { BeforeInsert, Column, Entity, OneToMany } from "typeorm";
 import { RoomUsers } from "./room-users.entity";
 
 @Entity("rooms")
@@ -25,4 +26,9 @@ export class Room extends AuditEntity {
     (note) => note.room,
   )
   notes: Note[];
+
+  @BeforeInsert()
+  generateSlug() {
+    this.slug = slug(this.title);
+  }
 }

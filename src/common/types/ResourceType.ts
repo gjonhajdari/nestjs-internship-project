@@ -1,1 +1,1 @@
-export type ResourceType = "user" | "comment" | "note";
+export type ResourceType = "user" | "room" | "comment" | "note";

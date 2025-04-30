@@ -12,7 +12,7 @@ import { Room } from "./room.entity";
 
 @Entity("room_users")
 export class RoomUsers {
-  @Column({ type: "enum", enum: Roles, nullable: false })
+  @Column({ type: "enum", enum: Roles, default: Roles.PARTICIPANT, nullable: false })
   role: Roles;
 
   @CreateDateColumn()
