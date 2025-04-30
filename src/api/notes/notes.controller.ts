@@ -7,6 +7,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseUUIDPipe,
   Patch,
   Post,
   UseInterceptors,
@@ -28,7 +29,9 @@ export class NotesController implements INotesController {
 
   @Get(":roomId")
   @HttpCode(HttpStatus.OK)
-  async getAllNotesFromRoom(@Param("roomId") roomId: string): Promise<Note[]> {
+  async getAllNotesFromRoom(
+    @Param("roomId", new ParseUUIDPipe()) roomId: string,
+  ): Promise<Note[]> {
     return await this.notesService.findAll(roomId);
   }
 
@@ -41,7 +44,7 @@ export class NotesController implements INotesController {
   @Patch(":noteId")
   @HttpCode(HttpStatus.OK)
   async updateNote(
-    @Param("noteId") noteId: string,
+    @Param("noteId", new ParseUUIDPipe()) noteId: string,
     @Body() body: UpdateNoteDto,
   ): Promise<Note> {
     return await this.notesService.updateNote(noteId, body);
@@ -49,19 +52,19 @@ export class NotesController implements INotesController {
 
   @Delete(":noteId")
   @HttpCode(HttpStatus.NO_CONTENT)
-  async removeNote(@Param("noteId") noteId: string): Promise<void> {
+  async removeNote(@Param("noteId", new ParseUUIDPipe()) noteId: string): Promise<void> {
     return await this.notesService.deleteNote(noteId);
   }
 
   @Post(":noteId/vote")
   @HttpCode(HttpStatus.CREATED)
-  async addVote(@Param("noteId") noteId: string): Promise<boolean> {
+  async addVote(@Param("noteId", new ParseUUIDPipe()) noteId: string): Promise<boolean> {
     return await this.notesService.addVote(noteId);
   }
 
   @Delete(":noteId/vote")
   @HttpCode(HttpStatus.NO_CONTENT)
-  async removeVote(@Param("noteId") noteId: string): Promise<boolean> {
+  async removeVote(@Param("noteId", new ParseUUIDPipe()) noteId: string): Promise<boolean> {
     return await this.notesService.removeVote(noteId);
   }
 }
