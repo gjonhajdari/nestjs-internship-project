@@ -32,6 +32,7 @@
 		"migration:revert": "npm run typeorm -- migration:revert"
 	},
 	"dependencies": {
+		"@maxmorozoff/try-catch-tuple": "^0.1.2",
 		"@nestjs-modules/mailer": "^1.8.1",
 		"@nestjs/common": "^9.0.0",
 		"@nestjs/config": "^2.2.0",
