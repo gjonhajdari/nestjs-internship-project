@@ -46,8 +46,7 @@ export class RegisterDTO {
   @IsString()
   @Matches(/^(?=.*\d)(?=.*[!@#$%^&*.?_-])(?=.*[a-z])(?=.*[A-Z]).{8,32}$/, {
     message:
-      "Password must be 8 to 32 characters and must contain a letter, a number, a symbol, one upper case and " +
-      "lower case character.",
+      "Password must be 8 to 32 characters and must contain an uppercase & lowercase letter, a number, and a symbol (!@#$%^&*.?_-).",
   })
   @ApiProperty({
     type: String,
