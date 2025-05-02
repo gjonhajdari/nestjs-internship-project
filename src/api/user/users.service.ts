@@ -59,7 +59,7 @@ export class UsersService implements IUsersService {
    * @returns Promise that resolves to the updated user
    * @throws {NotFoundException} - If no user is found with the given UUID
    */
-  async update(userId: string, payload: UpdateUserDto): Promise<User> {
+  async updateUser(userId: string, payload: UpdateUserDto): Promise<User> {
     const user = await this.findOne(userId);
     await this.userRepository.update(user.id, payload);
 
@@ -72,7 +72,7 @@ export class UsersService implements IUsersService {
    * @param userId - The unique UUID of the user
    * @throws {NotFoundException} - If no user with the given UUID is found
    */
-  async remove(userId: string): Promise<void> {
+  async deleteUser(userId: string): Promise<void> {
     const user = await this.findOne(userId);
     await this.userRepository.softRemove(user);
   }

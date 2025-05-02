@@ -67,7 +67,7 @@ export class UsersController implements IUsersController {
 
   @Patch("me")
   async updateMe(@GetCurrentUser() user: User, @Body() body: UpdateUserDto) {
-    return await this.usersService.update(user.uuid, body);
+    return await this.usersService.updateUser(user.uuid, body);
   }
 
   // @Roles(UserRoles.SUPER_ADMIN)
@@ -81,8 +81,8 @@ export class UsersController implements IUsersController {
 
   // @Roles(UserRoles.SUPER_ADMIN)
   @Delete(":userId")
-  async remove(@Param("userId") userId: string): Promise<void> {
-    return await this.usersService.remove(userId);
+  async delete(@Param("userId") userId: string): Promise<void> {
+    return await this.usersService.deleteUser(userId);
   }
 
   // @Roles(UserRoles.SUPER_ADMIN)

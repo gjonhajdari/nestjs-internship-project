@@ -13,9 +13,9 @@ export interface IUsersService {
 
   findAll(): Promise<User[]>;
 
-  update(userId: string, payload: UpdateUserDto): Promise<User>;
+  updateUser(userId: string, payload: UpdateUserDto): Promise<User>;
 
-  remove(userId: string): Promise<void>;
+  deleteUser(userId: string): Promise<void>;
 
   // addPermission(userId: string, permissionDto: PermissinDto): Promise<void>;
   // removePermission(userId: string, permissionDto: PermissinDto): Promise<void>;
