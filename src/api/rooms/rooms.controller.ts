@@ -11,6 +11,7 @@ import {
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { GetCurrentUser } from "src/common/decorators/get-current-user.decorator";
 import { IDeleteStatus } from "src/common/interfaces/DeleteStatus.interface";
+import { User } from "../user/entities/user.entity";
 import { CreateRoomDto } from "./dtos/create-room.dto";
 import { UpdateRoomDto } from "./dtos/update-room.dto";
 import { RoomUsers } from "./entities/room-users.entity";
@@ -35,8 +36,8 @@ export class RoomsController implements IRoomsController {
   }
 
   @Post()
-  async create(@Body() body: CreateRoomDto, @GetCurrentUser() userId: string): Promise<Room> {
-    return this.roomsService.createRoom(body, userId);
+  async create(@Body() body: CreateRoomDto, @GetCurrentUser() user: User): Promise<Room> {
+    return this.roomsService.createRoom(body, user.uuid);
   }
 
   @Patch(":roomId")
@@ -54,18 +55,18 @@ export class RoomsController implements IRoomsController {
 
   @Post("join/:roomId")
   async join(
-    @GetCurrentUser() userId: string,
+    @GetCurrentUser() user: User,
     @Param("roomId", new ParseUUIDPipe()) roomId: string,
   ): Promise<RoomUsers> {
-    return this.roomsService.joinRoom(userId, roomId);
+    return this.roomsService.joinRoom(user.uuid, roomId);
   }
 
   @Post("leave/:roomId")
   async leave(
-    @GetCurrentUser() userId: string,
+    @GetCurrentUser() user: User,
     @Param("roomId", new ParseUUIDPipe()) roomId: string,
   ): Promise<boolean> {
-    return this.roomsService.leaveRoom(userId, roomId);
+    return this.roomsService.leaveRoom(user.uuid, roomId);
   }
 
   @Post("remove/:roomId")

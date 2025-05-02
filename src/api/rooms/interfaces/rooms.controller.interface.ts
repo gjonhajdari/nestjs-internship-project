@@ -1,3 +1,4 @@
+import { User } from "src/api/user/entities/user.entity";
 import { IDeleteStatus } from "src/common/interfaces/DeleteStatus.interface";
 import { CreateRoomDto } from "../dtos/create-room.dto";
 import { UpdateRoomDto } from "../dtos/update-room.dto";
@@ -9,15 +10,15 @@ export interface IRoomsController {
 
   findRooms(): Promise<Room[]>;
 
-  create(body: CreateRoomDto, userId: string): Promise<Room>;
+  create(body: CreateRoomDto, user: User): Promise<Room>;
 
   update(roomId: string, body: UpdateRoomDto): Promise<Room>;
 
   delete(roomId: string): Promise<IDeleteStatus>;
 
-  join(userId: string, roomId: string): Promise<RoomUsers>;
+  join(user: User, roomId: string): Promise<RoomUsers>;
 
-  leave(userId: string, roomId: string): Promise<boolean>;
+  leave(user: User, roomId: string): Promise<boolean>;
 
   removeFromRoom(userId: string, roomId: string): Promise<boolean>;
 }
