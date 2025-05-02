@@ -1,3 +1,4 @@
+import { IDeleteStatus } from "src/common/interfaces/DeleteStatus.interface";
 import { ForgotPasswordDto, ResetPasswordDto } from "../dtos/password-reset.dto";
 import { UpdateUserDto } from "../dtos/update-user.dto";
 import { User } from "../entities/user.entity";
@@ -18,7 +19,7 @@ export interface IUsersController {
 
   // updateUser(userId: string, body: UpdateUserDto): Promise<User>;
 
-  delete(userId: string): Promise<void>;
+  deleteMe(user: User): Promise<IDeleteStatus>;
 
   // addPermission(userId: string, permission: PermissinDto): Promise<void>;
   // removePermission(userId: string, permission: PermissinDto): Promise<void>;

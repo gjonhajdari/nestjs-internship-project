@@ -1,5 +1,6 @@
 // remove eslint comment when you start to populate the interface
 
+import { IDeleteStatus } from "src/common/interfaces/DeleteStatus.interface";
 import { CreateUserDto } from "../dtos/create-user.dto";
 import { ForgotPasswordDto, ResetPasswordDto } from "../dtos/password-reset.dto";
 import { UpdateUserDto } from "../dtos/update-user.dto";
@@ -15,7 +16,7 @@ export interface IUsersService {
 
   updateUser(userId: string, payload: UpdateUserDto): Promise<User>;
 
-  deleteUser(userId: string): Promise<void>;
+  deleteUser(userId: string): Promise<IDeleteStatus>;
 
   // addPermission(userId: string, permissionDto: PermissinDto): Promise<void>;
   // removePermission(userId: string, permissionDto: PermissinDto): Promise<void>;

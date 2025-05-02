@@ -4,6 +4,7 @@ import { Injectable } from "@nestjs/common";
 import { UnprocessableEntityException } from "@nestjs/common/exceptions";
 import { InjectRepository } from "@nestjs/typeorm";
 import { InjectEventEmitter } from "nest-emitter";
+import { IDeleteStatus } from "src/common/interfaces/DeleteStatus.interface";
 import { Repository } from "typeorm";
 import { hashDataBrypt } from "../../services/providers";
 import { CreateUserDto } from "./dtos/create-user.dto";
@@ -72,9 +73,17 @@ export class UsersService implements IUsersService {
    * @param userId - The unique UUID of the user
    * @throws {NotFoundException} - If no user with the given UUID is found
    */
-  async deleteUser(userId: string): Promise<void> {
+  async deleteUser(userId: string): Promise<IDeleteStatus> {
     const user = await this.findOne(userId);
     await this.userRepository.softRemove(user);
+
+    return {
+      success: true,
+      resourceType: "user",
+      resourceId: userId,
+      message: "User deleted successfully",
+      timestamp: new Date(),
+    };
   }
 
   // async addPermission(userId: string, permissionDto: PermissinDto): Promise<void> {

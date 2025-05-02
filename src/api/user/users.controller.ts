@@ -13,6 +13,7 @@ import {
   ValidationPipe,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { IDeleteStatus } from "src/common/interfaces/DeleteStatus.interface";
 import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
 import { Public } from "../../common/decorators/public.decorator";
 import { PermissionsGuard } from "../../common/guards/permissions.guard";
@@ -80,9 +81,9 @@ export class UsersController implements IUsersController {
   // }
 
   // @Roles(UserRoles.SUPER_ADMIN)
-  @Delete(":userId")
-  async delete(@Param("userId") userId: string): Promise<void> {
-    return await this.usersService.deleteUser(userId);
+  @Delete("/me")
+  async deleteMe(@GetCurrentUser() user: User): Promise<IDeleteStatus> {
+    return await this.usersService.deleteUser(user.uuid);
   }
 
   // @Roles(UserRoles.SUPER_ADMIN)
