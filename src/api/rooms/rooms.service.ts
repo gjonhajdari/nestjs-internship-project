@@ -1,4 +1,5 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { tryCatch } from "@maxmorozoff/try-catch-tuple";
+import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { IDeleteStatus } from "src/common/interfaces/DeleteStatus.interface";
 import { DataSource, EntityManager } from "typeorm";
 import { User } from "../user/entities/user.entity";
@@ -22,7 +23,12 @@ export class RoomsService implements IRoomsService {
   ) {}
 
   async findById(roomId: string): Promise<Room> {
-    const room = await this.roomsRepository.findOne({ where: { uuid: roomId } });
+    const [room, error] = await tryCatch(
+      this.roomsRepository.findOne({ where: { uuid: roomId } }),
+    );
+
+    if (error)
+      throw new InternalServerErrorException("There was an error processing your request");
 
     if (!room) {
       throw new NotFoundException("Room doesn't exist!");
@@ -31,31 +37,52 @@ export class RoomsService implements IRoomsService {
   }
 
   async findRooms(): Promise<Room[]> {
-    const room = await this.roomsRepository.find();
+    const [rooms, error] = await tryCatch(this.roomsRepository.find());
 
-    return room;
+    if (error)
+      throw new InternalServerErrorException("There was an error processing your request");
+
+    return rooms;
   }
 
   async createRoom(payload: CreateRoomDto, userId: string): Promise<Room> {
-    return await this.dataSource.transaction(async (manager) => {
-      const room = manager.create(Room, payload);
-      const newRoom = await manager.save(Room, room);
+    const [newRoom, error] = await tryCatch(
+      this.dataSource.transaction(async (manager) => {
+        const room = manager.create(Room, payload);
+        const newRoom = await manager.save(Room, room);
 
-      await this.joinRoomInternal(manager, userId, newRoom.uuid, Roles.HOST);
+        await this.joinRoomInternal(manager, userId, newRoom.uuid, Roles.HOST);
 
-      return newRoom;
-    });
+        return newRoom;
+      }),
+    );
+
+    if (error)
+      throw new InternalServerErrorException("There was an error processing your request");
+
+    return newRoom;
   }
 
   async updateRoom(roomId: string, payload: UpdateRoomDto): Promise<Room> {
-    const room = this.findById(roomId);
+    const room = await this.findById(roomId);
 
-    return await this.roomsRepository.save({ ...room, ...payload });
+    const [updatedRoom, error] = await tryCatch(
+      this.roomsRepository.save({ ...room, ...payload }),
+    );
+
+    if (error)
+      throw new InternalServerErrorException("There was an error processing your request");
+
+    return updatedRoom;
   }
 
   async deleteRoom(roomId: string): Promise<IDeleteStatus> {
     const room = await this.findById(roomId);
-    await this.roomsRepository.remove(room);
+
+    const [_, error] = await tryCatch(this.roomsRepository.remove(room));
+
+    if (error)
+      throw new InternalServerErrorException("There was an error processing your request");
 
     return {
       success: true,
@@ -72,16 +99,23 @@ export class RoomsService implements IRoomsService {
     roomId: string,
     role?: Roles,
   ): Promise<RoomUsers> {
-    const room = await manager.findOneByOrFail(Room, { uuid: roomId });
-    const user = await manager.findOneByOrFail(User, { uuid: userId });
+    const [roomUser, error] = await tryCatch(async () => {
+      const room = await manager.findOneByOrFail(Room, { uuid: roomId });
+      const user = await manager.findOneByOrFail(User, { uuid: userId });
 
-    const join = manager.create(RoomUsers, {
-      user,
-      room,
-      role,
+      const join = manager.create(RoomUsers, {
+        user,
+        room,
+        role,
+      });
+
+      return await manager.save(RoomUsers, join);
     });
 
-    return await manager.save(RoomUsers, join);
+    if (error)
+      throw new InternalServerErrorException("There was an error processing your request");
+
+    return roomUser;
   }
 
   async joinRoom(userId: string, roomId: string): Promise<RoomUsers> {
@@ -90,7 +124,12 @@ export class RoomsService implements IRoomsService {
 
     const join = this.roomUsersRepository.create({ user: user, room: room });
 
-    return await this.roomUsersRepository.save(join);
+    const [roomUser, error] = await tryCatch(this.roomUsersRepository.save(join));
+
+    if (error)
+      throw new InternalServerErrorException("There was an error processing your request");
+
+    return roomUser;
   }
 
   async leaveRoom(userId: string, roomId: string): Promise<boolean> {
