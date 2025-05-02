@@ -18,7 +18,7 @@ export interface IUsersController {
 
   // updateUser(userId: string, body: UpdateUserDto): Promise<User>;
 
-  remove(userId: string): Promise<void>;
+  delete(userId: string): Promise<void>;
 
   // addPermission(userId: string, permission: PermissinDto): Promise<void>;
   // removePermission(userId: string, permission: PermissinDto): Promise<void>;
