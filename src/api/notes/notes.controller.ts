@@ -7,6 +7,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseUUIDPipe,
   Patch,
   Post,
   UseInterceptors,
@@ -47,7 +48,7 @@ export class NotesController implements INotesController {
     isArray: true,
   })
   @HttpCode(HttpStatus.OK)
-  async findAll(@Param("roomId") roomId: string): Promise<Note[]> {
+  async findAll(@Param("roomId", new ParseUUIDPipe()) roomId: string): Promise<Note[]> {
     return await this.notesService.findNotesFromRoom(roomId);
   }
 
@@ -78,7 +79,10 @@ export class NotesController implements INotesController {
   })
   @ApiNotFoundResponse({ description: "A 404 error if the note doesn't exist" })
   @HttpCode(HttpStatus.OK)
-  async update(@Param("noteId") noteId: string, @Body() body: UpdateNoteDto): Promise<Note> {
+  async update(
+    @Param("noteId", new ParseUUIDPipe()) noteId: string,
+    @Body() body: UpdateNoteDto,
+  ): Promise<Note> {
     return await this.notesService.updateNote(noteId, body);
   }
 
@@ -92,7 +96,7 @@ export class NotesController implements INotesController {
   })
   @ApiNotFoundResponse({ description: "A 404 error if the note doesn't exist" })
   @HttpCode(HttpStatus.NO_CONTENT)
-  async delete(@Param("noteId") noteId: string): Promise<void> {
+  async delete(@Param("noteId", new ParseUUIDPipe()) noteId: string): Promise<void> {
     return await this.notesService.deleteNote(noteId);
   }
 
@@ -108,7 +112,7 @@ export class NotesController implements INotesController {
   })
   @ApiNotFoundResponse({ description: "A 404 error if the note doesn't exist" })
   @HttpCode(HttpStatus.CREATED)
-  async addVote(@Param("noteId") noteId: string): Promise<boolean> {
+  async addVote(@Param("noteId", new ParseUUIDPipe()) noteId: string): Promise<boolean> {
     return await this.notesService.addVote(noteId);
   }
 
@@ -123,7 +127,7 @@ export class NotesController implements INotesController {
   })
   @ApiNotFoundResponse({ description: "A 404 error if the note doesn't exist" })
   @HttpCode(HttpStatus.NO_CONTENT)
-  async removeVote(@Param("noteId") noteId: string): Promise<boolean> {
+  async removeVote(@Param("noteId", new ParseUUIDPipe()) noteId: string): Promise<boolean> {
     return await this.notesService.removeVote(noteId);
   }
 }
