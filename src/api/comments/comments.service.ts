@@ -21,6 +21,7 @@ export class CommentsService implements ICommentsService {
    * @param commentId - Unique comment UUID
    * @returns Promise that resolves to the found comment
    * @throws {NotFoundException} - If no comment is found with the given UUID
+   * @throws {InternalServerErrorException} - If there was an error processing the request
    */
   async findById(commentId: string): Promise<Comment> {
     const [comment, error] = await tryCatch(
@@ -41,6 +42,7 @@ export class CommentsService implements ICommentsService {
    * @param noteId - Unique note UUID
    * @returns Promise that resolves to the found comments array
    * @throws {NotFoundException} - If no note is found with the given UUID
+   * @throws {InternalServerErrorException} - If there was an error processing the request
    */
   async findComments(noteId: string): Promise<Comment[]> {
     const note = await this.notesService.findById(noteId);
@@ -61,6 +63,7 @@ export class CommentsService implements ICommentsService {
    * @param payload - The required data to create a comment
    * @returns Promise that resolves to the created comment
    * @throws {NotFoundException} - If no note is found with the given UUID
+   * @throws {InternalServerErrorException} - If there was an error processing the request
    */
   async createComment(payload: CreateCommentDto): Promise<Comment> {
     const note = await this.notesService.findById(payload.noteId);
@@ -82,6 +85,7 @@ export class CommentsService implements ICommentsService {
    * @param payload - Given attributes of the comment to update
    * @returns Promise that resolves to the updated comment
    * @throws {NotFoundException} - If no comment is found with the given UUID
+   * @throws {InternalServerErrorException} - If there was an error processing the request
    */
   async updateComment(commentId: string, payload: UpdateCommentDto): Promise<Comment> {
     const comment = await this.findById(commentId);
