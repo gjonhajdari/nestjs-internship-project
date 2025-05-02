@@ -74,7 +74,7 @@ export class UsersService implements IUsersService {
    */
   async remove(userId: string): Promise<void> {
     const user = await this.findOne(userId);
-    await this.userRepository.remove(user);
+    await this.userRepository.softRemove(user);
   }
 
   // async addPermission(userId: string, permissionDto: PermissinDto): Promise<void> {
