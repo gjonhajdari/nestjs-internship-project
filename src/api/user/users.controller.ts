@@ -14,24 +14,18 @@ import {
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
-import { Permission } from "../../common/decorators/permissions.decorator";
 import { Public } from "../../common/decorators/public.decorator";
-import { Roles } from "../../common/decorators/roles.decorator";
 import { PermissionsGuard } from "../../common/guards/permissions.guard";
 import { RolesGuard } from "../../common/guards/roles.guard";
-import { PaginationInterceptor } from "../../common/interceptors/pagination.interceptor";
-import { CreateUserDto } from "./dtos/create-user.dto";
 import { ForgotPasswordDto, ResetPasswordDto } from "./dtos/password-reset.dto";
 import { UpdateUserDto } from "./dtos/update-user.dto";
 import { User } from "./entities/user.entity";
-import { UserPermissions } from "./enums/permissions.enum";
-import { UserRoles } from "./enums/roles.enum";
 import { IUsersController } from "./interfaces/users.controller.interface";
 import { UsersService } from "./users.service";
 
-@Controller("user")
+@Controller("users")
 @ApiBearerAuth()
-@ApiTags("User")
+@ApiTags("Users")
 @UsePipes(new ValidationPipe())
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(PermissionsGuard)
@@ -39,18 +33,18 @@ import { UsersService } from "./users.service";
 export class UsersController implements IUsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  //example how permissions work
-  @Permission(UserPermissions.CAN_ACCESS_HELLO_METHOD)
-  @Get("hello")
-  async getHello() {
-    return "Hello from Hello Method";
-  }
+  // //example how permissions work
+  // @Permission(UserPermissions.CAN_ACCESS_HELLO_METHOD)
+  // @Get("hello")
+  // async getHello() {
+  //   return "Hello from Hello Method";
+  // }
 
-  @Roles(UserRoles.SUPER_ADMIN)
-  @Post()
-  async create(@Body() body: CreateUserDto): Promise<User> {
-    return await this.usersService.create(body);
-  }
+  // @Roles(UserRoles.SUPER_ADMIN)
+  // @Post()
+  // async create(@Body() body: CreateUserDto): Promise<User> {
+  //   return await this.usersService.create(body);
+  // }
 
   @Get("me")
   async getMe(@GetCurrentUser() user: User): Promise<User> {
@@ -58,34 +52,34 @@ export class UsersController implements IUsersController {
   }
 
   // example how roles work
-  @Roles(UserRoles.SUPER_ADMIN)
+  // @Roles(UserRoles.SUPER_ADMIN)
   @Get(":userId")
   async findOne(@Param("userId") userId: string): Promise<User> {
     return await this.usersService.findOne(userId);
   }
 
-  @Roles(UserRoles.SUPER_ADMIN)
-  @Get()
-  @UseInterceptors(PaginationInterceptor)
-  async findAll(): Promise<User[]> {
-    return await this.usersService.findAll();
-  }
+  // @Roles(UserRoles.SUPER_ADMIN)
+  // @Get()
+  // @UseInterceptors(PaginationInterceptor)
+  // async findAll(): Promise<User[]> {
+  //   return await this.usersService.findAll();
+  // }
 
   @Patch("me")
   async updateMe(@GetCurrentUser() user: User, @Body() body: UpdateUserDto) {
     return await this.usersService.update(user.uuid, body);
   }
 
-  @Roles(UserRoles.SUPER_ADMIN)
-  @Patch(":userId")
-  async updateUser(
-    @Param("userId") userId: string,
-    @Body() body: UpdateUserDto,
-  ): Promise<User> {
-    return await this.usersService.update(userId, body);
-  }
+  // @Roles(UserRoles.SUPER_ADMIN)
+  // @Patch(":userId")
+  // async updateUser(
+  //   @Param("userId") userId: string,
+  //   @Body() body: UpdateUserDto,
+  // ): Promise<User> {
+  //   return await this.usersService.update(userId, body);
+  // }
 
-  @Roles(UserRoles.SUPER_ADMIN)
+  // @Roles(UserRoles.SUPER_ADMIN)
   @Delete(":userId")
   async remove(@Param("userId") userId: string): Promise<void> {
     return await this.usersService.remove(userId);

@@ -1,25 +1,22 @@
-// remove eslint comment when you start to populate the interface
-
-import { CreateUserDto } from "../dtos/create-user.dto";
 import { ForgotPasswordDto, ResetPasswordDto } from "../dtos/password-reset.dto";
 import { UpdateUserDto } from "../dtos/update-user.dto";
 import { User } from "../entities/user.entity";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface IUsersController {
-  getHello(user: User): Promise<string>;
+  // getHello(user: User): Promise<string>;
 
-  create(body: CreateUserDto): Promise<User>;
+  // create(body: CreateUserDto): Promise<User>;
 
   getMe(user: User): Promise<User>;
 
   findOne(userId: string): Promise<User>;
 
-  findAll(): Promise<User[]>;
+  // findAll(): Promise<User[]>;
 
   updateMe(user: User, body: UpdateUserDto): Promise<User>;
 
-  updateUser(userId: string, body: UpdateUserDto): Promise<User>;
+  // updateUser(userId: string, body: UpdateUserDto): Promise<User>;
 
   remove(userId: string): Promise<void>;
 
