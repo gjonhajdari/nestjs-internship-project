@@ -25,7 +25,7 @@ export class UsersSeeder implements Seeder {
       {
         firstName: "Endi",
         lastName: "Salihu",
-        email: "@kutia.net",
+        email: "endi@kutia.net",
         password: "$2a$12$y1bFqKN/3fhrSVimtXZx6ugAl0wooBSplaAjssJGrOedL2KSnLER6",
       },
       {
@@ -55,7 +55,7 @@ export class UsersSeeder implements Seeder {
     const emails = [
       "gjon@kutia.net",
       "desara@kutia.net",
-      "@kutia.net",
+      "endi@kutia.net",
       "era@kutia.net",
       "elsa@kutia.net",
       "rrezart@kutia.net",
