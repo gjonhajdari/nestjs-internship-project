@@ -1,7 +1,7 @@
 import { randomBytes } from "node:crypto";
 import EventEmitter from "node:events";
 import { Injectable } from "@nestjs/common";
-import { UnprocessableEntityException } from "@nestjs/common/exceptions";
+import { NotFoundException, UnprocessableEntityException } from "@nestjs/common/exceptions";
 import { InjectRepository } from "@nestjs/typeorm";
 import { InjectEventEmitter } from "nest-emitter";
 import { IDeleteStatus } from "src/common/interfaces/DeleteStatus.interface";
@@ -38,7 +38,7 @@ export class UsersService implements IUsersService {
   async findOne(userId: string): Promise<User> {
     const user = await this.userRepository.findOneBy({ uuid: userId });
     if (!user) {
-      throw new UnprocessableEntityException("This user does not exist!");
+      throw new NotFoundException("This user does not exist!");
     }
     return user;
   }
@@ -121,7 +121,7 @@ export class UsersService implements IUsersService {
     });
 
     if (!user) {
-      throw new UnprocessableEntityException("This user does not exist!");
+      throw new NotFoundException("This user does not exist!");
     }
 
     const count = await this.passwordRepository.count({
