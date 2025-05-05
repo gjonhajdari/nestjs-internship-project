@@ -8,5 +8,6 @@ import { RoomsService } from "./rooms.service";
   imports: [CustomRepositoryModule.forCustomRepository([RoomsRepository])],
   controllers: [RoomsController],
   providers: [RoomsService],
+  exports: [RoomsService],
 })
 export class RoomsModule {}
