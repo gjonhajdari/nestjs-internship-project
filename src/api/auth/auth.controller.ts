@@ -12,15 +12,13 @@ import {
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { GetCurrentUserId } from "../../common/decorators/get-current-user-id.decorator";
-import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
 import { Public } from "../../common/decorators/public.decorator";
 import { AccessTokenGuard } from "../../common/guards/access-token.guard";
-import { RefreshTokenGuard } from "../../common/guards/refresh-token.guard";
 import { AuthService } from "./auth.service";
 import { LoginDto } from "./dtos/login.dto";
+import { RefreshTokenDto } from "./dtos/refresh-token.dto";
 import { RegisterDTO } from "./dtos/register.dto";
 import { IAuthController } from "./interfaces/auth.controller.interface";
-import { TGetCurrentUser } from "./types";
 import { Tokens } from "./types/tokens.types";
 
 @ApiBearerAuth()
@@ -53,10 +51,9 @@ export class AuthController implements IAuthController {
   }
 
   @Public()
-  @UseGuards(RefreshTokenGuard)
-  @Post("token")
+  @Post("refresh-token")
   @HttpCode(HttpStatus.OK)
-  async refreshToken(@GetCurrentUser() user: TGetCurrentUser): Promise<Tokens> {
-    return await this.authService.refreshToken(user.id, user.refreshToken);
+  async refreshToken(@Body() body: RefreshTokenDto): Promise<Tokens> {
+    return await this.authService.refreshToken(body);
   }
 }
