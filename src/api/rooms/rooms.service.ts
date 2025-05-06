@@ -22,6 +22,14 @@ export class RoomsService implements IRoomsService {
     private dataSource: DataSource,
   ) {}
 
+  /**
+   * Finds a room by its UUID
+   *
+   * @param roomId - The UUID of the room to find
+   * @returns Promise that resolves to the room if found
+   * @throws {NotFoundException} - If the room doesn't exist
+   * @throws {InternalServerErrorException} - If there was an error processing the request
+   */
   async findById(roomId: string): Promise<Room> {
     const [room, error] = await tryCatch(
       this.roomsRepository.findOne({ where: { uuid: roomId } }),
@@ -36,6 +44,12 @@ export class RoomsService implements IRoomsService {
     return room;
   }
 
+  /**
+   * Finds all rooms
+   *
+   * @returns Promise that resolves to an array of rooms
+   * @throws {InternalServerErrorException} - If there was an error processing the request
+   */
   async findRooms(): Promise<Room[]> {
     const [rooms, error] = await tryCatch(this.roomsRepository.find());
 
@@ -45,6 +59,14 @@ export class RoomsService implements IRoomsService {
     return rooms;
   }
 
+  /**
+   * Finds all rooms for a specific user
+   *
+   * @param userId - The UUID of the user to find rooms for
+   * @returns Promise that resolves to an array of rooms
+   * @throws {NotFoundException} - If the user doesn't exist
+   * @throws {InternalServerErrorException} - If there was an error processing the request
+   */
   async createRoom(payload: CreateRoomDto, userId: string): Promise<Room> {
     const [newRoom, error] = await tryCatch(
       this.dataSource.transaction(async (manager) => {
@@ -63,6 +85,14 @@ export class RoomsService implements IRoomsService {
     return newRoom;
   }
 
+  /**
+   * Updates a room by its UUID
+   *
+   * @param roomId - The UUID of the room to update
+   * @param payload - The data to update the room with
+   * @returns Promise that resolves to the updated room
+   * @throws {InternalServerErrorException} - If there was an error processing the request
+   */
   async updateRoom(roomId: string, payload: UpdateRoomDto): Promise<Room> {
     const room = await this.findById(roomId);
 
@@ -76,6 +106,13 @@ export class RoomsService implements IRoomsService {
     return updatedRoom;
   }
 
+  /**
+   * Soft deletes a room by its UUID
+   *
+   * @param roomId - The UUID of the room to delete
+   * @returns Promise that resolves to a status object indicating success
+   * @throws {InternalServerErrorException} - If there was an error processing the request
+   */
   async deleteRoom(roomId: string): Promise<IDeleteStatus> {
     const room = await this.findById(roomId);
 
@@ -93,6 +130,15 @@ export class RoomsService implements IRoomsService {
     };
   }
 
+  /**
+   * Joins a room for a user
+   *
+   * @param userId - The UUID of the user to join the room
+   * @param roomId - The UUID of the room to join
+   * @param role - The role of the user in the room (optional)
+   * @returns Promise that resolves to the RoomUsers entity
+   * @throws {InternalServerErrorException} - If there was an error processing the request
+   */
   private async joinRoomInternal(
     manager: EntityManager,
     userId: string,
@@ -118,6 +164,14 @@ export class RoomsService implements IRoomsService {
     return roomUser;
   }
 
+  /**
+   * Joins a room for a user
+   *
+   * @param userId - The UUID of the user to join the room
+   * @param roomId - The UUID of the room to join
+   * @returns Promise that resolves to the RoomUsers entity
+   * @throws {InternalServerErrorException} - If there was an error processing the request
+   */
   async joinRoom(userId: string, roomId: string): Promise<RoomUsers> {
     const room = await this.findById(roomId);
     const user = await this.usersService.findOne(userId);
@@ -132,10 +186,26 @@ export class RoomsService implements IRoomsService {
     return roomUser;
   }
 
+  /**
+   * Removes the current
+   *
+   * @param userId - The UUID of the user to leave the room
+   * @param roomId - The UUID of the room to leave
+   * @returns Promise that resolves to true if successful, false otherwise
+   * @throws {InternalServerErrorException} - If there was an error processing the request
+   */
   async leaveRoom(userId: string, roomId: string): Promise<boolean> {
     throw new Error("Method not implemented");
   }
 
+  /**
+   * Removes a user from a room
+   *
+   * @param userId - The UUID of the user to remove from the room
+   * @param roomId - The UUID of the room to remove the user from
+   * @returns Promise that resolves to true if successful, false otherwise
+   * @throws {InternalServerErrorException} - If there was an error processing the request
+   */
   async removeFromRoom(userId: string, roomId: string): Promise<boolean> {
     throw new Error("Method not implemented");
   }
