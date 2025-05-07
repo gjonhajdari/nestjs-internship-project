@@ -11,27 +11,45 @@ export class UsersSeeder implements Seeder {
 
     const users = userRepository.create([
       {
-        firstName: "Argjend",
-        lastName: "Reqica",
-        email: "argjend@kutia.net",
+        firstName: "Gjon",
+        lastName: "Hajdari",
+        email: "gjon@kutia.net",
         password: "$2a$12$y1bFqKN/3fhrSVimtXZx6ugAl0wooBSplaAjssJGrOedL2KSnLER6",
       },
       {
-        firstName: "Lendrit",
-        lastName: "Shala",
-        email: "lendrit@kutia.net",
+        firstName: "Desara",
+        lastName: "Qerimi",
+        email: "desara@kutia.net",
         password: "$2a$12$y1bFqKN/3fhrSVimtXZx6ugAl0wooBSplaAjssJGrOedL2KSnLER6",
       },
       {
-        firstName: "Leutrim",
-        lastName: "Shala",
-        email: "leutrim@kutia.net",
+        firstName: "Endi",
+        lastName: "Salihu",
+        email: "endi@kutia.net",
         password: "$2a$12$y1bFqKN/3fhrSVimtXZx6ugAl0wooBSplaAjssJGrOedL2KSnLER6",
       },
       {
-        firstName: "Blend",
-        lastName: "Mehani",
-        email: "blend@kutia.net",
+        firstName: "Era",
+        lastName: "Ibrahimi",
+        email: "era@kutia.net",
+        password: "$2a$12$y1bFqKN/3fhrSVimtXZx6ugAl0wooBSplaAjssJGrOedL2KSnLER6",
+      },
+      {
+        firstName: "Elsa",
+        lastName: "Tafilaj",
+        email: "elsa@kutia.net",
+        password: "$2a$12$y1bFqKN/3fhrSVimtXZx6ugAl0wooBSplaAjssJGrOedL2KSnLER6",
+      },
+      {
+        firstName: "Rrezart",
+        lastName: "Merovci",
+        email: "rrezart@kutia.net",
+        password: "$2a$12$y1bFqKN/3fhrSVimtXZx6ugAl0wooBSplaAjssJGrOedL2KSnLER6",
+      },
+      {
+        firstName: "Albi",
+        lastName: "Hoti",
+        email: "albi@kutia.net",
         password: "$2a$12$y1bFqKN/3fhrSVimtXZx6ugAl0wooBSplaAjssJGrOedL2KSnLER6",
       },
     ]);
@@ -41,10 +59,13 @@ export class UsersSeeder implements Seeder {
   async drop(): Promise<any> {
     const userRepository = AppDataSource.getRepository(User);
     const emails = [
-      "argjend@kutia.net",
-      "blend@kutia.net",
-      "lendrit@kutia.net",
-      "leutrim@kutia.net",
+      "gjon@kutia.net",
+      "desara@kutia.net",
+      "endi@kutia.net",
+      "era@kutia.net",
+      "elsa@kutia.net",
+      "rrezart@kutia.net",
+      "albi@kutia.net",
     ];
     await userRepository.delete({ email: In(emails) });
   }
