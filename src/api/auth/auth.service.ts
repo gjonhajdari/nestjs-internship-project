@@ -17,6 +17,7 @@ import {
 import { User } from "../user/entities/user.entity";
 import { jwtConstants } from "./constants/constants";
 import { LoginDto } from "./dtos/login.dto";
+import { RefreshTokenDto } from "./dtos/refresh-token.dto";
 import { RegisterDTO } from "./dtos/register.dto";
 import { IAuthService } from "./interfaces/auth.service.interface";
 import { JwtPayload } from "./interfaces/jwt-payload.inteface";
@@ -109,13 +110,21 @@ export class AuthService implements IAuthService {
    * @throws {ForbiddenException} - If user does not exist or is not logged in
    * @throws {UnauthorizedException} - If refresh token is invalid
    */
-  async refreshToken(userId: string, rt: string): Promise<Tokens> {
-    const user: User = await this.validateUser(userId);
+  async refreshToken(payload: RefreshTokenDto): Promise<Tokens> {
+    const { id } = await this.jwtService.verifyAsync(payload.refreshToken, {
+      secret: jwtConstants.refresh_token_secret,
+    });
+
+    const user: User = await this.validateUser(id);
+
     if (!user || !user.hashedRefreshToken) {
       throw new ForbiddenException();
     }
 
-    const rtMatches = await compareHashedDataArgon(rt, user.hashedRefreshToken);
+    const rtMatches = await compareHashedDataArgon(
+      payload.refreshToken,
+      user.hashedRefreshToken,
+    );
 
     if (!rtMatches) {
       throw new UnauthorizedException();
