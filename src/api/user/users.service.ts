@@ -129,7 +129,7 @@ export class UsersService implements IUsersService {
     expiresAt.setHours(expiresAt.getHours() + 1);
 
     /**Send Email for forgotPassword*/
-    const emailDetails = { user: user.email, token: token };
+    const emailDetails = { user, token: token };
     this.emitter.emit("forgotPasswordMail", emailDetails);
 
     await this.passwordRepository.save({
