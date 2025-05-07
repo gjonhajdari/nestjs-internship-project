@@ -3,9 +3,9 @@ import { UpdateNoteDto } from "../dtos/update-note.dto";
 import { Note } from "../entities/note.entity";
 
 export interface INotesService {
-  findAll(roomId: string): Promise<Note[]>;
+  findNotesFromRoom(roomId: string): Promise<Note[]>;
 
-  create(payload: CreateNoteDto): Promise<Note>;
+  createNote(payload: CreateNoteDto): Promise<Note>;
 
   updateNote(noteId: string, payload: UpdateNoteDto): Promise<Note>;
 
