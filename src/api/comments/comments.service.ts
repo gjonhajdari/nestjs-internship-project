@@ -1,4 +1,5 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { tryCatch } from "@maxmorozoff/try-catch-tuple";
+import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { IDeleteStatus } from "src/common/interfaces/DeleteStatus.interface";
 import { NotesService } from "../notes/notes.service";
 import { CreateCommentDto } from "./dtos/create-comment.dto";
@@ -20,9 +21,15 @@ export class CommentsService implements ICommentsService {
    * @param commentId - Unique comment UUID
    * @returns Promise that resolves to the found comment
    * @throws {NotFoundException} - If no comment is found with the given UUID
+   * @throws {InternalServerErrorException} - If there was an error processing the request
    */
   async findById(commentId: string): Promise<Comment> {
-    const comment = await this.commentsRepository.findOne({ where: { uuid: commentId } });
+    const [comment, error] = await tryCatch(
+      this.commentsRepository.findOne({ where: { uuid: commentId } }),
+    );
+
+    if (error)
+      throw new InternalServerErrorException("There was an error processing your request");
 
     if (!comment) throw new NotFoundException("Comment doesn't exist");
 
@@ -35,10 +42,19 @@ export class CommentsService implements ICommentsService {
    * @param noteId - Unique note UUID
    * @returns Promise that resolves to the found comments array
    * @throws {NotFoundException} - If no note is found with the given UUID
+   * @throws {InternalServerErrorException} - If there was an error processing the request
    */
   async findComments(noteId: string): Promise<Comment[]> {
     const note = await this.notesService.findById(noteId);
-    return this.commentsRepository.find({ where: { note: { id: note.id } } });
+
+    const [comments, error] = await tryCatch(
+      this.commentsRepository.find({ where: { note: { id: note.id } } }),
+    );
+
+    if (error)
+      throw new InternalServerErrorException("There was an error processing your request");
+
+    return comments;
   }
 
   /**
@@ -47,13 +63,19 @@ export class CommentsService implements ICommentsService {
    * @param payload - The required data to create a comment
    * @returns Promise that resolves to the created comment
    * @throws {NotFoundException} - If no note is found with the given UUID
+   * @throws {InternalServerErrorException} - If there was an error processing the request
    */
   async createComment(payload: CreateCommentDto): Promise<Comment> {
     const note = await this.notesService.findById(payload.noteId);
     const comment = this.commentsRepository.create(payload);
     comment.note = note;
 
-    return this.commentsRepository.save(comment);
+    const [newComment, error] = await tryCatch(this.commentsRepository.save(comment));
+
+    if (error)
+      throw new InternalServerErrorException("There was an error processing your request");
+
+    return newComment;
   }
 
   /**
@@ -63,10 +85,19 @@ export class CommentsService implements ICommentsService {
    * @param payload - Given attributes of the comment to update
    * @returns Promise that resolves to the updated comment
    * @throws {NotFoundException} - If no comment is found with the given UUID
+   * @throws {InternalServerErrorException} - If there was an error processing the request
    */
   async updateComment(commentId: string, payload: UpdateCommentDto): Promise<Comment> {
     const comment = await this.findById(commentId);
-    return this.commentsRepository.save({ ...comment, ...payload });
+
+    const [updatedComment, error] = await tryCatch(
+      this.commentsRepository.save({ ...comment, ...payload }),
+    );
+
+    if (error)
+      throw new InternalServerErrorException("There was an error processing your request");
+
+    return updatedComment;
   }
 
   /**
@@ -77,7 +108,11 @@ export class CommentsService implements ICommentsService {
    */
   async deleteComment(commentId: string): Promise<IDeleteStatus> {
     const comment = await this.findById(commentId);
-    await this.commentsRepository.remove(comment);
+
+    const [_, error] = await tryCatch(this.commentsRepository.remove(comment));
+
+    if (error)
+      throw new InternalServerErrorException("There was an error processing your request");
 
     return {
       success: true,
