@@ -46,6 +46,12 @@ export class UsersSeeder implements Seeder {
         email: "rrezart@kutia.net",
         password: "$2a$12$y1bFqKN/3fhrSVimtXZx6ugAl0wooBSplaAjssJGrOedL2KSnLER6",
       },
+      {
+        firstName: "Albi",
+        lastName: "Hoti",
+        email: "albi@kutia.net",
+        password: "$2a$12$y1bFqKN/3fhrSVimtXZx6ugAl0wooBSplaAjssJGrOedL2KSnLER6",
+      },
     ]);
     await userRepository.save(users);
   }
@@ -59,6 +65,7 @@ export class UsersSeeder implements Seeder {
       "era@kutia.net",
       "elsa@kutia.net",
       "rrezart@kutia.net",
+      "albi@kutia.net",
     ];
     await userRepository.delete({ email: In(emails) });
   }
