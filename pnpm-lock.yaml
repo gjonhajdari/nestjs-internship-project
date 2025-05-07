@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@maxmorozoff/try-catch-tuple':
+        specifier: ^0.1.2
+        version: 0.1.2(typescript@4.9.5)
       '@nestjs-modules/mailer':
         specifier: ^1.8.1
         version: 1.11.2(@nestjs/common@9.4.3(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)(rxjs@7.8.2))(@nestjs/core@9.4.3)(nodemailer@6.10.1)
@@ -700,6 +703,14 @@ packages:
   '@mapbox/node-pre-gyp@1.0.11':
     resolution: {integrity: sha512-Yhlar6v9WQgUp/He7BdgzOz8lqMQ8sU+jkCq7Wx8Myc5YFJLbEe7lgui/V7G1qB1DJykHSGwreceSaD60Y0PUQ==}
     hasBin: true
+
+  '@maxmorozoff/try-catch-tuple@0.1.2':
+    resolution: {integrity: sha512-stFwucLpAkJPkLIlBGsXB/Q9A3kSTFoioqqlz7V5r6pwsysQ1/+vpVKEutmbjSztoIOdy+iTn/iSSKyJXb+ebQ==}
+    peerDependencies:
+      typescript: ^5.0.0
+    peerDependenciesMeta:
+      typescript:
+        optional: true
 
   '@nestjs-modules/mailer@1.11.2':
     resolution: {integrity: sha512-k07wyKbtCzxWMm6IqGwcGIisnXD/6sneGvUR8rBBZbxtLn1HE1FLGyiaXBrPui/0K7W41aS9x9jAIhfTawtlUg==}
@@ -5296,6 +5307,10 @@ snapshots:
     transitivePeerDependencies:
       - encoding
       - supports-color
+
+  '@maxmorozoff/try-catch-tuple@0.1.2(typescript@4.9.5)':
+    optionalDependencies:
+      typescript: 4.9.5
 
   '@nestjs-modules/mailer@1.11.2(@nestjs/common@9.4.3(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)(rxjs@7.8.2))(@nestjs/core@9.4.3)(nodemailer@6.10.1)':
     dependencies:
