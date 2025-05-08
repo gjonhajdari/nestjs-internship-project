@@ -7,6 +7,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  UseGuards,
 } from "@nestjs/common";
 import {
   ApiBadRequestResponse,
@@ -19,6 +20,8 @@ import {
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
 import { GetCurrentUser } from "src/common/decorators/get-current-user.decorator";
+import { Roles } from "src/common/decorators/roles.decorator";
+import { RolesGuard } from "src/common/guards/roles.guard";
 import { IDeleteStatus } from "src/common/interfaces/DeleteStatus.interface";
 import { BadRequestResponse } from "src/common/interfaces/responses/bad-request.response";
 import { DeletedResponse } from "src/common/interfaces/responses/deleted.response";
@@ -29,12 +32,14 @@ import { CreateRoomDto } from "./dtos/create-room.dto";
 import { UpdateRoomDto } from "./dtos/update-room.dto";
 import { RoomUsers } from "./entities/room-users.entity";
 import { Room } from "./entities/room.entity";
+import { RoomRoles } from "./enums/room-roles.enum";
 import { IRoomsController } from "./interfaces/rooms.controller.interface";
 import { RoomsService } from "./rooms.service";
 
 @ApiBearerAuth()
 @ApiTags("Rooms")
 @Controller("rooms")
+@UseGuards(RolesGuard)
 export class RoomsController implements IRoomsController {
   constructor(private roomsService: RoomsService) {}
 
@@ -137,6 +142,7 @@ export class RoomsController implements IRoomsController {
     description: "A 401 error if no bearer token is provided",
     type: UnauthorizedResponse,
   })
+  @Roles(RoomRoles.HOST)
   @Delete(":roomId")
   async delete(@Param("roomId", new ParseUUIDPipe()) roomId: string): Promise<IDeleteStatus> {
     return this.roomsService.deleteRoom(roomId);
@@ -158,6 +164,7 @@ export class RoomsController implements IRoomsController {
     return this.roomsService.leaveRoom(user.uuid, roomId);
   }
 
+  @Roles(RoomRoles.HOST)
   @Post("remove/:roomId")
   async removeFromRoom(
     @Body() body: string,
