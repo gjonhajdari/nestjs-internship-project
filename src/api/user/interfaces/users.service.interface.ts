@@ -18,9 +18,6 @@ export interface IUsersService {
 
   deleteUser(userId: string): Promise<IDeleteStatus>;
 
-  // addPermission(userId: string, permissionDto: PermissinDto): Promise<void>;
-  // removePermission(userId: string, permissionDto: PermissinDto): Promise<void>;
-
   forgotPassword(forgotPassword: ForgotPasswordDto): Promise<void>;
 
   resetPassword(token: string, resetPasswordDto: ResetPasswordDto): Promise<void>;

@@ -5,24 +5,13 @@ import { User } from "../entities/user.entity";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface IUsersController {
-  // getHello(user: User): Promise<string>;
-
-  // create(body: CreateUserDto): Promise<User>;
-
   getMe(user: User): Promise<User>;
 
   findOne(userId: string): Promise<User>;
 
-  // findAll(): Promise<User[]>;
-
   updateMe(user: User, body: UpdateUserDto): Promise<User>;
 
-  // updateUser(userId: string, body: UpdateUserDto): Promise<User>;
-
   deleteMe(user: User): Promise<IDeleteStatus>;
-
-  // addPermission(userId: string, permission: PermissinDto): Promise<void>;
-  // removePermission(userId: string, permission: PermissinDto): Promise<void>;
 
   forgotPassword(body: ForgotPasswordDto): Promise<void>;
 

@@ -44,19 +44,6 @@ import { UsersService } from "./users.service";
 export class UsersController implements IUsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // //example how permissions work
-  // @Permission(UserPermissions.CAN_ACCESS_HELLO_METHOD)
-  // @Get("hello")
-  // async getHello() {
-  //   return "Hello from Hello Method";
-  // }
-
-  // @Roles(UserRoles.SUPER_ADMIN)
-  // @Post()
-  // async create(@Body() body: CreateUserDto): Promise<User> {
-  //   return await this.usersService.create(body);
-  // }
-
   @ApiOperation({
     summary: "Get the current user",
     description: "Retrieves the current user based on the provided token",
@@ -74,8 +61,6 @@ export class UsersController implements IUsersController {
     return await this.usersService.findOne(user.uuid);
   }
 
-  // example how roles work
-  // @Roles(UserRoles.SUPER_ADMIN)
   @ApiOperation({
     summary: "Get a user by ID",
     description: "Retrieves a user based on the provided UUID",
@@ -92,13 +77,6 @@ export class UsersController implements IUsersController {
   async findOne(@Param("userId") userId: string): Promise<User> {
     return await this.usersService.findOne(userId);
   }
-
-  // @Roles(UserRoles.SUPER_ADMIN)
-  // @Get()
-  // @UseInterceptors(PaginationInterceptor)
-  // async findAll(): Promise<User[]> {
-  //   return await this.usersService.findAll();
-  // }
 
   @ApiOperation({
     summary: "Update the current user",
@@ -117,16 +95,6 @@ export class UsersController implements IUsersController {
     return await this.usersService.updateUser(user.uuid, body);
   }
 
-  // @Roles(UserRoles.SUPER_ADMIN)
-  // @Patch(":userId")
-  // async updateUser(
-  //   @Param("userId") userId: string,
-  //   @Body() body: UpdateUserDto,
-  // ): Promise<User> {
-  //   return await this.usersService.update(userId, body);
-  // }
-
-  // @Roles(UserRoles.SUPER_ADMIN)
   @ApiOperation({
     summary: "Delete the current user",
     description: "Deletes the current user based on the provided token",
@@ -143,24 +111,6 @@ export class UsersController implements IUsersController {
   async deleteMe(@GetCurrentUser() user: User): Promise<IDeleteStatus> {
     return await this.usersService.deleteUser(user.uuid);
   }
-
-  // @Roles(UserRoles.SUPER_ADMIN)
-  // @Post("add-permission/:userId")
-  // async addPermission(
-  //   @Param("userId") userId: string,
-  //   @Body() permission: PermissinDto,
-  // ): Promise<void> {
-  //   return this.usersService.addPermission(userId, permission);
-  // }
-
-  // @Roles(UserRoles.SUPER_ADMIN)
-  // @Post("remove-permission/:userId")
-  // async removePermission(
-  //   @Param("userId") userId: string,
-  //   @Body() permission: PermissinDto,
-  // ): Promise<void> {
-  //   return this.usersService.removePermission(userId, permission);
-  // }
 
   @ApiOperation({
     summary: "Send a password reset email",

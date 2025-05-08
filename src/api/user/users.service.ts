@@ -86,28 +86,6 @@ export class UsersService implements IUsersService {
     };
   }
 
-  // async addPermission(userId: string, permissionDto: PermissinDto): Promise<void> {
-  //   const user = await this.findOne(userId);
-
-  //   const permissionExist = checkPermissionsUtil(user.permissions, permissionDto.permission);
-  //   if (permissionExist) {
-  //     throw new UnprocessableEntityException("Permission was already added!");
-  //   }
-  //   user.permissions += permissionDto.permission;
-  //   await this.userRepository.save(user);
-  // }
-
-  // async removePermission(userId: string, permissionDto: PermissinDto): Promise<void> {
-  //   const user = await this.findOne(userId);
-
-  //   const permissionExist = checkPermissionsUtil(user.permissions, permissionDto.permission);
-  //   if (!permissionExist) {
-  //     throw new UnprocessableEntityException("Permission was already removed");
-  //   }
-  //   user.permissions -= permissionDto.permission;
-  //   await this.userRepository.save(user);
-  // }
-
   /**
    * Sends an email to the user with a token to reset their password
    *
