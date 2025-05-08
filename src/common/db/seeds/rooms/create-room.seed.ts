@@ -10,10 +10,10 @@ export class RoomsSeeder implements Seeder {
     const roomsRepository = AppDataSource.getRepository(Room);
 
     const rooms = roomsRepository.create([
-      { title: "test", slug: "test-1" },
-      { title: "test", slug: "test-2" },
-      { title: "test", slug: "test-3" },
-      { title: "test", slug: "test-4" },
+      { title: "test-1", slug: "test-1" },
+      { title: "test-2", slug: "test-2" },
+      { title: "test-3", slug: "test-3" },
+      { title: "test-4", slug: "test-4" },
     ]);
 
     await roomsRepository.save(rooms);

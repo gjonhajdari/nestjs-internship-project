@@ -15,10 +15,12 @@ export class AddToRoomSeeder implements Seeder {
     const roomUsersRepository = AppDataSource.getRepository(RoomUsers);
 
     const emails = [
-      "argjend@kutia.net",
-      "blend@kutia.net",
-      "lendrit@kutia.net",
-      "leutrim@kutia.net",
+      "desara@kutia.net",
+      "gjon@kutia.net",
+      "endi@kutia.net",
+      "era@kutia.net",
+      "elsa@kutia.net",
+      "rrezart@kutia.net",
     ];
     const slugs = ["test-1", "test-2", "test-3", "test-4"];
 
