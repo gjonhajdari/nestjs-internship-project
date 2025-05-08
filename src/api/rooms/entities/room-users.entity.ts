@@ -9,7 +9,7 @@ import {
   PrimaryGeneratedColumn,
   Unique,
 } from "typeorm";
-import { Roles } from "../enums/roles.enum";
+import { RoomRoles } from "../enums/room-roles.enum";
 import { Room } from "./room.entity";
 
 @Entity("room_users")
@@ -25,8 +25,8 @@ export class RoomUsers {
   @Column({ name: "user_id", type: "integer" })
   userId: number;
 
-  @Column({ type: "enum", enum: Roles, default: Roles.PARTICIPANT, nullable: false })
-  role: Roles;
+  @Column({ type: "enum", enum: RoomRoles, default: RoomRoles.PARTICIPANT, nullable: false })
+  role: RoomRoles;
 
   @CreateDateColumn()
   joined_at: Date;
