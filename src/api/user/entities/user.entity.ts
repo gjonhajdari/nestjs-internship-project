@@ -76,7 +76,7 @@ export class User extends AuditEntity {
     type: "varchar",
     length: 128,
     nullable: true,
-    name: "hashed_reset_token",
+    name: "hashed_refresh_token",
   })
   @Exclude()
   hashedRefreshToken: string;
