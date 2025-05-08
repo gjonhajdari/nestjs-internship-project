@@ -144,6 +144,21 @@ export class RoomsController implements IRoomsController {
     return this.roomsService.deleteRoom(roomId);
   }
 
+  @ApiOperation({
+    summary: "Join a room",
+    description: "Join a room as a participant",
+  })
+  @ApiCreatedResponse({
+    description: "A 201 response if the user joined room successfully",
+  })
+  @ApiNotFoundResponse({
+    description: "A 404 error if the room doesn't exist",
+    type: NotFoundResponse,
+  })
+  @ApiUnauthorizedResponse({
+    description: "A 401 error if no bearer token is provided",
+    type: UnauthorizedResponse,
+  })
   @Post("join/:roomId")
   async join(
     @GetCurrentUser() user: User,
