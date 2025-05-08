@@ -21,15 +21,16 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
+import { GetCurrentUser } from "src/common/decorators/get-current-user.decorator";
 import { BadRequestResponse } from "src/common/interfaces/responses/bad-request.response";
 import { ForbiddenResponse } from "src/common/interfaces/responses/forbidden.response";
 import { InternalErrorResponse } from "src/common/interfaces/responses/internal-error.response";
 import { LoginUserResponse } from "src/common/interfaces/responses/login-user.respons";
 import { UnauthorizedResponse } from "src/common/interfaces/responses/unauthorized.response";
 import { UserTokensResponse } from "src/common/interfaces/responses/user-tokens.response";
-import { GetCurrentUserId } from "../../common/decorators/get-current-user-id.decorator";
 import { Public } from "../../common/decorators/public.decorator";
 import { AccessTokenGuard } from "../../common/guards/access-token.guard";
+import { User } from "../user/entities/user.entity";
 import { AuthService } from "./auth.service";
 import { LoginDto } from "./dtos/login.dto";
 import { RefreshTokenDto } from "./dtos/refresh-token.dto";
@@ -90,8 +91,8 @@ export class AuthController implements IAuthController {
   @UseGuards(AccessTokenGuard)
   @Post("logout")
   @HttpCode(HttpStatus.OK)
-  async logout(@GetCurrentUserId() userId: string): Promise<void> {
-    return this.authService.logout(userId);
+  async logout(@GetCurrentUser() user: User): Promise<void> {
+    return this.authService.logout(user.uuid);
   }
 
   @ApiOperation({
