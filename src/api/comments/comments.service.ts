@@ -2,6 +2,7 @@ import { tryCatch } from "@maxmorozoff/try-catch-tuple";
 import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { IDeleteStatus } from "../../common/interfaces/DeleteStatus.interface";
 import { NotesService } from "../notes/notes.service";
+import { UsersService } from "../user/users.service";
 import { CreateCommentDto } from "./dtos/create-comment.dto";
 import { UpdateCommentDto } from "./dtos/update-comment.dto";
 import { Comment } from "./entities/comment.entity";
@@ -13,6 +14,7 @@ export class CommentsService implements ICommentsService {
   constructor(
     private commentsRepository: CommentsRepository,
     private notesService: NotesService,
+    private usersService: UsersService,
   ) {}
 
   /**
@@ -66,12 +68,20 @@ export class CommentsService implements ICommentsService {
    * @param payload - The required data to create a comment
    * @returns Promise that resolves to the created comment
    * @throws {NotFoundException} - If no note is found with the given UUID
+   * @throws {NotFoundException} - If no user is found with the given UUID
    * @throws {InternalServerErrorException} - If there was an error processing the request
    */
-  async createComment(payload: CreateCommentDto): Promise<Comment> {
+  async createComment(userId: string, payload: CreateCommentDto): Promise<Comment> {
     const note = await this.notesService.findById(payload.noteId);
+    const user = await this.usersService.findOne(userId);
     const comment = this.commentsRepository.create(payload);
+    let parentComment: Comment;
+
+    if (payload.parentId) parentComment = await this.findById(payload.parentId);
+
     comment.note = note;
+    comment.user = user;
+    comment.parent = parentComment;
 
     const [newComment, error] = await tryCatch(this.commentsRepository.save(comment));
 

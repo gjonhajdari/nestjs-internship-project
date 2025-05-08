@@ -6,7 +6,11 @@ import { CommentsService } from "./comments.service";
 import { CommentsRepository } from "./repository/comments.repository";
 
 @Module({
-  imports: [CustomRepositoryModule.forCustomRepository([CommentsRepository]), NotesModule],
+  imports: [
+    CustomRepositoryModule.forCustomRepository([CommentsRepository]),
+    NotesModule,
+    UserModule,
+  ],
   providers: [CommentsService],
   controllers: [CommentsController],
 })

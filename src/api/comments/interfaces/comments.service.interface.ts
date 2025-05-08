@@ -8,7 +8,7 @@ export interface ICommentsService {
 
   findComments(noteId: string): Promise<Comment[]>;
 
-  createComment(payload: CreateCommentDto): Promise<Comment>;
+  createComment(userId: string, payload: CreateCommentDto): Promise<Comment>;
 
   updateComment(commentId: string, payload: UpdateCommentDto): Promise<Comment>;
 
