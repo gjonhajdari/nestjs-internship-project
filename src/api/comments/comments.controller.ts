@@ -1,4 +1,14 @@
-import { Controller, Delete, Get, ParseUUIDPipe, Patch, Post, Query } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Query,
+} from "@nestjs/common";
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -9,11 +19,13 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
+import { GetCurrentUser } from "src/common/decorators/get-current-user.decorator";
 import { IDeleteStatus } from "src/common/interfaces/DeleteStatus.interface";
 import { BadRequestResponse } from "src/common/interfaces/responses/bad-request.response";
 import { DeletedResponse } from "src/common/interfaces/responses/deleted.response";
 import { NotFoundResponse } from "src/common/interfaces/responses/not-found.response";
 import { UnauthorizedResponse } from "src/common/interfaces/responses/unauthorized.response";
+import { User } from "../user/entities/user.entity";
 import { CommentsService } from "./comments.service";
 import { CreateCommentDto } from "./dtos/create-comment.dto";
 import { UpdateCommentDto } from "./dtos/update-comment.dto";
@@ -65,8 +77,11 @@ export class CommentsController implements ICommentsController {
     type: NotFoundResponse,
   })
   @Post()
-  async create(userId: string, body: CreateCommentDto): Promise<Comment> {
-    throw new Error("Method not implemented.");
+  async create(
+    @GetCurrentUser() user: User,
+    @Body() body: CreateCommentDto,
+  ): Promise<Comment> {
+    return this.commentsService.createComment(user.uuid, body);
   }
 
   @ApiOperation({
@@ -90,8 +105,12 @@ export class CommentsController implements ICommentsController {
     type: BadRequestResponse,
   })
   @Patch(":commentId")
-  async update(commendId: string, body: UpdateCommentDto): Promise<Comment> {
-    throw new Error("Method not implemented.");
+  async update(
+    @GetCurrentUser() user: User,
+    @Param("commendId") commendId: string,
+    @Body() body: UpdateCommentDto,
+  ): Promise<Comment> {
+    return this.commentsService.updateComment(user.uuid, commendId, body);
   }
 
   @ApiOperation({
