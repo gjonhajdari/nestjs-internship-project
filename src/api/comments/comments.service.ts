@@ -1,5 +1,10 @@
 import { tryCatch } from "@maxmorozoff/try-catch-tuple";
-import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from "@nestjs/common";
 import { IDeleteStatus } from "../../common/interfaces/DeleteStatus.interface";
 import { NotesService } from "../notes/notes.service";
 import { UsersService } from "../user/users.service";
@@ -25,9 +30,9 @@ export class CommentsService implements ICommentsService {
    * @throws {NotFoundException} - If no comment is found with the given UUID
    * @throws {InternalServerErrorException} - If there was an error processing the request
    */
-  async findById(commentId: string): Promise<Comment> {
+  async findById(commentId: string, relations?: string[]): Promise<Comment> {
     const [comment, error] = await tryCatch(
-      this.commentsRepository.findOne({ where: { uuid: commentId } }),
+      this.commentsRepository.findOne({ where: { uuid: commentId }, relations }),
     );
 
     if (error)
@@ -98,10 +103,19 @@ export class CommentsService implements ICommentsService {
    * @param payload - Given attributes of the comment to update
    * @returns Promise that resolves to the updated comment
    * @throws {NotFoundException} - If no comment is found with the given UUID
+   * @throws {BadRequestException} - If the user is trying to edit someone else's comment
    * @throws {InternalServerErrorException} - If there was an error processing the request
    */
-  async updateComment(commentId: string, payload: UpdateCommentDto): Promise<Comment> {
-    const comment = await this.findById(commentId);
+  async updateComment(
+    userId: string,
+    commentId: string,
+    payload: UpdateCommentDto,
+  ): Promise<Comment> {
+    const comment = await this.findById(commentId, ["user"]);
+    console.log(comment);
+
+    if (userId !== comment.user.uuid)
+      throw new BadRequestException("Can't edit someone else's comment");
 
     const [updatedComment, error] = await tryCatch(
       this.commentsRepository.save({ ...comment, ...payload }),
