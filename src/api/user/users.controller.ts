@@ -13,13 +13,14 @@ import {
   ValidationPipe,
 } from "@nestjs/common";
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
-  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
   ApiUnprocessableEntityResponse,
 } from "@nestjs/swagger";
+import { BadRequestResponse } from "src/common/interfaces/responses/bad-request.response";
 import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
 import { Public } from "../../common/decorators/public.decorator";
 import { PermissionsGuard } from "../../common/guards/permissions.guard";
@@ -165,6 +166,21 @@ export class UsersController implements IUsersController {
     return await this.usersService.resetPassword(token, body);
   }
 
+  @ApiOperation({
+    summary: "Update current user's password",
+    description: "Updates the password of the currently logged-in user",
+  })
+  @ApiOkResponse({
+    description: "A 200 response if the password is updated successfully",
+  })
+  @ApiUnprocessableEntityResponse({
+    description: "A 422 error if the user is not found",
+    type: UnprocessableEntityResponse,
+  })
+  @ApiBadRequestResponse({
+    description: "A 400 error if the passwords do not match or the new password is invalid",
+    type: BadRequestResponse,
+  })
   @Patch("me/password")
   async updateMyPassword(
     @GetCurrentUser() user: User,
