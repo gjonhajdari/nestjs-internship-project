@@ -32,7 +32,7 @@ export class RoomsService implements IRoomsService {
    */
   async findById(roomId: string): Promise<Room> {
     const [room, error] = await tryCatch(
-      this.roomsRepository.findOne({ where: { uuid: roomId } }),
+      this.roomsRepository.findOne({ where: { uuid: roomId }, relations: ["notes"] }),
     );
 
     if (error)
@@ -50,13 +50,18 @@ export class RoomsService implements IRoomsService {
    * @returns Promise that resolves to an array of rooms
    * @throws {InternalServerErrorException} - If there was an error processing the request
    */
-  async findRooms(): Promise<Room[]> {
-    const [rooms, error] = await tryCatch(this.roomsRepository.find());
+  async findRooms(userId: string): Promise<{ room: Room; role: Roles }[]> {
+    const [roomUsers, error] = await tryCatch(
+      this.roomUsersRepository.find({
+        where: { user: { uuid: userId } },
+        relations: ["room"],
+      }),
+    );
 
     if (error)
       throw new InternalServerErrorException("There was an error processing your request");
 
-    return rooms;
+    return roomUsers.map((ru) => ({ room: ru.room, role: ru.role }));
   }
 
   /**
