@@ -23,8 +23,6 @@ import {
 import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
 import { Public } from "../../common/decorators/public.decorator";
 import { PermissionsGuard } from "../../common/guards/permissions.guard";
-import { PaginationInterceptor } from "../../common/interceptors/pagination.interceptor";
-import { CreateUserDto } from "./dtos/create-user.dto";
 import { IDeleteStatus } from "../../common/interfaces/DeleteStatus.interface";
 import { DeletedResponse } from "../../common/interfaces/responses/deleted.response";
 import { NotFoundResponse } from "../../common/interfaces/responses/not-found.response";
@@ -165,5 +163,13 @@ export class UsersController implements IUsersController {
     @Body() body: ResetPasswordDto,
   ): Promise<void> {
     return await this.usersService.resetPassword(token, body);
+  }
+
+  @Patch("me/password")
+  async updateMyPassword(
+    @GetCurrentUser() user: User,
+    @Body() body: ResetPasswordDto,
+  ): Promise<void> {
+    return await this.usersService.updatePassword(user.uuid, body);
   }
 }
