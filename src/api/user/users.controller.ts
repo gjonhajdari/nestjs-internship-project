@@ -148,4 +148,12 @@ export class UsersController implements IUsersController {
   ): Promise<void> {
     return await this.usersService.resetPassword(token, body);
   }
+
+  @Patch("me/password")
+  async updateMyPassword(
+    @GetCurrentUser() user: User,
+    @Body() body: ResetPasswordDto,
+  ): Promise<void> {
+    return await this.usersService.updatePassword(user.uuid, body);
+  }
 }
