@@ -18,7 +18,6 @@ import { Permission } from "../../common/decorators/permissions.decorator";
 import { Public } from "../../common/decorators/public.decorator";
 import { Roles } from "../../common/decorators/roles.decorator";
 import { PermissionsGuard } from "../../common/guards/permissions.guard";
-import { RolesGuard } from "../../common/guards/roles.guard";
 import { PaginationInterceptor } from "../../common/interceptors/pagination.interceptor";
 import { CreateUserDto } from "./dtos/create-user.dto";
 import { ForgotPasswordDto, ResetPasswordDto } from "./dtos/password-reset.dto";
@@ -35,7 +34,6 @@ import { UsersService } from "./users.service";
 @UsePipes(new ValidationPipe())
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(PermissionsGuard)
-@UseGuards(RolesGuard)
 export class UsersController implements IUsersController {
   constructor(private readonly usersService: UsersService) {}
 
