@@ -4,11 +4,12 @@ import { CreateRoomDto } from "../dtos/create-room.dto";
 import { UpdateRoomDto } from "../dtos/update-room.dto";
 import { RoomUsers } from "../entities/room-users.entity";
 import { Room } from "../entities/room.entity";
+import { Roles } from "../enums/roles.enum";
 
 export interface IRoomsController {
   findById(roomId: string): Promise<Room>;
 
-  findRooms(): Promise<Room[]>;
+  findRooms(user: User): Promise<{ room: Room; role: Roles }[]>;
 
   create(body: CreateRoomDto, user: User): Promise<Room>;
 
