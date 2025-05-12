@@ -24,6 +24,7 @@ import { BadRequestResponse } from "src/common/interfaces/responses/bad-request.
 import { DeletedResponse } from "src/common/interfaces/responses/deleted.response";
 import { GetRoomsResponse } from "src/common/interfaces/responses/get-rooms.response";
 import { NotFoundResponse } from "src/common/interfaces/responses/not-found.response";
+import { RoomRelationsResponse } from "src/common/interfaces/responses/room-relations.response";
 import { UnauthorizedResponse } from "src/common/interfaces/responses/unauthorized.response";
 import { User } from "../user/entities/user.entity";
 import { CreateRoomDto } from "./dtos/create-room.dto";
@@ -42,11 +43,11 @@ export class RoomsController implements IRoomsController {
 
   @ApiOperation({
     summary: "Get one room by id",
-    description: "Retrieves the room with the specified id",
+    description: "Retrieves the room with the specified id and it's relations",
   })
   @ApiOkResponse({
     description: "A 200 response if room is found",
-    type: Room,
+    type: RoomRelationsResponse,
   })
   @ApiUnauthorizedResponse({
     description: "A 401 error if no bearer token is provided",
@@ -58,12 +59,12 @@ export class RoomsController implements IRoomsController {
   })
   @Get(":roomId")
   async findById(@Param("roomId", new ParseUUIDPipe()) roomId: string): Promise<Room> {
-    return this.roomsService.findById(roomId);
+    return this.roomsService.findWithRelations(roomId);
   }
 
   @ApiOperation({
     summary: "Get all rooms",
-    description: "Retrieves all rooms",
+    description: "Retrieves all current user's rooms",
   })
   @ApiOkResponse({
     description: "A 200 response if rooms are found successfully",

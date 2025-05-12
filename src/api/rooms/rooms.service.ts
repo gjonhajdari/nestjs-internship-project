@@ -1,6 +1,7 @@
 import { tryCatch } from "@maxmorozoff/try-catch-tuple";
 import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { IDeleteStatus } from "src/common/interfaces/DeleteStatus.interface";
+import { RoomRelationsResponse } from "src/common/interfaces/responses/room-relations.response";
 import { DataSource, EntityManager } from "typeorm";
 import { User } from "../user/entities/user.entity";
 import { UsersService } from "../user/users.service";
@@ -41,6 +42,71 @@ export class RoomsService implements IRoomsService {
     if (!room) {
       throw new NotFoundException("Room doesn't exist!");
     }
+    return room;
+  }
+
+  /**
+   * Finds a room and it's relations by UUID
+   *
+   * @param roomId - The UUID of the room to find
+   * @returns Promise that resolves to the room if found
+   * @throws {NotFoundException} - If the room doesn't exist
+   * @throws {InternalServerErrorException} - If there was an error processing the request
+   */
+  async findWithRelations(roomId: string): Promise<RoomRelationsResponse> {
+    const [room, error] = await tryCatch(async () => {
+      return await this.dataSource.query(
+        `
+        SELECT 
+          r.id as "room_id",
+          r.uuid as "room_uuid",
+          r.title as "room_title",
+          r.slug as "room_slug",
+          r.is_active as "room_isActive",
+          r.created_at as "room_createdAt",
+          r.updated_at as "roomUpdatedAt",
+  
+          json_agg(
+            DISTINCT jsonb_build_object(
+              'uuid', u.uuid,
+              'firstName', u.first_name,
+              'lastName', u.last_name,
+              'email', u.email,
+              'role', ru.role
+            )
+          ) FILTER (WHERE u.id IS NOT NULL) as users,
+  
+          json_agg(
+            DISTINCT jsonb_build_object(
+              'uuid', n.uuid,
+              'content', n.content,
+              'totalVotes', n.total_votes,
+              'xAxis', n.x_axis,
+              'yAxis', n.y_axis,
+              'createdAt', n.created_at,
+              'updatedAt', n.updated_at
+            )
+          ) FILTER (WHERE n.id IS NOT NULL) as notes
+  
+        FROM rooms r
+        LEFT JOIN room_users ru ON r.id = ru.room_id
+        LEFT JOIN users u ON ru.user_id = u.id
+        LEFT JOIN notes n ON r.id = n.room_id
+        WHERE r.uuid = $1
+        GROUP BY r.id
+      `,
+        [roomId],
+      );
+    });
+
+    if (error) {
+      console.log(error);
+      throw new InternalServerErrorException("There was an error processing your request");
+    }
+    if (!room) {
+      throw new NotFoundException("Room doesn't exist!");
+    }
+
     return room;
   }
 
