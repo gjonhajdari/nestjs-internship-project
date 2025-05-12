@@ -1,7 +1,8 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Exclude } from "class-transformer";
 import { Matches } from "class-validator";
 import { Comment } from "src/api/comments/entities/comment.entity";
+import { NoteVote } from "src/api/notes/entities/note-vote.entity";
 import { Note } from "src/api/notes/entities/note.entity";
 import { RoomUsers } from "src/api/rooms/entities/room-users.entity";
 import { Column, Entity, OneToMany } from "typeorm";
@@ -98,4 +99,14 @@ export class User extends AuditEntity {
     (roomUsers) => roomUsers.user,
   )
   rooms: RoomUsers[];
+
+  @OneToMany(
+    () => NoteVote,
+    (noteVote) => noteVote.user,
+  )
+  @ApiPropertyOptional({
+    type: () => [NoteVote],
+    description: "Votes cast by the user on notes",
+  })
+  noteVotes: NoteVote[];
 }
