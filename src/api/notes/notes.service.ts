@@ -1,19 +1,25 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from "@nestjs/common";
+import { DataSource } from "typeorm";
 import { RoomsService } from "../rooms/rooms.service";
+import { User } from "../user/entities/user.entity";
 import { CreateNoteDto } from "./dtos/create-note.dto";
 import { UpdateNoteDto } from "./dtos/update-note.dto";
 import { Note } from "./entities/note.entity";
 import { INotesService } from "./interfaces/notes.service.interface";
+import { NoteVoteRepository } from "./repository/note-vote.repository";
 import { NotesRepository } from "./repository/notes.repository";
 
 @Injectable()
 export class NotesService implements INotesService {
   constructor(
+    private dataSource: DataSource,
+    private noteVoteRepository: NoteVoteRepository,
     private notesRepository: NotesRepository,
     private roomsService: RoomsService,
   ) {}
@@ -26,7 +32,10 @@ export class NotesService implements INotesService {
    * @throws {NotFoundException} - If no note is found with the given UUID
    */
   async findById(noteId: string): Promise<Note> {
-    const note = await this.notesRepository.findOne({ where: { uuid: noteId } });
+    const note = await this.notesRepository.findOne({
+      where: { uuid: noteId },
+      relations: ["room", "author"],
+    });
 
     if (!note) throw new NotFoundException("Note does not exist");
 
@@ -41,9 +50,11 @@ export class NotesService implements INotesService {
    * @throws {NotFoundException} - If no room is found with the given UUID
    */
   async findNotesFromRoom(roomId: string): Promise<Note[]> {
+    const room = await this.roomsService.findById(roomId);
+
     return await this.notesRepository.find({
-      where: { room: { uuid: roomId } },
-      relations: ["room"],
+      where: { room: { id: room.id } },
+      relations: ["author"],
     });
   }
 
@@ -51,11 +62,12 @@ export class NotesService implements INotesService {
    * Creates a new note and saves it in the database
    *
    * @param payload - The required data to create a note
+   * @param currentUser - The user creating the note
    * @returns Promise that resolves to the created note
-   * @throws {NotFoundException} - If no note is found with the given UUID
+   * @throws {NotFoundException} - If the room with the given UUID does not exist
    * @throws {InternalServerErrorException} - If an error occurs while saving the note to the database
    */
-  async createNote(payload: CreateNoteDto): Promise<Note> {
+  async createNote(payload: CreateNoteDto, currentUser: User): Promise<Note> {
     const room = await this.roomsService.findById(payload.roomId);
 
     if (!room) {
@@ -65,7 +77,13 @@ export class NotesService implements INotesService {
     try {
       const { content, xAxis, yAxis } = payload;
 
-      const newNote = this.notesRepository.create({ room, content, xAxis, yAxis });
+      const newNote = this.notesRepository.create({
+        room,
+        content,
+        xAxis,
+        yAxis,
+        author: currentUser,
+      });
 
       return await this.notesRepository.save(newNote);
     } catch (error) {
@@ -74,16 +92,23 @@ export class NotesService implements INotesService {
   }
 
   /**
-   * Updates a note in the database with the new given attributes
+   * Updates a note in the database with the new given attributes.
+   * Only the author of the note is allowed to perform the update.
    *
-   * @param noteId - The unique UUID of the note
-   * @param payload - Given attributes of the note to update
-   * @returns Promise that resolves to the updated note
-   * @throws {NotFoundException} - If no note is found with the given UUID
-   * @throws {InternalServerErrorException} - If an error occurs while updating the note in the database
+   * @param noteId - The unique UUID of the note.
+   * @param payload - The new attributes of the note to update.
+   * @param currentUser - The user attempting to update the note.
+   * @returns Promise that resolves to the updated note.
+   * @throws {NotFoundException} - If no note is found with the given UUID.
+   * @throws {ForbiddenException} - If the current user is not the author of the note.
+   * @throws {InternalServerErrorException} - If an error occurs while updating the note in the database.
    */
-  async updateNote(noteId: string, payload: UpdateNoteDto): Promise<Note> {
+  async updateNote(noteId: string, payload: UpdateNoteDto, currentUser: User): Promise<Note> {
     const note = await this.findById(noteId);
+
+    if (note.author.id !== currentUser.id) {
+      throw new ForbiddenException("You are not allowed to update this note");
+    }
 
     try {
       await this.notesRepository.update(note.id, { ...payload });
@@ -94,11 +119,16 @@ export class NotesService implements INotesService {
   }
 
   /**
-   * Deletes a note from the database
+   * Deletes a note from the database.
+   * This operation is restricted to either:
+   * - The author of the note, or
+   * - A user with the "host" role in the same room as the note.
    *
-   * @param noteId - The unique UUID of the note
-   * @throws {NotFoundException} - If no note with the given UUID is found
-   * @throws {InternalServerErrorException} - If an error occurs while removing the note
+   * Authorization is handled via the DeleteNoteGuard.
+   *
+   * @param noteId - The unique UUID of the note.
+   * @throws {NotFoundException} - If no note with the given UUID is found.
+   * @throws {InternalServerErrorException} - If an error occurs while removing the note.
    */
   async deleteNote(noteId: string): Promise<void> {
     const note = await this.findById(noteId);
@@ -111,52 +141,93 @@ export class NotesService implements INotesService {
   }
 
   /**
-   * Adds a vote to the note, incrementing its vote count by 1
+   * Adds a vote to the specified note and increments its vote count by 1.
+   * A user can only vote once per room, regardless of how many notes are in it.
    *
    * @param noteId - The UUID of the note to add a vote to
-   * @returns A Promise that resolves to `true` if the vote was successfully added
-   * @throws {NotFoundException} - If no note is found with the given UUID
-   * @throws {InternalServerErrorException} - If an error occurs while adding the vote
+   * @param currentUser - The user casting the vote
+   * @returns A Promise that resolves to true if the vote was successfully added
+   * @throws {NotFoundException} - If the note with the given UUID is not found
+   * @throws {BadRequestException} - If the user has already voted in the same room
+   * @throws {InternalServerErrorException} - If an error occurs while saving the vote or updating the note
    */
-  async addVote(noteId: string): Promise<boolean> {
+  async addVote(noteId: string, currentUser: User): Promise<boolean> {
     const note = await this.findById(noteId);
 
+    const existingVote = await this.noteVoteRepository.findOne({
+      where: {
+        user: { id: currentUser.id },
+        room: { id: note.room.id },
+      },
+    });
+
+    if (existingVote) {
+      throw new BadRequestException("You have already voted in this room.");
+    }
+
     try {
-      note.totalVotes += 1;
-      await this.notesRepository.save(note);
+      await this.dataSource.transaction(async (manager) => {
+        const voteRepo = manager.withRepository(this.noteVoteRepository);
+        const notesRepo = manager.withRepository(this.notesRepository);
+
+        const userVote = voteRepo.create({
+          user: currentUser,
+          note,
+          room: note.room,
+        });
+
+        await voteRepo.save(userVote);
+
+        note.totalVotes += 1;
+        await notesRepo.save(note);
+      });
 
       return true;
     } catch (error) {
-      throw new InternalServerErrorException(
-        "An error occurred while adding vote to the note",
-      );
+      throw new InternalServerErrorException("An error occurred while adding the vote");
     }
   }
 
   /**
-   * Removes a vote from the note, decrementing its vote count by 1
+   * Removes a vote from the note, decrementing its vote count by 1.
    *
    * @param noteId - The UUID of the note to remove a vote from
-   * @returns A Promise that resolves to `true` if the vote was successfully removed
-   * @throws {NotFoundException} - If no note is found with the given UUID
-   * @throws {BadRequestException} - If attempting to remove a vote when the vote count is already 0
+   * @param currentUser - The user removing the vote
+   * @returns A Promise that resolves to true if the vote was successfully removed
+   * @throws {NotFoundException} - If the note is not found or if the user has not voted in the room
    * @throws {InternalServerErrorException} - If an error occurs while removing the vote
    */
-  async removeVote(noteId: string): Promise<boolean> {
+  async removeVote(noteId: string, currentUser: User): Promise<boolean> {
     const note = await this.findById(noteId);
 
-    if (note.totalVotes === 0) {
-      throw new BadRequestException("Cannot remove vote: total votes is already 0");
+    const existingVote = await this.noteVoteRepository.findOne({
+      where: {
+        user: { id: currentUser.id },
+        room: { id: note.room.id },
+      },
+    });
+
+    if (!existingVote) {
+      throw new NotFoundException("You have not voted in this room");
     }
 
     try {
-      note.totalVotes -= 1;
-      await this.notesRepository.save(note);
+      await this.dataSource.transaction(async (manager) => {
+        const voteRepo = manager.withRepository(this.noteVoteRepository);
+        const notesRepo = manager.withRepository(this.notesRepository);
+
+        await voteRepo.remove(existingVote);
+
+        if (note.totalVotes > 0) {
+          note.totalVotes -= 1;
+          await notesRepo.save(note);
+        }
+      });
 
       return true;
     } catch (error) {
       throw new InternalServerErrorException(
-        "An error occurred while removing vote from the note",
+        "An error occurred while removing the vote from the note",
       );
     }
   }
