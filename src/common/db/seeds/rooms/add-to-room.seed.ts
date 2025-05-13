@@ -21,10 +21,11 @@ export class AddToRoomSeeder implements Seeder {
       "era@kutia.net",
       "elsa@kutia.net",
       "rrezart@kutia.net",
+      "albi@kutia.net",
     ];
-    const slugs = ["test-1", "test-2", "test-3", "test-4"];
+    const ids = [1, 2, 3, 4];
 
-    const rooms = await roomsRepository.find({ where: { slug: In(slugs) } });
+    const rooms = await roomsRepository.find({ where: { id: In(ids) } });
     const users = await usersRepository.find({ where: { email: In(emails) } });
     const roomUsers: RoomUsers[] = [];
 
