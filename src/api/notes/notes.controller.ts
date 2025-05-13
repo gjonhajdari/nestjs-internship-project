@@ -10,6 +10,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
 
@@ -22,6 +23,9 @@ import {
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger";
+import { GetCurrentUser } from "src/common/decorators/get-current-user.decorator";
+import { DeleteNoteGuard } from "src/common/guards/delete-note.guard";
+import { User } from "../user/entities/user.entity";
 import { CreateNoteDto } from "./dtos/create-note.dto";
 import { UpdateNoteDto } from "./dtos/update-note.dto";
 import { Note } from "./entities/note.entity";
@@ -63,8 +67,11 @@ export class NotesController implements INotesController {
   })
   @ApiNotFoundResponse({ description: "A 404 error if the room doesn't exist" })
   @HttpCode(HttpStatus.CREATED)
-  async create(@Body() body: CreateNoteDto): Promise<Note> {
-    return await this.notesService.createNote(body);
+  async create(
+    @Body() body: CreateNoteDto,
+    @GetCurrentUser() currentUser: User,
+  ): Promise<Note> {
+    return await this.notesService.createNote(body, currentUser);
   }
 
   @Patch(":noteId")
@@ -82,10 +89,12 @@ export class NotesController implements INotesController {
   async update(
     @Param("noteId", new ParseUUIDPipe()) noteId: string,
     @Body() body: UpdateNoteDto,
+    @GetCurrentUser() currentUser: User,
   ): Promise<Note> {
-    return await this.notesService.updateNote(noteId, body);
+    return await this.notesService.updateNote(noteId, body, currentUser);
   }
 
+  @UseGuards(DeleteNoteGuard)
   @Delete(":noteId")
   @ApiOperation({
     summary: "Delete note",
@@ -112,8 +121,11 @@ export class NotesController implements INotesController {
   })
   @ApiNotFoundResponse({ description: "A 404 error if the note doesn't exist" })
   @HttpCode(HttpStatus.CREATED)
-  async addVote(@Param("noteId", new ParseUUIDPipe()) noteId: string): Promise<boolean> {
-    return await this.notesService.addVote(noteId);
+  async addVote(
+    @Param("noteId", new ParseUUIDPipe()) noteId: string,
+    @GetCurrentUser() currentUser: User,
+  ): Promise<boolean> {
+    return await this.notesService.addVote(noteId, currentUser);
   }
 
   @Delete(":noteId/vote")
@@ -127,7 +139,10 @@ export class NotesController implements INotesController {
   })
   @ApiNotFoundResponse({ description: "A 404 error if the note doesn't exist" })
   @HttpCode(HttpStatus.NO_CONTENT)
-  async removeVote(@Param("noteId", new ParseUUIDPipe()) noteId: string): Promise<boolean> {
-    return await this.notesService.removeVote(noteId);
+  async removeVote(
+    @Param("noteId", new ParseUUIDPipe()) noteId: string,
+    @GetCurrentUser() currentUser: User,
+  ): Promise<boolean> {
+    return await this.notesService.removeVote(noteId, currentUser);
   }
 }
