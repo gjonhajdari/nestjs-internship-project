@@ -1,9 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Note } from "src/api/notes/entities/note.entity";
-import { Room } from "src/api/rooms/entities/room.entity";
-import { User } from "src/api/user/entities/user.entity";
-import { AuditEntity } from "src/common/db/customBaseEntites/AuditEntity";
 import { Entity, JoinColumn, ManyToOne, Unique } from "typeorm";
+import { AuditEntity } from "../../../common/db/customBaseEntites/AuditEntity";
+import { Room } from "../../rooms/entities/room.entity";
+import { User } from "../../user/entities/user.entity";
+import { Note } from "../entities/note.entity";
 
 @Entity("note_votes")
 @Unique(["user", "room"])
