@@ -100,7 +100,6 @@ export class RoomsService implements IRoomsService {
     });
 
     if (error) {
-      console.log(error);
       throw new InternalServerErrorException("There was an error processing your request");
     }
     if (!room) {
