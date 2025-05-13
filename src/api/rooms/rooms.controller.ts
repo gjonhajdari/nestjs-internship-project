@@ -77,7 +77,8 @@ export class RoomsController implements IRoomsController {
   })
   @Get()
   async findRooms(@GetCurrentUser() user: User): Promise<{ room: Room; role: Roles }[]> {
-    return this.roomsService.findRooms(user.uuid);
+    const { uuid } = user;
+    return this.roomsService.findRooms(uuid);
   }
 
   @ApiOperation({
@@ -93,7 +94,8 @@ export class RoomsController implements IRoomsController {
   })
   @Post()
   async create(@Body() body: CreateRoomDto, @GetCurrentUser() user: User): Promise<Room> {
-    return this.roomsService.createRoom(body, user.uuid);
+    const { uuid } = user;
+    return this.roomsService.createRoom(body, uuid);
   }
 
   @ApiOperation({
@@ -165,7 +167,8 @@ export class RoomsController implements IRoomsController {
     @GetCurrentUser() user: User,
     @Param("roomId", new ParseUUIDPipe()) roomId: string,
   ): Promise<RoomUsers> {
-    return this.roomsService.joinRoom(user.uuid, roomId);
+    const { uuid } = user;
+    return this.roomsService.joinRoom(uuid, roomId);
   }
 
   @Post("leave/:roomId")
@@ -173,7 +176,8 @@ export class RoomsController implements IRoomsController {
     @GetCurrentUser() user: User,
     @Param("roomId", new ParseUUIDPipe()) roomId: string,
   ): Promise<boolean> {
-    return this.roomsService.leaveRoom(user.uuid, roomId);
+    const { uuid } = user;
+    return this.roomsService.leaveRoom(uuid, roomId);
   }
 
   @Post("remove/:roomId")
