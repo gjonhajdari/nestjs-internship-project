@@ -10,5 +10,6 @@ export const slug = (str) => {
     .replace(/[^a-z0-9 -]/g, "")
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-");
-  return str;
+  const timestamp = Date.now();
+  return `${str}-${timestamp}`;
 };

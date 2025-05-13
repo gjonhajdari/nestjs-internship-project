@@ -22,13 +22,16 @@ import { GetCurrentUser } from "src/common/decorators/get-current-user.decorator
 import { IDeleteStatus } from "src/common/interfaces/DeleteStatus.interface";
 import { BadRequestResponse } from "src/common/interfaces/responses/bad-request.response";
 import { DeletedResponse } from "src/common/interfaces/responses/deleted.response";
+import { GetRoomsResponse } from "src/common/interfaces/responses/get-rooms.response";
 import { NotFoundResponse } from "src/common/interfaces/responses/not-found.response";
+import { RoomRelationsResponse } from "src/common/interfaces/responses/room-relations.response";
 import { UnauthorizedResponse } from "src/common/interfaces/responses/unauthorized.response";
 import { User } from "../user/entities/user.entity";
 import { CreateRoomDto } from "./dtos/create-room.dto";
 import { UpdateRoomDto } from "./dtos/update-room.dto";
 import { RoomUsers } from "./entities/room-users.entity";
 import { Room } from "./entities/room.entity";
+import { Roles } from "./enums/roles.enum";
 import { IRoomsController } from "./interfaces/rooms.controller.interface";
 import { RoomsService } from "./rooms.service";
 
@@ -40,11 +43,11 @@ export class RoomsController implements IRoomsController {
 
   @ApiOperation({
     summary: "Get one room by id",
-    description: "Retrieves the room with the specified id",
+    description: "Retrieves the room with the specified id and it's relations",
   })
   @ApiOkResponse({
     description: "A 200 response if room is found",
-    type: Room,
+    type: RoomRelationsResponse,
   })
   @ApiUnauthorizedResponse({
     description: "A 401 error if no bearer token is provided",
@@ -56,16 +59,16 @@ export class RoomsController implements IRoomsController {
   })
   @Get(":roomId")
   async findById(@Param("roomId", new ParseUUIDPipe()) roomId: string): Promise<Room> {
-    return this.roomsService.findById(roomId);
+    return this.roomsService.findWithRelations(roomId);
   }
 
   @ApiOperation({
     summary: "Get all rooms",
-    description: "Retrieves all rooms",
+    description: "Retrieves all current user's rooms",
   })
   @ApiOkResponse({
     description: "A 200 response if rooms are found successfully",
-    type: Room,
+    type: GetRoomsResponse,
     isArray: true,
   })
   @ApiUnauthorizedResponse({
@@ -73,8 +76,9 @@ export class RoomsController implements IRoomsController {
     type: UnauthorizedResponse,
   })
   @Get()
-  async findRooms(): Promise<Room[]> {
-    return this.roomsService.findRooms();
+  async findRooms(@GetCurrentUser() user: User): Promise<{ room: Room; role: Roles }[]> {
+    const { uuid } = user;
+    return this.roomsService.findRooms(uuid);
   }
 
   @ApiOperation({
@@ -90,7 +94,8 @@ export class RoomsController implements IRoomsController {
   })
   @Post()
   async create(@Body() body: CreateRoomDto, @GetCurrentUser() user: User): Promise<Room> {
-    return this.roomsService.createRoom(body, user.uuid);
+    const { uuid } = user;
+    return this.roomsService.createRoom(body, uuid);
   }
 
   @ApiOperation({
@@ -116,7 +121,7 @@ export class RoomsController implements IRoomsController {
   @Patch(":roomId")
   async update(
     @Param("roomId", new ParseUUIDPipe()) roomId: string,
-    body: UpdateRoomDto,
+    @Body() body: UpdateRoomDto,
   ): Promise<Room> {
     return this.roomsService.updateRoom(roomId, body);
   }
@@ -142,12 +147,28 @@ export class RoomsController implements IRoomsController {
     return this.roomsService.deleteRoom(roomId);
   }
 
+  @ApiOperation({
+    summary: "Join a room",
+    description: "Join a room as a participant",
+  })
+  @ApiCreatedResponse({
+    description: "A 201 response if the user joined room successfully",
+  })
+  @ApiNotFoundResponse({
+    description: "A 404 error if the room doesn't exist",
+    type: NotFoundResponse,
+  })
+  @ApiUnauthorizedResponse({
+    description: "A 401 error if no bearer token is provided",
+    type: UnauthorizedResponse,
+  })
   @Post("join/:roomId")
   async join(
     @GetCurrentUser() user: User,
     @Param("roomId", new ParseUUIDPipe()) roomId: string,
   ): Promise<RoomUsers> {
-    return this.roomsService.joinRoom(user.uuid, roomId);
+    const { uuid } = user;
+    return this.roomsService.joinRoom(uuid, roomId);
   }
 
   @Post("leave/:roomId")
@@ -155,7 +176,8 @@ export class RoomsController implements IRoomsController {
     @GetCurrentUser() user: User,
     @Param("roomId", new ParseUUIDPipe()) roomId: string,
   ): Promise<boolean> {
-    return this.roomsService.leaveRoom(user.uuid, roomId);
+    const { uuid } = user;
+    return this.roomsService.leaveRoom(uuid, roomId);
   }
 
   @Post("remove/:roomId")
