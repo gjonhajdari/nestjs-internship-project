@@ -5,6 +5,10 @@ import { Room } from "src/api/rooms/entities/room.entity";
 import { RoomRoles } from "src/api/rooms/enums/room-roles.enum";
 import { User } from "src/api/user/entities/user.entity";
 import { In } from "typeorm";
+import { RoomUsers } from "../../../../api/rooms/entities/room-users.entity";
+import { Room } from "../../../../api/rooms/entities/room.entity";
+import { Roles } from "../../../../api/rooms/enums/roles.enum";
+import { User } from "../../../../api/user/entities/user.entity";
 import AppDataSource from "../../dataSource/data-source.initialize";
 
 @Injectable()
