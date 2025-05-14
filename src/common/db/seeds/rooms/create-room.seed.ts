@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Seeder } from "nestjs-seeder";
-import { Room } from "src/api/rooms/entities/room.entity";
 import { In } from "typeorm";
+import { Room } from "../../../../api/rooms/entities/room.entity";
 import AppDataSource from "../../dataSource/data-source.initialize";
 
 @Injectable()
