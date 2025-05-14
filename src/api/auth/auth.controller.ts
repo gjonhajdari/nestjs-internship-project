@@ -21,15 +21,15 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
-import { GetCurrentUser } from "src/common/decorators/get-current-user.decorator";
-import { BadRequestResponse } from "src/common/interfaces/responses/bad-request.response";
-import { ForbiddenResponse } from "src/common/interfaces/responses/forbidden.response";
-import { InternalErrorResponse } from "src/common/interfaces/responses/internal-error.response";
-import { LoginUserResponse } from "src/common/interfaces/responses/login-user.respons";
-import { UnauthorizedResponse } from "src/common/interfaces/responses/unauthorized.response";
-import { UserTokensResponse } from "src/common/interfaces/responses/user-tokens.response";
+import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
 import { Public } from "../../common/decorators/public.decorator";
 import { AccessTokenGuard } from "../../common/guards/access-token.guard";
+import { BadRequestResponse } from "../../common/interfaces/responses/bad-request.response";
+import { ForbiddenResponse } from "../../common/interfaces/responses/forbidden.response";
+import { InternalErrorResponse } from "../../common/interfaces/responses/internal-error.response";
+import { LoginUserResponse } from "../../common/interfaces/responses/login-user.respons";
+import { UnauthorizedResponse } from "../../common/interfaces/responses/unauthorized.response";
+import { UserTokensResponse } from "../../common/interfaces/responses/user-tokens.response";
 import { User } from "../user/entities/user.entity";
 import { AuthService } from "./auth.service";
 import { LoginDto } from "./dtos/login.dto";

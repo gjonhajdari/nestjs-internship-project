@@ -1,8 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { Note } from "src/api/notes/entities/note.entity";
-import { User } from "src/api/user/entities/user.entity";
-import { AuditEntity } from "src/common/db/customBaseEntites/AuditEntity";
 import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
+import { AuditEntity } from "../../../common/db/customBaseEntites/AuditEntity";
+import { Note } from "../../notes/entities/note.entity";
+import { User } from "../../user/entities/user.entity";
 
 @Entity("comments")
 export class Comment extends AuditEntity {

@@ -1,8 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Note } from "src/api/notes/entities/note.entity";
-import { AuditEntity } from "src/common/db/customBaseEntites/AuditEntity";
-import { slug } from "src/utils/slug";
 import { BeforeInsert, Column, Entity, OneToMany } from "typeorm";
+import { AuditEntity } from "../../../common/db/customBaseEntites/AuditEntity";
+import { slug } from "../../../utils/slug";
+import { Note } from "../../notes/entities/note.entity";
 import { RoomUsers } from "./room-users.entity";
 
 @Entity("rooms")
