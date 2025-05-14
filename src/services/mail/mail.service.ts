@@ -1,6 +1,6 @@
 import { MailerService } from "@nestjs-modules/mailer";
 import { Inject, Injectable } from "@nestjs/common";
-import { ForgotPasswordEmail } from "src/common/interfaces/ForgotPasswordEmail.interface";
+import { ForgotPasswordEmail } from "../../common/interfaces/ForgotPasswordEmail.interface";
 
 @Injectable()
 export class MailService {
