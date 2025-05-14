@@ -19,16 +19,16 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
-import { GetCurrentUser } from "src/common/decorators/get-current-user.decorator";
+import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
 import { Roles } from "src/common/decorators/roles.decorator";
 import { RolesGuard } from "src/common/guards/roles.guard";
-import { IDeleteStatus } from "src/common/interfaces/DeleteStatus.interface";
-import { BadRequestResponse } from "src/common/interfaces/responses/bad-request.response";
-import { DeletedResponse } from "src/common/interfaces/responses/deleted.response";
-import { GetRoomsResponse } from "src/common/interfaces/responses/get-rooms.response";
-import { NotFoundResponse } from "src/common/interfaces/responses/not-found.response";
-import { RoomRelationsResponse } from "src/common/interfaces/responses/room-relations.response";
-import { UnauthorizedResponse } from "src/common/interfaces/responses/unauthorized.response";
+import { IDeleteStatus } from "../../common/interfaces/DeleteStatus.interface";
+import { BadRequestResponse } from "../../common/interfaces/responses/bad-request.response";
+import { DeletedResponse } from "../../common/interfaces/responses/deleted.response";
+import { GetRoomsResponse } from "../../common/interfaces/responses/get-rooms.response";
+import { NotFoundResponse } from "../../common/interfaces/responses/not-found.response";
+import { RoomRelationsResponse } from "../../common/interfaces/responses/room-relations.response";
+import { UnauthorizedResponse } from "../../common/interfaces/responses/unauthorized.response";
 import { User } from "../user/entities/user.entity";
 import { CreateRoomDto } from "./dtos/create-room.dto";
 import { UpdateRoomDto } from "./dtos/update-room.dto";

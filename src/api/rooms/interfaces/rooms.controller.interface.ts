@@ -1,5 +1,5 @@
-import { User } from "src/api/user/entities/user.entity";
-import { IDeleteStatus } from "src/common/interfaces/DeleteStatus.interface";
+import { IDeleteStatus } from "../../../common/interfaces/DeleteStatus.interface";
+import { User } from "../../user/entities/user.entity";
 import { CreateRoomDto } from "../dtos/create-room.dto";
 import { UpdateRoomDto } from "../dtos/update-room.dto";
 import { RoomUsers } from "../entities/room-users.entity";
