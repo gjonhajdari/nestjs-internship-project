@@ -1,11 +1,15 @@
 import { randomBytes } from "node:crypto";
 import EventEmitter from "node:events";
 import { Injectable } from "@nestjs/common";
-import { BadRequestException, UnprocessableEntityException } from "@nestjs/common/exceptions";
+import {
+  BadRequestException,
+  NotFoundException,
+  UnprocessableEntityException,
+} from "@nestjs/common/exceptions";
 import { InjectRepository } from "@nestjs/typeorm";
 import { InjectEventEmitter } from "nest-emitter";
-import { IDeleteStatus } from "src/common/interfaces/DeleteStatus.interface";
 import { Repository } from "typeorm";
+import { IDeleteStatus } from "../../common/interfaces/DeleteStatus.interface";
 import { compareHashedDataBcrypt, hashDataBrypt } from "../../services/providers";
 import { CreateUserDto } from "./dtos/create-user.dto";
 import { ForgotPasswordDto, ResetPasswordDto } from "./dtos/password-reset.dto";
