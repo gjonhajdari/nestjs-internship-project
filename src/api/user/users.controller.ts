@@ -15,16 +15,17 @@ import {
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
   ApiUnprocessableEntityResponse,
 } from "@nestjs/swagger";
-import { BadRequestResponse } from "src/common/interfaces/responses/bad-request.response";
 import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
 import { Public } from "../../common/decorators/public.decorator";
 import { PermissionsGuard } from "../../common/guards/permissions.guard";
 import { IDeleteStatus } from "../../common/interfaces/DeleteStatus.interface";
+import { BadRequestResponse } from "../../common/interfaces/responses/bad-request.response";
 import { DeletedResponse } from "../../common/interfaces/responses/deleted.response";
 import { NotFoundResponse } from "../../common/interfaces/responses/not-found.response";
 import { UnprocessableEntityResponse } from "../../common/interfaces/responses/unprocessable-entity.response";
