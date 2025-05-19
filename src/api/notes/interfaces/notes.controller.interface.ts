@@ -1,4 +1,5 @@
-import { User } from "src/api/user/entities/user.entity";
+import { IDeleteStatus } from "../../../common/interfaces/DeleteStatus.interface";
+import { User } from "../../user/entities/user.entity";
 import { CreateNoteDto } from "../dtos/create-note.dto";
 import { UpdateNoteDto } from "../dtos/update-note.dto";
 import { Note } from "../entities/note.entity";
@@ -10,7 +11,7 @@ export interface INotesController {
 
   update(noteId: string, body: UpdateNoteDto, currentUser: User): Promise<Note>;
 
-  delete(noteId: string): Promise<void>;
+  delete(noteId: string): Promise<IDeleteStatus>;
 
   addVote(noteId: string, currentUser: User): Promise<boolean>;
 
