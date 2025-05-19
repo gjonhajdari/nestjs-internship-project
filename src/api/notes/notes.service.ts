@@ -5,6 +5,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from "@nestjs/common";
+
 import { DataSource } from "typeorm";
 import { IDeleteStatus } from "../../common/interfaces/DeleteStatus.interface";
 import { RoomsService } from "../rooms/rooms.service";
@@ -19,10 +20,10 @@ import { NotesRepository } from "./repository/notes.repository";
 @Injectable()
 export class NotesService implements INotesService {
   constructor(
-    private dataSource: DataSource,
-    private noteVoteRepository: NoteVoteRepository,
-    private notesRepository: NotesRepository,
-    private roomsService: RoomsService,
+    private readonly dataSource: DataSource,
+    private readonly noteVoteRepository: NoteVoteRepository,
+    private readonly notesRepository: NotesRepository,
+    private readonly roomsService: RoomsService,
   ) {}
 
   /**
@@ -55,7 +56,7 @@ export class NotesService implements INotesService {
 
     return await this.notesRepository.find({
       where: { room: { id: room.id } },
-      relations: ["author"],
+      relations: ["author", "comments"],
     });
   }
 
