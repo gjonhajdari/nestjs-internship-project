@@ -6,6 +6,7 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { DataSource } from "typeorm";
+import { IDeleteStatus } from "../../common/interfaces/DeleteStatus.interface";
 import { RoomsService } from "../rooms/rooms.service";
 import { User } from "../user/entities/user.entity";
 import { CreateNoteDto } from "./dtos/create-note.dto";
@@ -115,15 +116,24 @@ export class NotesService implements INotesService {
    * Authorization is handled via the DeleteNoteGuard.
    *
    * @param noteId - The unique UUID of the note.
+   * @returns Promise that resolves to a status object indicating success
    * @throws {NotFoundException} - If no note with the given UUID is found.
    * @throws {ForbiddenException} - If the user is not authorized to delete the note
    * @throws {InternalServerErrorException} - If an error occurs while removing the note.
    */
-  async deleteNote(noteId: string): Promise<void> {
+  async deleteNote(noteId: string): Promise<IDeleteStatus> {
     const note = await this.findById(noteId);
 
     try {
       await this.notesRepository.remove(note);
+
+      return {
+        success: true,
+        resourceType: "note",
+        resourceId: note.uuid,
+        message: "Note deleted successfully",
+        timestamp: new Date(),
+      };
     } catch (error) {
       throw new InternalServerErrorException("An error occurred while removing the note");
     }
