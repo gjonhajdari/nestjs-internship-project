@@ -17,6 +17,8 @@ import { AppService } from "./app.service";
 import { config } from "./common/db/dataSource/data-source.config";
 import { AccessTokenGuard } from "./common/guards/access-token.guard";
 import { MailService } from "./services/mail/mail.service";
+import { WebsocketGateway } from "./websocket/websocket.gateway";
+import { WebsocketModule } from "./websocket/websocket.module";
 
 @Module({
   imports: [
@@ -50,6 +52,7 @@ import { MailService } from "./services/mail/mail.service";
     RoomsModule,
     NotesModule,
     CommentsModule,
+    WebsocketModule,
   ],
   controllers: [AppController],
   providers: [
@@ -57,6 +60,7 @@ import { MailService } from "./services/mail/mail.service";
     AppService,
     MailService,
     Logger,
+    WebsocketGateway,
   ],
 })
 export class AppModule {}
