@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Room } from "src/api/rooms/entities/room.entity";
-import { Roles } from "src/api/rooms/enums/roles.enum";
+import { Room } from "../../../api/rooms/entities/room.entity";
+import { Roles } from "../../../api/rooms/enums/roles.enum";
 
 export class GetRoomsResponse {
   @ApiProperty({

@@ -1,6 +1,6 @@
 import { tryCatch } from "@maxmorozoff/try-catch-tuple";
 import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
-import { IDeleteStatus } from "src/common/interfaces/DeleteStatus.interface";
+import { IDeleteStatus } from "../../common/interfaces/DeleteStatus.interface";
 import { NotesService } from "../notes/notes.service";
 import { CreateCommentDto } from "./dtos/create-comment.dto";
 import { UpdateCommentDto } from "./dtos/update-comment.dto";

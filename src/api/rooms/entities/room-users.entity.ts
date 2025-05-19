@@ -1,5 +1,4 @@
 import { Exclude } from "class-transformer";
-import { User } from "src/api/user/entities/user.entity";
 import {
   Column,
   CreateDateColumn,
@@ -9,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
   Unique,
 } from "typeorm";
+import { User } from "../../user/entities/user.entity";
 import { Roles } from "../enums/roles.enum";
 import { Room } from "./room.entity";
 
