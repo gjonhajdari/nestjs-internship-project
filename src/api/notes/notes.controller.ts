@@ -3,7 +3,6 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Delete,
-  ForbiddenException,
   Get,
   HttpCode,
   HttpStatus,
@@ -32,6 +31,8 @@ import { GetCurrentUser } from "../../common/decorators/get-current-user.decorat
 import { DeleteNoteGuard } from "../../common/guards/delete-note.guard";
 import { IDeleteStatus } from "../../common/interfaces/DeleteStatus.interface";
 import { BadRequestResponse } from "../../common/interfaces/responses/bad-request.response";
+import { DeletedResponse } from "../../common/interfaces/responses/deleted.response";
+import { ForbiddenResponse } from "../../common/interfaces/responses/forbidden.response";
 import { NotFoundResponse } from "../../common/interfaces/responses/not-found.response";
 import { UnauthorizedResponse } from "../../common/interfaces/responses/unauthorized.response";
 import { User } from "../user/entities/user.entity";
@@ -47,7 +48,7 @@ import { NotesService } from "./notes.service";
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller("notes")
 export class NotesController implements INotesController {
-  constructor(private notesService: NotesService) {}
+  constructor(private readonly notesService: NotesService) {}
 
   @Get(":roomId")
   @ApiOperation({
@@ -117,7 +118,7 @@ export class NotesController implements INotesController {
   })
   @ApiForbiddenResponse({
     description: "A 403 error If the current user is not the author of the note",
-    type: ForbiddenException,
+    type: ForbiddenResponse,
   })
   @ApiNotFoundResponse({
     description: "A 404 error if the note doesn't exist",
@@ -145,7 +146,7 @@ export class NotesController implements INotesController {
   })
   @ApiOkResponse({
     description: "A 200 response if the note is deleted successfully",
-    type: NotFoundResponse,
+    type: DeletedResponse,
   })
   @ApiUnauthorizedResponse({
     description: "A 401 error if no bearer token is provided",
@@ -153,7 +154,7 @@ export class NotesController implements INotesController {
   })
   @ApiForbiddenResponse({
     description: "A 403 error if the user is not authorized to delete the note",
-    type: ForbiddenException,
+    type: ForbiddenResponse,
   })
   @ApiNotFoundResponse({
     description: "A 404 error if the note doesn't exist",
