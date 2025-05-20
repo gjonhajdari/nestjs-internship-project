@@ -37,7 +37,6 @@ export class NotesService implements INotesService {
   async findById(noteId: string): Promise<Note> {
     const note = await this.notesRepository.findOne({
       where: { uuid: noteId },
-      relations: ["room", "author"],
     });
 
     if (!note) throw new NotFoundException("Note does not exist");
@@ -57,7 +56,7 @@ export class NotesService implements INotesService {
 
     return await this.notesRepository.find({
       where: { room: { id: room.id } },
-      relations: ["author", "comments"],
+      relations: ["author"],
     });
   }
 
@@ -97,9 +96,8 @@ export class NotesService implements INotesService {
   async updateNote(noteId: string, payload: UpdateNoteDto, currentUser: User): Promise<Note> {
     const note = await this.findById(noteId);
 
-    if (note.author?.id !== currentUser?.id) {
+    if (note.author?.id !== currentUser?.id)
       throw new ForbiddenException("You are not allowed to update this note");
-    }
 
     try {
       await this.notesRepository.update(note.id, { ...payload });
@@ -155,9 +153,8 @@ export class NotesService implements INotesService {
   async addVote(noteId: string, currentUser: User): Promise<boolean> {
     const note = await this.findById(noteId);
 
-    if (!currentUser?.id || !note.room?.id) {
+    if (!currentUser?.id || !note.room?.id)
       throw new BadRequestException("Missing user or room information");
-    }
 
     const existingVote = await this.noteVoteRepository.findOne({
       where: {
@@ -166,9 +163,7 @@ export class NotesService implements INotesService {
       },
     });
 
-    if (existingVote) {
-      throw new BadRequestException("You have already voted in this room.");
-    }
+    if (existingVote) throw new BadRequestException("You have already voted in this room.");
 
     try {
       await this.dataSource.transaction(async (manager) => {
@@ -206,9 +201,8 @@ export class NotesService implements INotesService {
   async removeVote(noteId: string, currentUser: User): Promise<boolean> {
     const note = await this.findById(noteId);
 
-    if (!currentUser?.id || !note.room?.id) {
+    if (!currentUser?.id || !note.room?.id)
       throw new BadRequestException("Missing user or room information");
-    }
 
     const existingVote = await this.noteVoteRepository.findOne({
       where: {
@@ -217,9 +211,7 @@ export class NotesService implements INotesService {
       },
     });
 
-    if (!existingVote) {
-      throw new NotFoundException("You have not voted in this room");
-    }
+    if (!existingVote) throw new NotFoundException("You have not voted in this room");
 
     try {
       await this.dataSource.transaction(async (manager) => {
