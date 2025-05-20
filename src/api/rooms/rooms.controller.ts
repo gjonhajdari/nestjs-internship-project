@@ -8,6 +8,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
   UseInterceptors,
   UseGuards,
 } from "@nestjs/common";
@@ -54,7 +55,7 @@ export class RoomsController implements IRoomsController {
   })
   @ApiOkResponse({
     description: "A 200 response if room is found",
-    type: RoomRelationsResponse,
+    type: Room,
   })
   @ApiUnauthorizedResponse({
     description: "A 401 error if no bearer token is provided",
@@ -66,7 +67,7 @@ export class RoomsController implements IRoomsController {
   })
   @Get(":roomId")
   async findById(@Param("roomId", new ParseUUIDPipe()) roomId: string): Promise<Room> {
-    return this.roomsService.findWithRelations(roomId);
+    return this.roomsService.findById(roomId);
   }
 
   @ApiOperation({
