@@ -257,26 +257,29 @@ export class RoomsService implements IRoomsService {
   }
 
   /**
-   * Removes the current
+   * Removes user from room
    *
    * @param userId - The UUID of the user to leave the room
-   * @param roomId - The UUID of the room to leave
-   * @returns Promise that resolves to true if successful, false otherwise
+   * @param roomId - The UUID of the room
+   * @returns Promise that resolves to DeleteStatus if successful, false otherwise
    * @throws {InternalServerErrorException} - If there was an error processing the request
    */
-  async leaveRoom(userId: string, roomId: string): Promise<boolean> {
-    throw new Error("Method not implemented");
-  }
+  async leaveRoom(userId: string, roomId: string): Promise<IDeleteStatus> {
+    const room = await this.findById(roomId);
+    const user = await this.usersService.findOne(userId);
 
-  /**
-   * Removes a user from a room
-   *
-   * @param userId - The UUID of the user to remove from the room
-   * @param roomId - The UUID of the room to remove the user from
-   * @returns Promise that resolves to true if successful, false otherwise
-   * @throws {InternalServerErrorException} - If there was an error processing the request
-   */
-  async removeFromRoom(userId: string, roomId: string): Promise<boolean> {
-    throw new Error("Method not implemented");
+    const [_, error] = await tryCatch(
+      this.roomUsersRepository.delete({ user: user, room: room }),
+    );
+
+    if (error)
+      throw new InternalServerErrorException("There was an error processing your request");
+
+    return {
+      success: true,
+      resourceType: "user",
+      message: `User ${userId} left room ${roomId}`,
+      timestamp: new Date(),
+    };
   }
 }

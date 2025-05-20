@@ -18,7 +18,5 @@ export interface IRoomsService {
 
   joinRoom(userId: string, roomId: string): Promise<RoomUsers>;
 
-  leaveRoom(userId: string, roomId: string): Promise<boolean>;
-
-  removeFromRoom(userId: string, roomId: string): Promise<boolean>;
+  leaveRoom(userId: string, roomId: string): Promise<IDeleteStatus>;
 }

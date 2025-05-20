@@ -19,7 +19,7 @@ export interface IRoomsController {
 
   join(user: User, roomId: string): Promise<RoomUsers>;
 
-  leave(user: User, roomId: string): Promise<boolean>;
+  leave(user: User, roomId: string): Promise<IDeleteStatus>;
 
-  removeFromRoom(userId: string, roomId: string): Promise<boolean>;
+  removeFromRoom(userId: string, roomId: string): Promise<IDeleteStatus>;
 }
