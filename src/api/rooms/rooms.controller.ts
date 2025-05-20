@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -7,6 +8,8 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
+  UseInterceptors,
 } from "@nestjs/common";
 import {
   ApiBadRequestResponse,
@@ -24,7 +27,6 @@ import { BadRequestResponse } from "src/common/interfaces/responses/bad-request.
 import { DeletedResponse } from "src/common/interfaces/responses/deleted.response";
 import { GetRoomsResponse } from "src/common/interfaces/responses/get-rooms.response";
 import { NotFoundResponse } from "src/common/interfaces/responses/not-found.response";
-import { RoomRelationsResponse } from "src/common/interfaces/responses/room-relations.response";
 import { UnauthorizedResponse } from "src/common/interfaces/responses/unauthorized.response";
 import { User } from "../user/entities/user.entity";
 import { CreateRoomDto } from "./dtos/create-room.dto";
@@ -38,6 +40,7 @@ import { RoomsService } from "./rooms.service";
 @ApiBearerAuth()
 @ApiTags("Rooms")
 @Controller("rooms")
+@UseInterceptors(ClassSerializerInterceptor)
 export class RoomsController implements IRoomsController {
   constructor(private roomsService: RoomsService) {}
 
@@ -47,7 +50,7 @@ export class RoomsController implements IRoomsController {
   })
   @ApiOkResponse({
     description: "A 200 response if room is found",
-    type: RoomRelationsResponse,
+    type: Room,
   })
   @ApiUnauthorizedResponse({
     description: "A 401 error if no bearer token is provided",
@@ -59,7 +62,7 @@ export class RoomsController implements IRoomsController {
   })
   @Get(":roomId")
   async findById(@Param("roomId", new ParseUUIDPipe()) roomId: string): Promise<Room> {
-    return this.roomsService.findWithRelations(roomId);
+    return this.roomsService.findById(roomId);
   }
 
   @ApiOperation({
@@ -162,7 +165,7 @@ export class RoomsController implements IRoomsController {
     description: "A 401 error if no bearer token is provided",
     type: UnauthorizedResponse,
   })
-  @Post("join/:roomId")
+  @Post(":roomId/join")
   async join(
     @GetCurrentUser() user: User,
     @Param("roomId", new ParseUUIDPipe()) roomId: string,
@@ -171,20 +174,53 @@ export class RoomsController implements IRoomsController {
     return this.roomsService.joinRoom(uuid, roomId);
   }
 
-  @Post("leave/:roomId")
+  @ApiOperation({
+    summary: "Leave a room",
+    description: "Leave a room as the logged in user",
+  })
+  @ApiCreatedResponse({
+    description: "A 201 response if the user left the room successfully",
+    type: DeletedResponse,
+  })
+  @ApiNotFoundResponse({
+    description: "A 404 error if the room doesn't exist",
+    type: NotFoundResponse,
+  })
+  @ApiUnauthorizedResponse({
+    description: "A 401 error if no bearer token is provided",
+    type: UnauthorizedResponse,
+  })
+  @Post(":roomId/leave")
   async leave(
     @GetCurrentUser() user: User,
     @Param("roomId", new ParseUUIDPipe()) roomId: string,
-  ): Promise<boolean> {
+  ): Promise<IDeleteStatus> {
     const { uuid } = user;
     return this.roomsService.leaveRoom(uuid, roomId);
   }
 
-  @Post("remove/:roomId")
+  @ApiOperation({
+    summary: "Remove user from room",
+    description: "Remove a user from a room",
+  })
+  @ApiCreatedResponse({
+    description: "A 201 response if the user left the room successfully",
+    type: DeletedResponse,
+  })
+  @ApiNotFoundResponse({
+    description: "A 404 error if the room doesn't exist",
+    type: NotFoundResponse,
+  })
+  @ApiUnauthorizedResponse({
+    description: "A 401 error if no bearer token is provided or user is not host",
+    type: UnauthorizedResponse,
+  })
+  //TODO: add guard
+  @Post(":roomId/remove/")
   async removeFromRoom(
-    @Body() body: string,
+    @Query("userId", new ParseUUIDPipe()) userId: string,
     @Param("roomId", new ParseUUIDPipe()) roomId: string,
-  ): Promise<boolean> {
-    return this.roomsService.removeFromRoom(body, roomId);
+  ): Promise<IDeleteStatus> {
+    return this.roomsService.leaveRoom(userId, roomId);
   }
 }
