@@ -8,6 +8,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
   UseInterceptors,
 } from "@nestjs/common";
 import {
@@ -26,7 +27,6 @@ import { BadRequestResponse } from "src/common/interfaces/responses/bad-request.
 import { DeletedResponse } from "src/common/interfaces/responses/deleted.response";
 import { GetRoomsResponse } from "src/common/interfaces/responses/get-rooms.response";
 import { NotFoundResponse } from "src/common/interfaces/responses/not-found.response";
-import { RoomRelationsResponse } from "src/common/interfaces/responses/room-relations.response";
 import { UnauthorizedResponse } from "src/common/interfaces/responses/unauthorized.response";
 import { User } from "../user/entities/user.entity";
 import { CreateRoomDto } from "./dtos/create-room.dto";
@@ -50,7 +50,7 @@ export class RoomsController implements IRoomsController {
   })
   @ApiOkResponse({
     description: "A 200 response if room is found",
-    type: RoomRelationsResponse,
+    type: Room,
   })
   @ApiUnauthorizedResponse({
     description: "A 401 error if no bearer token is provided",
@@ -62,7 +62,7 @@ export class RoomsController implements IRoomsController {
   })
   @Get(":roomId")
   async findById(@Param("roomId", new ParseUUIDPipe()) roomId: string): Promise<Room> {
-    return this.roomsService.findWithRelations(roomId);
+    return this.roomsService.findById(roomId);
   }
 
   @ApiOperation({
