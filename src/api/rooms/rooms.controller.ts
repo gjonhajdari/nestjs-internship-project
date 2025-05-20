@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -7,6 +8,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  UseInterceptors,
   UseGuards,
 } from "@nestjs/common";
 import {
@@ -41,6 +43,7 @@ import { RoomsService } from "./rooms.service";
 @ApiBearerAuth()
 @ApiTags("Rooms")
 @Controller("rooms")
+@UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(RolesGuard)
 export class RoomsController implements IRoomsController {
   constructor(private roomsService: RoomsService) {}
