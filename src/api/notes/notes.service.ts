@@ -6,22 +6,23 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 
-import { DataSource } from "typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
+import { DataSource, Repository } from "typeorm";
 import { IDeleteStatus } from "../../common/interfaces/DeleteStatus.interface";
 import { RoomsService } from "../rooms/rooms.service";
 import { User } from "../user/entities/user.entity";
 import { CreateNoteDto } from "./dtos/create-note.dto";
 import { UpdateNoteDto } from "./dtos/update-note.dto";
+import { NoteVote } from "./entities/note-vote.entity";
 import { Note } from "./entities/note.entity";
 import { INotesService } from "./interfaces/notes.service.interface";
-import { NoteVoteRepository } from "./repository/note-vote.repository";
 import { NotesRepository } from "./repository/notes.repository";
 
 @Injectable()
 export class NotesService implements INotesService {
   constructor(
     private readonly dataSource: DataSource,
-    private readonly noteVoteRepository: NoteVoteRepository,
+    @InjectRepository(NoteVote) private readonly noteVoteRepository: Repository<NoteVote>,
     private readonly notesRepository: NotesRepository,
     private readonly roomsService: RoomsService,
   ) {}
