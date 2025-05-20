@@ -1,14 +1,18 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Entity, JoinColumn, ManyToOne, Unique } from "typeorm";
-import { AuditEntity } from "../../../common/db/customBaseEntites/AuditEntity";
+import { Exclude } from "class-transformer";
+import { Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from "typeorm";
 import { Room } from "../../rooms/entities/room.entity";
 import { User } from "../../user/entities/user.entity";
 import { Note } from "../entities/note.entity";
 
 @Entity("note_votes")
 @Unique(["user", "room"])
-export class NoteVote extends AuditEntity {
-  @ManyToOne(() => User, { eager: true })
+export class NoteVote {
+  @PrimaryGeneratedColumn()
+  @Exclude()
+  id: number;
+
+  @ManyToOne(() => User)
   @JoinColumn({ name: "user_id" })
   @ApiProperty({
     type: () => User,
@@ -17,7 +21,7 @@ export class NoteVote extends AuditEntity {
   })
   user: User;
 
-  @ManyToOne(() => Note, { eager: true })
+  @ManyToOne(() => Note)
   @JoinColumn({ name: "note_id" })
   @ApiProperty({
     type: () => Note,
@@ -26,7 +30,7 @@ export class NoteVote extends AuditEntity {
   })
   note: Note;
 
-  @ManyToOne(() => Room, { eager: true })
+  @ManyToOne(() => Room)
   @JoinColumn({ name: "room_id" })
   @ApiProperty({
     type: () => Room,
