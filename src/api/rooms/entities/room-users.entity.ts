@@ -20,9 +20,11 @@ export class RoomUsers {
   id: number;
 
   @Column({ name: "room_id", type: "integer" })
+  @Exclude()
   roomId: number;
 
   @Column({ name: "user_id", type: "integer" })
+  @Exclude()
   userId: number;
 
   @Column({ type: "enum", enum: Roles, default: Roles.PARTICIPANT, nullable: false })
