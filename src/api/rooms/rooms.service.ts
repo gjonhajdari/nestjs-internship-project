@@ -186,7 +186,12 @@ export class RoomsService implements IRoomsService {
   async deleteRoom(roomId: string): Promise<IDeleteStatus> {
     const room = await this.findById(roomId);
 
-    const [_, error] = await tryCatch(this.roomsRepository.softRemove(room));
+    const [_, error] = await tryCatch(
+      this.dataSource.transaction(async (manager) => {
+        await manager.getRepository(RoomUsers).delete({ roomId: room.id });
+        await manager.getRepository(Room).softDelete({ uuid: roomId });
+      }),
+    );
 
     if (error)
       throw new InternalServerErrorException("There was an error processing your request");
