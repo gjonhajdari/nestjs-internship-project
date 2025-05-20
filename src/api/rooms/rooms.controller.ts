@@ -170,7 +170,7 @@ export class RoomsController implements IRoomsController {
     description: "A 401 error if no bearer token is provided",
     type: UnauthorizedResponse,
   })
-  @Post("join/:roomId")
+  @Post(":roomId/join")
   async join(
     @GetCurrentUser() user: User,
     @Param("roomId", new ParseUUIDPipe()) roomId: string,
@@ -179,21 +179,54 @@ export class RoomsController implements IRoomsController {
     return this.roomsService.joinRoom(uuid, roomId);
   }
 
-  @Post("leave/:roomId")
+  @ApiOperation({
+    summary: "Leave a room",
+    description: "Leave a room as the logged in user",
+  })
+  @ApiCreatedResponse({
+    description: "A 201 response if the user left the room successfully",
+    type: DeletedResponse,
+  })
+  @ApiNotFoundResponse({
+    description: "A 404 error if the room doesn't exist",
+    type: NotFoundResponse,
+  })
+  @ApiUnauthorizedResponse({
+    description: "A 401 error if no bearer token is provided",
+    type: UnauthorizedResponse,
+  })
+  @Post(":roomId/leave")
   async leave(
     @GetCurrentUser() user: User,
     @Param("roomId", new ParseUUIDPipe()) roomId: string,
-  ): Promise<boolean> {
+  ): Promise<IDeleteStatus> {
     const { uuid } = user;
     return this.roomsService.leaveRoom(uuid, roomId);
   }
 
   @Roles(RoomRoles.HOST)
-  @Post("remove/:roomId")
+  @ApiOperation({
+    summary: "Remove user from room",
+    description: "Remove a user from a room",
+  })
+  @ApiCreatedResponse({
+    description: "A 201 response if the user left the room successfully",
+    type: DeletedResponse,
+  })
+  @ApiNotFoundResponse({
+    description: "A 404 error if the room doesn't exist",
+    type: NotFoundResponse,
+  })
+  @ApiUnauthorizedResponse({
+    description: "A 401 error if no bearer token is provided or user is not host",
+    type: UnauthorizedResponse,
+  })
+  //TODO: add guard
+  @Post(":roomId/remove/")
   async removeFromRoom(
-    @Body() body: string,
+    @Query("userId", new ParseUUIDPipe()) userId: string,
     @Param("roomId", new ParseUUIDPipe()) roomId: string,
-  ): Promise<boolean> {
-    return this.roomsService.removeFromRoom(body, roomId);
+  ): Promise<IDeleteStatus> {
+    return this.roomsService.leaveRoom(userId, roomId);
   }
 }
