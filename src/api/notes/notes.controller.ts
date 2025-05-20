@@ -10,6 +10,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
@@ -70,7 +71,7 @@ export class NotesController implements INotesController {
     type: NotFoundResponse,
   })
   @HttpCode(HttpStatus.OK)
-  async findAll(@Param("roomId", new ParseUUIDPipe()) roomId: string): Promise<Note[]> {
+  async findAll(@Query("roomId", new ParseUUIDPipe()) roomId: string): Promise<Note[]> {
     return await this.notesService.findNotesFromRoom(roomId);
   }
 
