@@ -30,6 +30,8 @@ import { BadRequestResponse } from "../../common/interfaces/responses/bad-reques
 import { DeletedResponse } from "../../common/interfaces/responses/deleted.response";
 import { NotFoundResponse } from "../../common/interfaces/responses/not-found.response";
 import { UnprocessableEntityResponse } from "../../common/interfaces/responses/unprocessable-entity.response";
+import { PaginationInterceptor } from "../../common/interceptors/pagination.interceptor";
+import { CreateUserDto } from "./dtos/create-user.dto";
 import { ForgotPasswordDto, ResetPasswordDto } from "./dtos/password-reset.dto";
 import { UpdateUserDto } from "./dtos/update-user.dto";
 import { User } from "./entities/user.entity";
@@ -42,7 +44,6 @@ import { UsersService } from "./users.service";
 @UsePipes(new ValidationPipe())
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(PermissionsGuard)
-@UseGuards(RolesGuard)
 export class UsersController implements IUsersController {
   constructor(private readonly usersService: UsersService) {}
 

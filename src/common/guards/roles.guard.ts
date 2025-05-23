@@ -1,27 +1,44 @@
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
-import { Reflector } from "@nestjs/core";
+import { ModuleRef, Reflector } from "@nestjs/core";
+import { RoomRoles } from "src/api/rooms/enums/room-roles.enum";
+import { RoomUsersRepository } from "src/api/rooms/repository/room-users.repository";
+import { RoomsService } from "src/api/rooms/rooms.service";
 
 @Injectable()
 export class RolesGuard implements CanActivate {
   protected readonly reflector: Reflector = new Reflector();
+  private roomUsersRepository: RoomUsersRepository;
+
+  constructor(
+    private moduleRef: ModuleRef,
+    private roomsService: RoomsService,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     // await super.canActivate(context);
-
-    const roles = this.reflector.get<string[]>("roles", context.getHandler());
-
-    if (!roles) {
-      return true;
+    if (!this.roomUsersRepository) {
+      this.roomUsersRepository = this.moduleRef.get(RoomUsersRepository, { strict: false });
     }
+
+    const roles = this.reflector.get<RoomRoles[]>("roles", context.getHandler());
+    if (!roles) return true;
 
     const request = context.switchToHttp().getRequest();
-
     const user = request.user;
+    if (!user) return false;
 
-    if (!user) {
-      return false;
-    }
-    if (roles.includes(user.role)) return true;
-    return false;
+    const roomId = request.params.roomId;
+    const room = await this.roomsService.findById(roomId);
+
+    const roomUser = await this.roomUsersRepository.findOne({
+      where: {
+        roomId: room.id,
+        userId: user.id,
+      },
+    });
+
+    if (!roomUser) return false;
+
+    return roles.includes(roomUser.role);
   }
 }
