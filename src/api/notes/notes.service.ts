@@ -6,8 +6,7 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 
-import { InjectRepository } from "@nestjs/typeorm";
-import { DataSource, Repository } from "typeorm";
+import { DataSource, EntityManager } from "typeorm";
 import { IDeleteStatus } from "../../common/interfaces/DeleteStatus.interface";
 import { RoomsService } from "../rooms/rooms.service";
 import { User } from "../user/entities/user.entity";
@@ -22,7 +21,6 @@ import { NotesRepository } from "./repository/notes.repository";
 export class NotesService implements INotesService {
   constructor(
     private readonly dataSource: DataSource,
-    @InjectRepository(NoteVote) private readonly noteVoteRepository: Repository<NoteVote>,
     private readonly notesRepository: NotesRepository,
     private readonly roomsService: RoomsService,
   ) {}
@@ -37,11 +35,64 @@ export class NotesService implements INotesService {
   async findById(noteId: string): Promise<Note> {
     const note = await this.notesRepository.findOne({
       where: { uuid: noteId },
+      relations: ["author"],
     });
 
     if (!note) throw new NotFoundException("Note does not exist");
 
     return note;
+  }
+
+  /**
+   * Gets a note by its unique UUID and includes its associated room information.
+   * The method locks the note for write operations to prevent concurrent modification.
+   *
+   * @param noteId - Unique note UUID
+   * @param manager - The EntityManager used to access the transaction-scoped repository.
+   * @returns A Promise that resolves to the found note with its related room.
+   * @throws {NotFoundException} - If no note is found with the given UUID.
+   * @throws {BadRequestException} - If missing room information.
+   *
+   */
+  private async findNoteWithRoomRelation(
+    noteId: string,
+    manager: EntityManager,
+  ): Promise<Note> {
+    const note = await manager.getRepository(Note).findOne({
+      where: { uuid: noteId },
+      relations: ["room"],
+      lock: { mode: "pessimistic_write" },
+    });
+
+    if (!note) throw new NotFoundException("Note does not exist");
+    if (!note.room?.id) throw new BadRequestException("Missing room information");
+
+    return note;
+  }
+
+  /**
+   * Gets an existing vote by a specific user in a specific room.
+   * This method is used to check if the user has already voted in the room,
+   * which helps enforce the rule that a user can only vote once per room.
+   *
+   * @param userId - The ID of the user whose vote is being checked.
+   * @param roomId - The ID of the room where the vote may exist.
+   * @param manager - The EntityManager used to access the transaction-scoped repository.
+   * @returns A Promise that resolves to the existing NoteVote entity if found, otherwise null.
+   */
+  private async findExistingVoteInRoom(
+    userId: number,
+    roomId: number,
+    manager: EntityManager,
+  ): Promise<NoteVote | null> {
+    const voteRepo = manager.getRepository(NoteVote);
+
+    return await voteRepo.findOne({
+      where: {
+        user: { id: userId },
+        room: { id: roomId },
+      },
+    });
   }
 
   /**
@@ -151,35 +202,33 @@ export class NotesService implements INotesService {
    * @throws {InternalServerErrorException} - If an error occurs while saving the vote or updating the note
    */
   async addVote(noteId: string, currentUser: User): Promise<boolean> {
-    const note = await this.findById(noteId);
-
-    if (!currentUser?.id || !note.room?.id)
-      throw new BadRequestException("Missing user or room information");
-
-    const existingVote = await this.noteVoteRepository.findOne({
-      where: {
-        user: { id: currentUser.id },
-        room: { id: note.room.id },
-      },
-    });
-
-    if (existingVote) throw new BadRequestException("You have already voted in this room.");
+    if (!currentUser?.id) throw new BadRequestException("Missing user information");
 
     try {
-      await this.dataSource.transaction(async (manager) => {
-        const voteRepo = manager.withRepository(this.noteVoteRepository);
-        const notesRepo = manager.withRepository(this.notesRepository);
+      await this.dataSource.transaction(async (manager: EntityManager) => {
+        const voteRepo = manager.getRepository(NoteVote);
+        const noteRepo = manager.getRepository(Note);
 
-        const userVote = voteRepo.create({
-          user: currentUser,
-          note,
-          room: note.room,
-        });
+        const note = await this.findNoteWithRoomRelation(noteId, manager);
 
-        await voteRepo.save(userVote);
+        const existingVote = await this.findExistingVoteInRoom(
+          currentUser.id,
+          note.room.id,
+          manager,
+        );
 
-        note.totalVotes += 1;
-        await notesRepo.save(note);
+        if (existingVote) {
+          await noteRepo.decrement({ id: existingVote.note.id }, "totalVotes", 1);
+
+          existingVote.note = note;
+          await voteRepo.save(existingVote);
+
+          await noteRepo.increment({ id: note.id }, "totalVotes", 1);
+        } else {
+          const userVote = voteRepo.create({ user: currentUser, note: note, room: note.room });
+          await voteRepo.save(userVote);
+          await noteRepo.increment({ id: note.id }, "totalVotes", 1);
+        }
       });
 
       return true;
@@ -199,30 +248,26 @@ export class NotesService implements INotesService {
    * @throws {InternalServerErrorException} - If an error occurs while removing the vote
    */
   async removeVote(noteId: string, currentUser: User): Promise<boolean> {
-    const note = await this.findById(noteId);
-
-    if (!currentUser?.id || !note.room?.id)
-      throw new BadRequestException("Missing user or room information");
-
-    const existingVote = await this.noteVoteRepository.findOne({
-      where: {
-        user: { id: currentUser.id },
-        room: { id: note.room.id },
-      },
-    });
-
-    if (!existingVote) throw new NotFoundException("You have not voted in this room");
+    if (!currentUser?.id) throw new BadRequestException("Missing user information");
 
     try {
-      await this.dataSource.transaction(async (manager) => {
-        const voteRepo = manager.withRepository(this.noteVoteRepository);
-        const notesRepo = manager.withRepository(this.notesRepository);
+      await this.dataSource.transaction(async (manager: EntityManager) => {
+        const voteRepo = manager.getRepository(NoteVote);
+        const noteRepo = manager.getRepository(Note);
+
+        const note = await this.findNoteWithRoomRelation(noteId, manager);
+
+        const existingVote = await this.findExistingVoteInRoom(
+          currentUser.id,
+          note.room.id,
+          manager,
+        );
+        if (!existingVote) throw new NotFoundException("You have not voted in this room");
 
         await voteRepo.remove(existingVote);
 
         if (note.totalVotes > 0) {
-          note.totalVotes -= 1;
-          await notesRepo.save(note);
+          await noteRepo.decrement({ id: note.id }, "totalVotes", 1);
         }
       });
 
