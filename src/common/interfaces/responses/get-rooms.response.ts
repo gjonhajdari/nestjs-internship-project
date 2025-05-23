@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Room } from "src/api/rooms/entities/room.entity";
-import { Roles } from "src/api/rooms/enums/roles.enum";
+import { RoomRoles } from "src/api/rooms/enums/room-roles.enum";
 
 export class GetRoomsResponse {
   @ApiProperty({
@@ -10,8 +10,8 @@ export class GetRoomsResponse {
   room: Room;
 
   @ApiProperty({
-    enum: Roles,
+    enum: RoomRoles,
     description: "Users role in the corresponding room",
   })
-  role: Roles;
+  role: RoomRoles;
 }

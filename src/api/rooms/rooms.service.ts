@@ -9,7 +9,7 @@ import { CreateRoomDto } from "./dtos/create-room.dto";
 import { UpdateRoomDto } from "./dtos/update-room.dto";
 import { RoomUsers } from "./entities/room-users.entity";
 import { Room } from "./entities/room.entity";
-import { Roles } from "./enums/roles.enum";
+import { RoomRoles } from "./enums/room-roles.enum";
 import { IRoomsService } from "./interfaces/rooms.service.interface";
 import { RoomUsersRepository } from "./repository/room-users.repository";
 import { RoomsRepository } from "./repository/rooms.repository";
@@ -115,7 +115,7 @@ export class RoomsService implements IRoomsService {
    * @returns Promise that resolves to an array of rooms
    * @throws {InternalServerErrorException} - If there was an error processing the request
    */
-  async findRooms(userId: string): Promise<{ room: Room; role: Roles }[]> {
+  async findRooms(userId: string): Promise<{ room: Room; role: RoomRoles }[]> {
     const [roomUsers, error] = await tryCatch(
       this.roomUsersRepository.find({
         where: { user: { uuid: userId } },
@@ -143,7 +143,7 @@ export class RoomsService implements IRoomsService {
         const room = manager.create(Room, payload);
         const newRoom = await manager.save(Room, room);
 
-        await this.joinRoomInternal(manager, userId, newRoom.uuid, Roles.HOST);
+        await this.joinRoomInternal(manager, userId, newRoom.uuid, RoomRoles.HOST);
 
         return newRoom;
       }),
@@ -213,7 +213,7 @@ export class RoomsService implements IRoomsService {
     manager: EntityManager,
     userId: string,
     roomId: string,
-    role?: Roles,
+    role?: RoomRoles,
   ): Promise<RoomUsers> {
     const [roomUser, error] = await tryCatch(async () => {
       const room = await manager.findOneByOrFail(Room, { uuid: roomId });

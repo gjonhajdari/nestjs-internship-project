@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from "@nestjs/common";
 import { NotesService } from "src/api/notes/notes.service";
 import { RoomUsers } from "src/api/rooms/entities/room-users.entity";
-import { Roles } from "src/api/rooms/enums/roles.enum";
+import { RoomRoles } from "src/api/rooms/enums/room-roles.enum";
 import { User } from "src/api/user/entities/user.entity";
 import { DataSource } from "typeorm";
 
@@ -25,7 +25,7 @@ export class DeleteNoteGuard implements CanActivate {
       where: { roomId: note.room.id, userId: user.id },
     });
 
-    const isHost = roomUser?.role === Roles.HOST;
+    const isHost = roomUser?.role === RoomRoles.HOST;
 
     if (!isAuthor && !isHost) {
       throw new ForbiddenException("You are not allowed to delete this note.");

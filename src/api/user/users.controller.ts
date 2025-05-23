@@ -27,7 +27,8 @@ import { UnprocessableEntityResponse } from "src/common/interfaces/responses/unp
 import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
 import { Public } from "../../common/decorators/public.decorator";
 import { PermissionsGuard } from "../../common/guards/permissions.guard";
-import { RolesGuard } from "../../common/guards/roles.guard";
+import { PaginationInterceptor } from "../../common/interceptors/pagination.interceptor";
+import { CreateUserDto } from "./dtos/create-user.dto";
 import { ForgotPasswordDto, ResetPasswordDto } from "./dtos/password-reset.dto";
 import { UpdateUserDto } from "./dtos/update-user.dto";
 import { User } from "./entities/user.entity";
@@ -40,7 +41,6 @@ import { UsersService } from "./users.service";
 @UsePipes(new ValidationPipe())
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(PermissionsGuard)
-@UseGuards(RolesGuard)
 export class UsersController implements IUsersController {
   constructor(private readonly usersService: UsersService) {}
 
