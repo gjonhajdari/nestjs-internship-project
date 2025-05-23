@@ -1,4 +1,4 @@
-export enum Roles {
+export enum RoomRoles {
   HOST = "host",
   PARTICIPANT = "participant",
 }
