@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { Seeder } from "nestjs-seeder";
 import { RoomUsers } from "src/api/rooms/entities/room-users.entity";
 import { Room } from "src/api/rooms/entities/room.entity";
-import { Roles } from "src/api/rooms/enums/roles.enum";
+import { RoomRoles } from "src/api/rooms/enums/room-roles.enum";
 import { User } from "src/api/user/entities/user.entity";
 import { In } from "typeorm";
 import AppDataSource from "../../dataSource/data-source.initialize";
@@ -33,8 +33,8 @@ export class AddToRoomSeeder implements Seeder {
       for (const user of users) {
         let ru: RoomUsers;
 
-        if (user.id === 1) ru = roomUsersRepository.create({ role: Roles.HOST });
-        else ru = roomUsersRepository.create({ role: Roles.PARTICIPANT });
+        if (user.id === 1) ru = roomUsersRepository.create({ role: RoomRoles.HOST });
+        else ru = roomUsersRepository.create({ role: RoomRoles.PARTICIPANT });
 
         ru.user = user;
         ru.room = room;
