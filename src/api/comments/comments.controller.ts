@@ -1,4 +1,14 @@
-import { Controller, Delete, Get, ParseUUIDPipe, Patch, Post, Query } from "@nestjs/common";
+import {
+  ClassSerializerInterceptor,
+  Controller,
+  Delete,
+  Get,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Query,
+  UseInterceptors,
+} from "@nestjs/common";
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -23,6 +33,7 @@ import { ICommentsController } from "./interfaces/comments.controller.interface"
 @ApiBearerAuth()
 @ApiTags("Comments")
 @Controller("comments")
+@UseInterceptors(ClassSerializerInterceptor)
 export class CommentsController implements ICommentsController {
   constructor(private commentsService: CommentsService) {}
 
