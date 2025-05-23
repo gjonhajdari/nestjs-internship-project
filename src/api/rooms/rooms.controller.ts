@@ -80,7 +80,7 @@ export class RoomsController implements IRoomsController {
     type: UnauthorizedResponse,
   })
   @Get()
-  async findRooms(@GetCurrentUser() user: User): Promise<{ room: Room; role: Roles }[]> {
+  async findRooms(@GetCurrentUser() user: User): Promise<{ room: Room; role: RoomRoles }[]> {
     const { uuid } = user;
     return this.roomsService.findRooms(uuid);
   }
