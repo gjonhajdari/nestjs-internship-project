@@ -48,7 +48,10 @@ export class CommentsService implements ICommentsService {
     const note = await this.notesService.findById(noteId);
 
     const [comments, error] = await tryCatch(
-      this.commentsRepository.find({ where: { note: { id: note.id } } }),
+      this.commentsRepository.find({
+        where: { note: { id: note.id } },
+        relations: ["user", "parent"],
+      }),
     );
 
     if (error)
