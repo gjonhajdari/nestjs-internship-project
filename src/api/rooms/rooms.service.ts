@@ -1,9 +1,7 @@
 import { tryCatch } from "@maxmorozoff/try-catch-tuple";
 import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
-import { IDeleteStatus } from "src/common/interfaces/DeleteStatus.interface";
 import { DataSource, EntityManager } from "typeorm";
 import { IDeleteStatus } from "../../common/interfaces/DeleteStatus.interface";
-import { RoomRelationsResponse } from "../../common/interfaces/responses/room-relations.response";
 import { User } from "../user/entities/user.entity";
 import { UsersService } from "../user/users.service";
 import { CreateRoomDto } from "./dtos/create-room.dto";

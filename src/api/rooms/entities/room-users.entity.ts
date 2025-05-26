@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
   Unique,
 } from "typeorm";
+import { User } from "../../user/entities/user.entity";
 import { RoomRoles } from "../enums/room-roles.enum";
 import { Room } from "./room.entity";
 
