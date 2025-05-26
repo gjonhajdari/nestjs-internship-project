@@ -1,4 +1,4 @@
-import { IDeleteStatus } from "src/common/interfaces/DeleteStatus.interface";
+import { IDeleteStatus } from "../../../common/interfaces/DeleteStatus.interface";
 import { CreateCommentDto } from "../dtos/create-comment.dto";
 import { UpdateCommentDto } from "../dtos/update-comment.dto";
 import { Comment } from "../entities/comment.entity";

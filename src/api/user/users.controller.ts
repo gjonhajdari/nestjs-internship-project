@@ -20,15 +20,15 @@ import {
   ApiTags,
   ApiUnprocessableEntityResponse,
 } from "@nestjs/swagger";
-import { IDeleteStatus } from "src/common/interfaces/DeleteStatus.interface";
-import { DeletedResponse } from "src/common/interfaces/responses/deleted.response";
-import { NotFoundResponse } from "src/common/interfaces/responses/not-found.response";
-import { UnprocessableEntityResponse } from "src/common/interfaces/responses/unprocessable-entity.response";
 import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
 import { Public } from "../../common/decorators/public.decorator";
 import { PermissionsGuard } from "../../common/guards/permissions.guard";
 import { PaginationInterceptor } from "../../common/interceptors/pagination.interceptor";
 import { CreateUserDto } from "./dtos/create-user.dto";
+import { IDeleteStatus } from "../../common/interfaces/DeleteStatus.interface";
+import { DeletedResponse } from "../../common/interfaces/responses/deleted.response";
+import { NotFoundResponse } from "../../common/interfaces/responses/not-found.response";
+import { UnprocessableEntityResponse } from "../../common/interfaces/responses/unprocessable-entity.response";
 import { ForgotPasswordDto, ResetPasswordDto } from "./dtos/password-reset.dto";
 import { UpdateUserDto } from "./dtos/update-user.dto";
 import { User } from "./entities/user.entity";

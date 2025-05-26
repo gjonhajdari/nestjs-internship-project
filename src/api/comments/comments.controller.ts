@@ -9,11 +9,11 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
-import { IDeleteStatus } from "src/common/interfaces/DeleteStatus.interface";
-import { BadRequestResponse } from "src/common/interfaces/responses/bad-request.response";
-import { DeletedResponse } from "src/common/interfaces/responses/deleted.response";
-import { NotFoundResponse } from "src/common/interfaces/responses/not-found.response";
-import { UnauthorizedResponse } from "src/common/interfaces/responses/unauthorized.response";
+import { IDeleteStatus } from "../../common/interfaces/DeleteStatus.interface";
+import { BadRequestResponse } from "../../common/interfaces/responses/bad-request.response";
+import { DeletedResponse } from "../../common/interfaces/responses/deleted.response";
+import { NotFoundResponse } from "../../common/interfaces/responses/not-found.response";
+import { UnauthorizedResponse } from "../../common/interfaces/responses/unauthorized.response";
 import { CommentsService } from "./comments.service";
 import { CreateCommentDto } from "./dtos/create-comment.dto";
 import { UpdateCommentDto } from "./dtos/update-comment.dto";

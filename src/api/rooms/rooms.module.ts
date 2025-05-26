@@ -1,5 +1,5 @@
 import { Module, forwardRef } from "@nestjs/common";
-import { CustomRepositoryModule } from "src/common/db/CustomRepository.module";
+import { CustomRepositoryModule } from "../../common/db/CustomRepository.module";
 import { UserModule } from "../user/users.module";
 import { RoomUsersRepository } from "./repository/room-users.repository";
 import { RoomsRepository } from "./repository/rooms.repository";
