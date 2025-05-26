@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { Seeder } from "nestjs-seeder";
-import { Note } from "src/api/notes/entities/note.entity";
-import { Room } from "src/api/rooms/entities/room.entity";
-import { User } from "src/api/user/entities/user.entity";
 import { In } from "typeorm";
+import { Note } from "../../../../api/notes/entities/note.entity";
+import { Room } from "../../../../api/rooms/entities/room.entity";
+import { User } from "../../../../api/user/entities/user.entity";
 import AppDataSource from "../../dataSource/data-source.initialize";
 
 @Injectable()
