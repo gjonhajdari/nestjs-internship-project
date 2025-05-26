@@ -150,7 +150,7 @@ export class UsersService implements IUsersService {
 
     const { user } = passwordReset;
 
-    user.password = await hashDataBrypt(payload.password);
+    user.password = await hashDataBrypt(payload.newPassword);
 
     await this.userRepository.save(user);
     await this.passwordRepository.delete({ user: user });
@@ -169,15 +169,16 @@ export class UsersService implements IUsersService {
   async updatePassword(userId: string, payload: ResetPasswordDto): Promise<void> {
     const user = await this.findOne(userId);
 
-    if (payload.password !== payload.passwordConfirm)
-      throw new BadRequestException("Passwords do not match!");
+    const matches = await compareHashedDataBcrypt(payload.oldPassword, user.password);
 
-    const matchesOld = await compareHashedDataBcrypt(payload.password, user.password);
+    if (!matches) throw new BadRequestException("Old password incorrect");
 
-    if (matchesOld)
+    const sameAsOld = await compareHashedDataBcrypt(payload.newPassword, user.password);
+
+    if (sameAsOld)
       throw new BadRequestException("New password can't be the same as the old one");
 
-    user.password = await hashDataBrypt(payload.password);
+    user.password = await hashDataBrypt(payload.newPassword);
     await this.userRepository.save(user);
   }
 }
