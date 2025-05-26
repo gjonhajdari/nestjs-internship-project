@@ -58,11 +58,13 @@ export class NotesService implements INotesService {
     noteId: string,
     manager: EntityManager,
   ): Promise<Note> {
-    const note = await manager.getRepository(Note).findOne({
-      where: { uuid: noteId },
-      relations: ["room"],
-      lock: { mode: "pessimistic_write" },
-    });
+    const note = await manager
+      .getRepository(Note)
+      .createQueryBuilder("note")
+      .innerJoinAndSelect("note.room", "room")
+      .where("note.uuid = :noteId", { noteId })
+      .setLock("pessimistic_write")
+      .getOne();
 
     if (!note) throw new NotFoundException("Note does not exist");
     if (!note.room?.id) throw new BadRequestException("Missing room information");
@@ -92,6 +94,7 @@ export class NotesService implements INotesService {
         user: { id: userId },
         room: { id: roomId },
       },
+      relations: ["note"],
     });
   }
 

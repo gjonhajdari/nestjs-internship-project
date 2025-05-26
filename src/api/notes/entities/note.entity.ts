@@ -1,5 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Check, Column, Entity, Index, JoinColumn, ManyToOne, OneToMany } from "typeorm";
+import { AuditEntity } from "../../../common/db/customBaseEntites/AuditEntity";
+import { Comment } from "../../comments/entities/comment.entity";
+import { Room } from "../../rooms/entities/room.entity";
+import { User } from "../../user/entities/user.entity";
 import { NoteVote } from "./note-vote.entity";
 
 @Entity("notes")
