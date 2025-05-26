@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
   Unique,
 } from "typeorm";
+import { User } from "../../user/entities/user.entity";
 import { RoomRoles } from "../enums/room-roles.enum";
 import { Room } from "./room.entity";
 
@@ -19,9 +20,11 @@ export class RoomUsers {
   id: number;
 
   @Column({ name: "room_id", type: "integer" })
+  @Exclude()
   roomId: number;
 
   @Column({ name: "user_id", type: "integer" })
+  @Exclude()
   userId: number;
 
   @Column({ type: "enum", enum: RoomRoles, default: RoomRoles.PARTICIPANT, nullable: false })

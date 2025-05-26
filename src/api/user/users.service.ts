@@ -44,6 +44,24 @@ export class UsersService implements IUsersService {
   }
 
   /**
+   * Gets all users in a specific room
+   *
+   * @param roomId - Unique room UUID
+   * @returns Promise that resolves to the found users
+   * @throws {NotFoundException} - If no users are found with the given room UUID
+   */
+  async findByRoom(roomId: string): Promise<User[]> {
+    const users = await this.userRepository.find({
+      where: { rooms: { room: { uuid: roomId } } },
+      relations: ["rooms"],
+    });
+    if (!users || users.length === 0) {
+      throw new NotFoundException("This room's users not found!");
+    }
+    return users;
+  }
+
+  /**
    * Gets all the users in the database
    *
    * @returns Promise that resolves to the found users array

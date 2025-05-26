@@ -12,7 +12,7 @@ import { RoomsService } from "./rooms.service";
     forwardRef(() => UserModule),
   ],
   controllers: [RoomsController],
-  providers: [RoomsService, RoomUsersRepository],
-  exports: [RoomsService, RoomUsersRepository],
+  providers: [RoomsService],
+  exports: [RoomsService],
 })
 export class RoomsModule {}
