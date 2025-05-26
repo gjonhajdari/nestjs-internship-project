@@ -1,12 +1,16 @@
 import { randomBytes } from "node:crypto";
 import EventEmitter from "node:events";
 import { Injectable } from "@nestjs/common";
-import { NotFoundException, UnprocessableEntityException } from "@nestjs/common/exceptions";
+import {
+  BadRequestException,
+  NotFoundException,
+  UnprocessableEntityException,
+} from "@nestjs/common/exceptions";
 import { InjectRepository } from "@nestjs/typeorm";
 import { InjectEventEmitter } from "nest-emitter";
 import { Repository } from "typeorm";
 import { IDeleteStatus } from "../../common/interfaces/DeleteStatus.interface";
-import { hashDataBrypt } from "../../services/providers";
+import { compareHashedDataBcrypt, hashDataBrypt } from "../../services/providers";
 import { CreateUserDto } from "./dtos/create-user.dto";
 import { ForgotPasswordDto, ResetPasswordDto } from "./dtos/password-reset.dto";
 import { UpdateUserDto } from "./dtos/update-user.dto";
@@ -164,9 +168,35 @@ export class UsersService implements IUsersService {
 
     const { user } = passwordReset;
 
-    user.password = await hashDataBrypt(payload.password);
+    user.password = await hashDataBrypt(payload.newPassword);
 
     await this.userRepository.save(user);
     await this.passwordRepository.delete({ user: user });
+  }
+
+  /**
+   * Updates the password of a user
+   *
+   * @param userId - The unique UUID of the user
+   * @param payload - Required attributes to update the password
+   * @returns Promise that resolves to void
+   * @throws {UnprocessableEntityException} - If no user is found with the given UUID
+   * @throws {BadRequestException} - If both entered passwords do not match
+   * @throws {BadRequestException} - If the new password is the same as the old one
+   */
+  async updatePassword(userId: string, payload: ResetPasswordDto): Promise<void> {
+    const user = await this.findOne(userId);
+
+    const matches = await compareHashedDataBcrypt(payload.oldPassword, user.password);
+
+    if (!matches) throw new BadRequestException("Old password incorrect");
+
+    const sameAsOld = await compareHashedDataBcrypt(payload.newPassword, user.password);
+
+    if (sameAsOld)
+      throw new BadRequestException("New password can't be the same as the old one");
+
+    user.password = await hashDataBrypt(payload.newPassword);
+    await this.userRepository.save(user);
   }
 }
