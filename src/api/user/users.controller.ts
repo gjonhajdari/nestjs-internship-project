@@ -79,6 +79,24 @@ export class UsersController implements IUsersController {
   }
 
   @ApiOperation({
+    summary: "Get users by room UUID",
+    description: "Retrieves users based on the provided room UUID",
+  })
+  @ApiOkResponse({
+    description: "A 200 response if the users are found successfully",
+    type: User,
+    isArray: true,
+  })
+  @ApiNotFoundResponse({
+    description: "A 404 error if the user doesn't exist",
+    type: NotFoundResponse,
+  })
+  @Get("room/:roomId")
+  async findRoomsUsers(@Param("roomId") roomId: string) {
+    return await this.usersService.findByRoom(roomId);
+  }
+
+  @ApiOperation({
     summary: "Update the current user",
     description: "Updates the current user based on the provided token",
   })
