@@ -1,7 +1,11 @@
 import { randomBytes } from "node:crypto";
 import EventEmitter from "node:events";
 import { Injectable } from "@nestjs/common";
-import { BadRequestException, UnprocessableEntityException } from "@nestjs/common/exceptions";
+import {
+  BadRequestException,
+  NotFoundException,
+  UnprocessableEntityException,
+} from "@nestjs/common/exceptions";
 import { InjectRepository } from "@nestjs/typeorm";
 import { InjectEventEmitter } from "nest-emitter";
 import { Repository } from "typeorm";
