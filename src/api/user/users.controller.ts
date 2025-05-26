@@ -13,6 +13,7 @@ import {
   ValidationPipe,
 } from "@nestjs/common";
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -23,9 +24,8 @@ import {
 import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
 import { Public } from "../../common/decorators/public.decorator";
 import { PermissionsGuard } from "../../common/guards/permissions.guard";
-import { PaginationInterceptor } from "../../common/interceptors/pagination.interceptor";
-import { CreateUserDto } from "./dtos/create-user.dto";
 import { IDeleteStatus } from "../../common/interfaces/DeleteStatus.interface";
+import { BadRequestResponse } from "../../common/interfaces/responses/bad-request.response";
 import { DeletedResponse } from "../../common/interfaces/responses/deleted.response";
 import { NotFoundResponse } from "../../common/interfaces/responses/not-found.response";
 import { UnprocessableEntityResponse } from "../../common/interfaces/responses/unprocessable-entity.response";
@@ -165,5 +165,28 @@ export class UsersController implements IUsersController {
     @Body() body: ResetPasswordDto,
   ): Promise<void> {
     return await this.usersService.resetPassword(token, body);
+  }
+
+  @ApiOperation({
+    summary: "Update current user's password",
+    description: "Updates the password of the currently logged-in user",
+  })
+  @ApiOkResponse({
+    description: "A 200 response if the password is updated successfully",
+  })
+  @ApiUnprocessableEntityResponse({
+    description: "A 422 error if the user is not found",
+    type: UnprocessableEntityResponse,
+  })
+  @ApiBadRequestResponse({
+    description: "A 400 error if the passwords do not match or the new password is invalid",
+    type: BadRequestResponse,
+  })
+  @Patch("me/password")
+  async updateMyPassword(
+    @GetCurrentUser() user: User,
+    @Body() body: ResetPasswordDto,
+  ): Promise<void> {
+    return await this.usersService.updatePassword(user.uuid, body);
   }
 }
