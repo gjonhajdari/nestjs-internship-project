@@ -1,7 +1,13 @@
 import { tryCatch } from "@maxmorozoff/try-catch-tuple";
-import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from "@nestjs/common";
 import { IDeleteStatus } from "../../common/interfaces/DeleteStatus.interface";
 import { NotesService } from "../notes/notes.service";
+import { UsersService } from "../user/users.service";
 import { CreateCommentDto } from "./dtos/create-comment.dto";
 import { UpdateCommentDto } from "./dtos/update-comment.dto";
 import { Comment } from "./entities/comment.entity";
@@ -13,6 +19,7 @@ export class CommentsService implements ICommentsService {
   constructor(
     private commentsRepository: CommentsRepository,
     private notesService: NotesService,
+    private usersService: UsersService,
   ) {}
 
   /**
@@ -23,9 +30,9 @@ export class CommentsService implements ICommentsService {
    * @throws {NotFoundException} - If no comment is found with the given UUID
    * @throws {InternalServerErrorException} - If there was an error processing the request
    */
-  async findById(commentId: string): Promise<Comment> {
+  async findById(commentId: string, relations?: string[]): Promise<Comment> {
     const [comment, error] = await tryCatch(
-      this.commentsRepository.findOne({ where: { uuid: commentId } }),
+      this.commentsRepository.findOne({ where: { uuid: commentId }, relations }),
     );
 
     if (error)
@@ -66,12 +73,20 @@ export class CommentsService implements ICommentsService {
    * @param payload - The required data to create a comment
    * @returns Promise that resolves to the created comment
    * @throws {NotFoundException} - If no note is found with the given UUID
+   * @throws {NotFoundException} - If no user is found with the given UUID
    * @throws {InternalServerErrorException} - If there was an error processing the request
    */
-  async createComment(payload: CreateCommentDto): Promise<Comment> {
+  async createComment(userId: string, payload: CreateCommentDto): Promise<Comment> {
     const note = await this.notesService.findById(payload.noteId);
+    const user = await this.usersService.findOne(userId);
     const comment = this.commentsRepository.create(payload);
+    let parentComment: Comment;
+
+    if (payload.parentId) parentComment = await this.findById(payload.parentId);
+
     comment.note = note;
+    comment.user = user;
+    comment.parent = parentComment;
 
     const [newComment, error] = await tryCatch(this.commentsRepository.save(comment));
 
@@ -88,10 +103,19 @@ export class CommentsService implements ICommentsService {
    * @param payload - Given attributes of the comment to update
    * @returns Promise that resolves to the updated comment
    * @throws {NotFoundException} - If no comment is found with the given UUID
+   * @throws {BadRequestException} - If the user is trying to edit someone else's comment
    * @throws {InternalServerErrorException} - If there was an error processing the request
    */
-  async updateComment(commentId: string, payload: UpdateCommentDto): Promise<Comment> {
-    const comment = await this.findById(commentId);
+  async updateComment(
+    userId: string,
+    commentId: string,
+    payload: UpdateCommentDto,
+  ): Promise<Comment> {
+    const comment = await this.findById(commentId, ["user"]);
+    console.log(comment);
+
+    if (userId !== comment.user.uuid)
+      throw new BadRequestException("Can't edit someone else's comment");
 
     const [updatedComment, error] = await tryCatch(
       this.commentsRepository.save({ ...comment, ...payload }),
