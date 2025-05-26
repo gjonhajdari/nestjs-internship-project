@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { NoteVote } from "src/api/notes/entities/note-vote.entity";
 import { BeforeInsert, Column, Entity, OneToMany } from "typeorm";
 import { AuditEntity } from "../../../common/db/customBaseEntites/AuditEntity";
 import { slug } from "../../../utils/slug";
@@ -42,6 +43,12 @@ export class Room extends AuditEntity {
     (note) => note.room,
   )
   notes: Note[];
+
+  @OneToMany(
+    () => NoteVote,
+    (vote) => vote.room,
+  )
+  noteVotes: NoteVote[];
 
   @BeforeInsert()
   generateSlug() {

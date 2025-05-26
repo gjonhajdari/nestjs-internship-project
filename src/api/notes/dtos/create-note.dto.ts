@@ -6,7 +6,7 @@ export class CreateNoteDto {
   @IsUUID()
   @ApiProperty({
     type: String,
-    description: "A unique identifier for the room entity. This should be a valid UUID.",
+    description: "UUID of the room where the note will be created.",
     example: "123e4567-e89b-12d3-a456-426614174000",
   })
   roomId: string;
@@ -15,37 +15,36 @@ export class CreateNoteDto {
   @IsString()
   @ApiPropertyOptional({
     type: String,
-    description: "The content of the note. It can be long text.",
-    example: "This is a sample note content",
-    nullable: true,
+    description: "Optional text content of the note.",
+    example: "Remember to discuss this topic during the meeting.",
   })
   content?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsInt()
   @Min(0)
   @Max(50000)
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: Number,
-    description: "The X coordinate for the note on the display. It should be an integer.",
-    example: 100,
+    description: "X coordinate of the note (between 0 and 50,000).",
+    example: 1200,
     minimum: 0,
     maximum: 50000,
-    nullable: false,
+    nullable: true,
   })
-  xAxis: number;
+  xAxis?: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsInt()
   @Min(0)
   @Max(50000)
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: Number,
-    description: "The Y coordinate for the note on the display. It should be an integer.",
-    example: 200,
+    description: "Y coordinate of the note (between 0 and 50,000).",
+    example: 3400,
     minimum: 0,
     maximum: 50000,
-    nullable: false,
+    nullable: true,
   })
-  yAxis: number;
+  yAxis?: number;
 }
