@@ -1,4 +1,4 @@
-import { User } from "src/api/user/entities/user.entity";
+import { User } from "../../user/entities/user.entity";
 import { LoginDto } from "../dtos/login.dto";
 import { RefreshTokenDto } from "../dtos/refresh-token.dto";
 import { RegisterDTO } from "../dtos/register.dto";

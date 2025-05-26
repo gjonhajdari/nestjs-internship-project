@@ -24,14 +24,11 @@ import {
 import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
 import { Public } from "../../common/decorators/public.decorator";
 import { PermissionsGuard } from "../../common/guards/permissions.guard";
-import { RolesGuard } from "../../common/guards/roles.guard";
 import { IDeleteStatus } from "../../common/interfaces/DeleteStatus.interface";
 import { BadRequestResponse } from "../../common/interfaces/responses/bad-request.response";
 import { DeletedResponse } from "../../common/interfaces/responses/deleted.response";
 import { NotFoundResponse } from "../../common/interfaces/responses/not-found.response";
 import { UnprocessableEntityResponse } from "../../common/interfaces/responses/unprocessable-entity.response";
-import { PaginationInterceptor } from "../../common/interceptors/pagination.interceptor";
-import { CreateUserDto } from "./dtos/create-user.dto";
 import { ForgotPasswordDto, ResetPasswordDto } from "./dtos/password-reset.dto";
 import { UpdateUserDto } from "./dtos/update-user.dto";
 import { User } from "./entities/user.entity";

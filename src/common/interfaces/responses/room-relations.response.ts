@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Room } from "src/api/rooms/entities/room.entity";
+import { Room } from "../../../api/rooms/entities/room.entity";
 
 class UserWithRole {
   @ApiProperty()

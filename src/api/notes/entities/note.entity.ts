@@ -1,9 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { Comment } from "src/api/comments/entities/comment.entity";
-import { Room } from "src/api/rooms/entities/room.entity";
-import { User } from "src/api/user/entities/user.entity";
-import { AuditEntity } from "src/common/db/customBaseEntites/AuditEntity";
 import { Check, Column, Entity, Index, JoinColumn, ManyToOne, OneToMany } from "typeorm";
+import { AuditEntity } from "../../../common/db/customBaseEntites/AuditEntity";
+import { Comment } from "../../comments/entities/comment.entity";
+import { Room } from "../../rooms/entities/room.entity";
+import { User } from "../../user/entities/user.entity";
 
 @Entity("notes")
 @Index("idx_notes_room_id", ["room"])
