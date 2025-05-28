@@ -17,7 +17,6 @@ import { AppService } from "./app.service";
 import { config } from "./common/db/dataSource/data-source.config";
 import { AccessTokenGuard } from "./common/guards/access-token.guard";
 import { MailService } from "./services/mail/mail.service";
-import { WebsocketGateway } from "./websocket/websocket.gateway";
 import { WebsocketModule } from "./websocket/websocket.module";
 
 @Module({
@@ -60,7 +59,6 @@ import { WebsocketModule } from "./websocket/websocket.module";
     AppService,
     MailService,
     Logger,
-    WebsocketGateway,
   ],
 })
 export class AppModule {}
