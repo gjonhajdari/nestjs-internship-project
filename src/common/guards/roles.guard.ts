@@ -20,9 +20,6 @@ export class RolesGuard implements CanActivate {
       this.roomUsersRepository = this.moduleRef.get(RoomUsersRepository, { strict: false });
     }
 
-    const roles = this.reflector.get<RoomRoles[]>("roles", context.getHandler());
-    if (!roles) return true;
-
     const request = context.switchToHttp().getRequest();
     const user = request.user;
     if (!user) return false;
@@ -38,6 +35,9 @@ export class RolesGuard implements CanActivate {
     });
 
     if (!roomUser) return false;
+
+    const roles = this.reflector.get<RoomRoles[]>("roles", context.getHandler());
+    if (!roles) return true;
 
     return roles.includes(roomUser.role);
   }
