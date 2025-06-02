@@ -133,7 +133,9 @@ export class CommentsController implements ICommentsController {
     type: UnauthorizedResponse,
   })
   @Delete(":commentId")
-  async delete(commentid: string): Promise<IDeleteStatus> {
-    throw new Error("Method not implemented.");
+  async delete(
+    @Param("commentId", new ParseUUIDPipe()) commentid: string,
+  ): Promise<IDeleteStatus> {
+    return this.commentsService.deleteComment(commentid);
   }
 }
