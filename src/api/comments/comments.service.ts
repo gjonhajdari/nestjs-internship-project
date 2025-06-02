@@ -137,10 +137,22 @@ export class CommentsService implements ICommentsService {
   async deleteComment(commentId: string): Promise<IResponseStatus> {
     const comment = await this.findById(commentId);
 
-    const [_, error] = await tryCatch(this.commentsRepository.remove(comment));
+    const [replies, repliesError] = await tryCatch(
+      this.commentsRepository.find({ where: { parent: { id: comment.id } } }),
+    );
 
-    if (error)
+    if (repliesError)
       throw new InternalServerErrorException("There was an error processing your request");
+
+    const [_, deleteError] = await tryCatch(
+      Promise.all([
+        this.commentsRepository.softRemove(comment),
+        this.commentsRepository.softRemove(replies),
+      ]),
+    );
+
+    if (deleteError)
+      throw new InternalServerErrorException("There was an error deleting your comment");
 
     return {
       success: true,
