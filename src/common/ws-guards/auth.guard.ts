@@ -10,8 +10,8 @@ export class WsAuthGuard implements CanActivate {
     if (!token) return false;
 
     try {
-      const { id } = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-      (client as any).user = id;
+      const payload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+      (client as any).user = payload;
       return true;
     } catch (error) {
       return false;
