@@ -14,19 +14,8 @@ export class AddToRoomSeeder implements Seeder {
     const usersRepository = AppDataSource.getRepository(User);
     const roomUsersRepository = AppDataSource.getRepository(RoomUsers);
 
-    const emails = [
-      "desara@kutia.net",
-      "gjon@kutia.net",
-      "endi@kutia.net",
-      "era@kutia.net",
-      "elsa@kutia.net",
-      "rrezart@kutia.net",
-      "albi@kutia.net",
-    ];
-    const ids = [1, 2, 3, 4];
-
-    const rooms = await roomsRepository.find({ where: { id: In(ids) } });
-    const users = await usersRepository.find({ where: { email: In(emails) } });
+    const rooms = await roomsRepository.find();
+    const users = await usersRepository.find();
     const roomUsers: RoomUsers[] = [];
 
     for (const room of rooms) {
