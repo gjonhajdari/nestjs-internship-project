@@ -6,7 +6,7 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 
-export function catchKnownErrors(error: unknown): never | undefined {
+export function catchKnownErrors(error: unknown): void {
   if (
     error instanceof NotFoundException ||
     error instanceof BadRequestException ||
