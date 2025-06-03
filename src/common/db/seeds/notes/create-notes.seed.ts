@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { Seeder } from "nestjs-seeder";
-import { In } from "typeorm";
+import { DeepPartial, In } from "typeorm";
 import { Note } from "../../../../api/notes/entities/note.entity";
 import { Room } from "../../../../api/rooms/entities/room.entity";
 import { User } from "../../../../api/user/entities/user.entity";
@@ -15,24 +15,30 @@ export class NotesSeeder implements Seeder {
 
     const notes = notesRepository.create([
       {
-        content: "test",
-        totalVotes: 123,
-        xAxis: 1000,
-        yAxis: 2000,
+        content:
+          "Explore new ways to onboard users with interactive product tours or gamification elements.",
+        totalVotes: 0,
+        color: "note-background-red",
+        xAxis: 100,
+        yAxis: 200,
       },
       {
-        content: "test-2",
-        totalVotes: 123,
-        xAxis: 1000,
-        yAxis: 2000,
+        content:
+          "Explore ideas for making our product more accessible and inclusive to a global audience.",
+        totalVotes: 0,
+        color: "note-background-pink",
+        xAxis: 300,
+        yAxis: 400,
       },
       {
-        content: "test-3",
-        totalVotes: 123,
-        xAxis: 1000,
-        yAxis: 2000,
+        content:
+          "Research competitors approach to user retention and identify gaps in our current strategy.",
+        totalVotes: 0,
+        color: "note-background-yellow",
+        xAxis: 500,
+        yAxis: 600,
       },
-    ]);
+    ] as DeepPartial<Note>[]);
 
     const user = await usersRepository.findOne({ where: { id: 1 } });
     const room = await roomsRepository.findOne({ where: { id: 1 } });

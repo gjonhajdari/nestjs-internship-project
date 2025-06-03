@@ -30,6 +30,7 @@ import {
 import { InternalErrorResponse } from "src/common/interfaces/responses/internal-error.response";
 import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
 import { DeleteNoteGuard } from "../../common/guards/delete-note.guard";
+import { RolesGuard } from "../../common/guards/roles.guard";
 import { IResponseStatus } from "../../common/interfaces/ResponseStatus.interface";
 import { BadRequestResponse } from "../../common/interfaces/responses/bad-request.response";
 import { DeletedResponse } from "../../common/interfaces/responses/deleted.response";
@@ -40,18 +41,23 @@ import { User } from "../user/entities/user.entity";
 import { CreateNoteDto } from "./dtos/create-note.dto";
 import { UpdateNoteDto } from "./dtos/update-note.dto";
 import { Note } from "./entities/note.entity";
+import {
+  IAddVoteNote,
+  IRemoveVoteNote,
+  IUpdateNote,
+} from "./interfaces/notes-response.interface";
 import { INotesController } from "./interfaces/notes.controller.interface";
 import { NotesService } from "./notes.service";
 
-// TODO: sockets
 @ApiBearerAuth()
 @ApiTags("Notes")
 @UseInterceptors(ClassSerializerInterceptor)
+@UseGuards(RolesGuard)
 @Controller("notes")
 export class NotesController implements INotesController {
   constructor(private readonly notesService: NotesService) {}
 
-  @Get(":roomId")
+  @Get()
   @ApiOperation({
     summary: "Get all notes from a specific room",
     description:
@@ -72,7 +78,7 @@ export class NotesController implements INotesController {
   })
   @HttpCode(HttpStatus.OK)
   async findAll(@Query("roomId", new ParseUUIDPipe()) roomId: string): Promise<Note[]> {
-    return await this.notesService.findNotesFromRoom(roomId);
+    return await this.notesService.findNotesWithVotesFromRoom(roomId);
   }
 
   @Post()
@@ -117,10 +123,6 @@ export class NotesController implements INotesController {
     description: "A 401 error if no bearer token is provided",
     type: UnauthorizedResponse,
   })
-  @ApiForbiddenResponse({
-    description: "A 403 error If the current user is not the author of the note",
-    type: ForbiddenResponse,
-  })
   @ApiNotFoundResponse({
     description: "A 404 error if the note doesn't exist",
     type: NotFoundResponse,
@@ -134,7 +136,7 @@ export class NotesController implements INotesController {
     @Param("noteId", new ParseUUIDPipe()) noteId: string,
     @Body() body: UpdateNoteDto,
     @GetCurrentUser() currentUser: User,
-  ): Promise<Note> {
+  ): Promise<IUpdateNote> {
     return await this.notesService.updateNote(noteId, body, currentUser);
   }
 
@@ -176,7 +178,7 @@ export class NotesController implements INotesController {
   @ApiOperation({
     summary: "Add vote to note",
     description:
-      "Increments the vote count on the specified note by 1, returns true if successful",
+      "Increments the vote count on the specified note by 1, returns a success, message & switched vote status",
   })
   @ApiCreatedResponse({
     description: "A 201 response if the vote is added successfully",
@@ -203,7 +205,7 @@ export class NotesController implements INotesController {
   async addVote(
     @Param("noteId", new ParseUUIDPipe()) noteId: string,
     @GetCurrentUser() currentUser: User,
-  ): Promise<boolean> {
+  ): Promise<IAddVoteNote> {
     return await this.notesService.addVote(noteId, currentUser);
   }
 
@@ -211,7 +213,7 @@ export class NotesController implements INotesController {
   @ApiOperation({
     summary: "Remove vote from note",
     description:
-      "Decrements the vote count on the specified note by 1, returns true if successful",
+      "Decrements the vote count on the specified note by 1, returns success & message",
   })
   @ApiOkResponse({
     description: "A 200 response if the vote is removed successfully",
@@ -238,7 +240,7 @@ export class NotesController implements INotesController {
   async removeVote(
     @Param("noteId", new ParseUUIDPipe()) noteId: string,
     @GetCurrentUser() currentUser: User,
-  ): Promise<boolean> {
+  ): Promise<IRemoveVoteNote> {
     return await this.notesService.removeVote(noteId, currentUser);
   }
 }
