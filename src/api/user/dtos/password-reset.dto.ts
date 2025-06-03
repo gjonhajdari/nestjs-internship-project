@@ -29,7 +29,7 @@ export class ResetPasswordDto {
   })
   @IsString()
   @IsNotEmpty()
-  @Matches(/^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{6,15}$/, {
+  @Matches(/^(?=.*\d)(?=.*[!@#$%^&*.?_-])(?=.*[a-z])(?=.*[A-Z]).{8,32}$/, {
     message:
       "Password must be 6 to 15 characters and must contain a letter, a number, a symbol, one upper case and " +
       "lower case character.",
