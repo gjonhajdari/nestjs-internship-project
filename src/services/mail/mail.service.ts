@@ -27,6 +27,24 @@ export class MailService {
       });
   }
 
+  public verifyEmail(payload: VerifyMail) {
+    this.mailerService
+      .sendMail({
+        to: payload.user.email,
+        from: this.getFromEmail(),
+        subject: this.getSubject("Verify Email"),
+        template: this.getEmailTemplatePath("verifyEmail"),
+        context: {
+          email: payload.user.email,
+          code: payload.token,
+        },
+      })
+      .then((data) => data)
+      .catch((error) => {
+        throw error;
+      });
+  }
+
   public getEmailTemplatePath(template_name) {
     return `email/${template_name}`;
   }
