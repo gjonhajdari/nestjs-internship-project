@@ -9,6 +9,7 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
 import {
@@ -22,6 +23,7 @@ import {
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
 import { GetCurrentUser } from "src/common/decorators/get-current-user.decorator";
+import { RolesGuard } from "../../common/guards/roles.guard";
 import { IDeleteStatus } from "../../common/interfaces/DeleteStatus.interface";
 import { BadRequestResponse } from "../../common/interfaces/responses/bad-request.response";
 import { DeletedResponse } from "../../common/interfaces/responses/deleted.response";
@@ -36,6 +38,7 @@ import { ICommentsController } from "./interfaces/comments.controller.interface"
 
 @ApiBearerAuth()
 @ApiTags("Comments")
+@UseGuards(RolesGuard)
 @Controller("comments")
 @UseInterceptors(ClassSerializerInterceptor)
 export class CommentsController implements ICommentsController {
