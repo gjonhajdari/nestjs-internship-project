@@ -143,7 +143,7 @@ export class UsersController implements IUsersController {
   })
   @Public()
   @Post("forgot")
-  async forgotPassword(@Body() body: ForgotPasswordDto): Promise<void> {
+  async forgotPassword(@Body() body: ForgotPasswordDto): Promise<IResponseStatus> {
     return await this.usersService.forgotPassword(body);
   }
 

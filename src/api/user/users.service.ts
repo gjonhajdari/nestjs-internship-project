@@ -113,9 +113,9 @@ export class UsersService implements IUsersService {
    *
    * @param paload - Required attributes to send a password change request
    * @returns Promise that resolves to void
-   * @throws {UnprocessableEntityException} - If no user is found with the given email
+   * @throws {NotFoundException} - If no user is found with the given email
    */
-  async forgotPassword(paload: ForgotPasswordDto): Promise<void> {
+  async forgotPassword(paload: ForgotPasswordDto): Promise<IResponseStatus> {
     const user = await this.userRepository.findOne({
       where: { email: paload.email },
     });
@@ -146,6 +146,12 @@ export class UsersService implements IUsersService {
       expiresAt,
       user,
     });
+
+    return {
+      success: true,
+      message: "Email sent successfully",
+      timestamp: new Date(),
+    };
   }
 
   /**
