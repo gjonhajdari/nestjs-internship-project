@@ -21,6 +21,7 @@ import {
   ApiTags,
   ApiUnprocessableEntityResponse,
 } from "@nestjs/swagger";
+import { EmailSentResponse } from "src/common/interfaces/responses/email-sent.response";
 import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
 import { Public } from "../../common/decorators/public.decorator";
 import { PermissionsGuard } from "../../common/guards/permissions.guard";
@@ -136,6 +137,7 @@ export class UsersController implements IUsersController {
   })
   @ApiOkResponse({
     description: "A 200 response if the email is sent successfully",
+    type: EmailSentResponse,
   })
   @ApiNotFoundResponse({
     description: "A 404 error if the user doesn't exist",
