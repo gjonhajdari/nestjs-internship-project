@@ -1,7 +1,7 @@
 import { tryCatch } from "@maxmorozoff/try-catch-tuple";
 import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
-import { ActivityType } from "src/common/enums/activity-type.enum";
-import { ResourceType } from "src/common/enums/resource-type.enum";
+import { ActivityType } from "../../common/enums/activity-type.enum";
+import { ResourceType } from "../../common/enums/resource-type.enum";
 import { RoomsService } from "../rooms/rooms.service";
 import { UsersService } from "../user/users.service";
 import { Activity } from "./entities/activity.entity";
