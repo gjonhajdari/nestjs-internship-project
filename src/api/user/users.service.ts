@@ -9,6 +9,7 @@ import {
 import { InjectRepository } from "@nestjs/typeorm";
 import { InjectEventEmitter } from "nest-emitter";
 import { Repository } from "typeorm";
+import { ResourceType } from "../../common/enums/resource-type.enum";
 import { IResponseStatus } from "../../common/interfaces/ResponseStatus.interface";
 import { compareHashedDataBcrypt, hashDataBrypt } from "../../services/providers";
 import { CreateUserDto } from "./dtos/create-user.dto";
@@ -101,7 +102,7 @@ export class UsersService implements IUsersService {
 
     return {
       success: true,
-      resourceType: "user",
+      resourceType: ResourceType.USER,
       resourceId: userId,
       message: "User deleted successfully",
       timestamp: new Date(),

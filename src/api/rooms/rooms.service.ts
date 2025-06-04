@@ -1,6 +1,7 @@
 import { tryCatch } from "@maxmorozoff/try-catch-tuple";
 import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { DataSource, EntityManager } from "typeorm";
+import { ResourceType } from "../../common/enums/resource-type.enum";
 import { IResponseStatus } from "../../common/interfaces/ResponseStatus.interface";
 import { User } from "../user/entities/user.entity";
 import { UsersService } from "../user/users.service";
@@ -111,6 +112,7 @@ export class RoomsService implements IRoomsService {
     return updatedRoom;
   }
 
+  //TODO: delete activites per room
   /**
    * Soft deletes a room by its UUID
    *
@@ -133,7 +135,7 @@ export class RoomsService implements IRoomsService {
 
     return {
       success: true,
-      resourceType: "room",
+      resourceType: ResourceType.ROOM,
       resourceId: room.uuid,
       message: "Room deleted successfully",
       timestamp: new Date(),
@@ -217,7 +219,7 @@ export class RoomsService implements IRoomsService {
 
     return {
       success: true,
-      resourceType: "user",
+      resourceType: ResourceType.USER,
       message: `User ${userId} left room ${roomId}`,
       timestamp: new Date(),
     };
