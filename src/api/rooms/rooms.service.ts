@@ -1,7 +1,7 @@
 import { tryCatch } from "@maxmorozoff/try-catch-tuple";
 import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { DataSource, EntityManager } from "typeorm";
-import { IDeleteStatus } from "../../common/interfaces/DeleteStatus.interface";
+import { IResponseStatus } from "../../common/interfaces/ResponseStatus.interface";
 import { User } from "../user/entities/user.entity";
 import { UsersService } from "../user/users.service";
 import { CreateRoomDto } from "./dtos/create-room.dto";
@@ -118,7 +118,7 @@ export class RoomsService implements IRoomsService {
    * @returns Promise that resolves to a status object indicating success
    * @throws {InternalServerErrorException} - If there was an error processing the request
    */
-  async deleteRoom(roomId: string): Promise<IDeleteStatus> {
+  async deleteRoom(roomId: string): Promise<IResponseStatus> {
     const room = await this.findById(roomId);
 
     const [_, error] = await tryCatch(
@@ -204,7 +204,7 @@ export class RoomsService implements IRoomsService {
    * @returns Promise that resolves to DeleteStatus if successful, false otherwise
    * @throws {InternalServerErrorException} - If there was an error processing the request
    */
-  async leaveRoom(userId: string, roomId: string): Promise<IDeleteStatus> {
+  async leaveRoom(userId: string, roomId: string): Promise<IResponseStatus> {
     const room = await this.findById(roomId);
     const user = await this.usersService.findOne(userId);
 

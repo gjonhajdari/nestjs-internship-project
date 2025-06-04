@@ -9,7 +9,7 @@ import {
 import { InjectRepository } from "@nestjs/typeorm";
 import { InjectEventEmitter } from "nest-emitter";
 import { Repository } from "typeorm";
-import { IDeleteStatus } from "../../common/interfaces/DeleteStatus.interface";
+import { IResponseStatus } from "../../common/interfaces/ResponseStatus.interface";
 import { compareHashedDataBcrypt, hashDataBrypt } from "../../services/providers";
 import { CreateUserDto } from "./dtos/create-user.dto";
 import { ForgotPasswordDto, ResetPasswordDto } from "./dtos/password-reset.dto";
@@ -95,7 +95,7 @@ export class UsersService implements IUsersService {
    * @param userId - The unique UUID of the user
    * @throws {NotFoundException} - If no user with the given UUID is found
    */
-  async deleteUser(userId: string): Promise<IDeleteStatus> {
+  async deleteUser(userId: string): Promise<IResponseStatus> {
     const user = await this.findOne(userId);
     await this.userRepository.softRemove(user);
 

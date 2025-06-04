@@ -1,8 +1,8 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { ResourceType } from "../../types/ResourceType";
-import { IDeleteStatus } from "../DeleteStatus.interface";
+import { IResponseStatus } from "../ResponseStatus.interface";
 
-export class DeletedResponse implements IDeleteStatus {
+export class DeletedResponse implements IResponseStatus {
   @ApiProperty({
     type: Boolean,
     description: "Indicates if the request was successful",
@@ -17,21 +17,21 @@ export class DeletedResponse implements IDeleteStatus {
   })
   message: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: String,
     description: "The type of resource that was deleted",
     example: "note",
   })
-  resourceType: ResourceType;
+  resourceType?: ResourceType;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: String,
     description: "The unique identifier of the deleted resource",
     example: "123e4567-e89b-12d3-a456-426614174000",
   })
   resourceId?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: Date,
     description: "Timestamp of when the deletion occurred",
     example: "2023-10-01T12:00:00Z",

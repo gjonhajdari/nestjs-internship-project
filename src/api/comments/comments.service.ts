@@ -5,7 +5,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from "@nestjs/common";
-import { IDeleteStatus } from "../../common/interfaces/DeleteStatus.interface";
+import { IResponseStatus } from "../../common/interfaces/ResponseStatus.interface";
 import { NotesService } from "../notes/notes.service";
 import { UsersService } from "../user/users.service";
 import { CreateCommentDto } from "./dtos/create-comment.dto";
@@ -133,7 +133,7 @@ export class CommentsService implements ICommentsService {
    * @param commentId - The unique UUID of the comment
    * @throws {NotFoundException} - If no comment with the given UUID is found
    */
-  async deleteComment(commentId: string): Promise<IDeleteStatus> {
+  async deleteComment(commentId: string): Promise<IResponseStatus> {
     const comment = await this.findById(commentId);
 
     const [_, error] = await tryCatch(this.commentsRepository.remove(comment));
