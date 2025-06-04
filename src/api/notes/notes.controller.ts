@@ -29,7 +29,6 @@ import {
 } from "@nestjs/swagger";
 import { InternalErrorResponse } from "src/common/interfaces/responses/internal-error.response";
 import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
-import { DeleteNoteGuard } from "../../common/guards/delete-note.guard";
 import { RolesGuard } from "../../common/guards/roles.guard";
 import { IDeleteStatus } from "../../common/interfaces/DeleteStatus.interface";
 import { BadRequestResponse } from "../../common/interfaces/responses/bad-request.response";
@@ -140,7 +139,7 @@ export class NotesController implements INotesController {
     return await this.notesService.updateNote(noteId, body, currentUser);
   }
 
-  @UseGuards(DeleteNoteGuard)
+  // @UseGuards(DeleteNoteGuard)
   @Delete(":noteId")
   @ApiOperation({
     summary: "Delete note",

@@ -7,6 +7,7 @@ import {
 
 import { DataSource, EntityManager } from "typeorm";
 import { IDeleteStatus } from "../../common/interfaces/DeleteStatus.interface";
+import { Comment } from "../comments/entities/comment.entity";
 import { RoomsService } from "../rooms/rooms.service";
 import { User } from "../user/entities/user.entity";
 import { catchKnownErrors } from "./../../utils/catchKnownErrors.util";
@@ -172,7 +173,7 @@ export class NotesService implements INotesService {
   }
 
   /**
-   * Deletes a note from the database.
+   * Soft deletes a note by its UUID
    * This operation is restricted to either:
    * - The author of the note, or
    * - A user with the "host" role in the same room as the note.
@@ -189,7 +190,13 @@ export class NotesService implements INotesService {
     const note = await this.findById(noteId);
 
     try {
-      await this.notesRepository.remove(note);
+      await this.dataSource.transaction(async (manager: EntityManager) => {
+        const noteRepo = manager.getRepository(Note);
+        const commentRepo = manager.getRepository(Comment);
+
+        await noteRepo.softDelete({ uuid: noteId });
+        await commentRepo.softDelete({ note: note });
+      });
 
       return {
         success: true,
