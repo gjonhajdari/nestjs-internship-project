@@ -18,7 +18,7 @@ export interface IUsersService {
 
   deleteUser(userId: string): Promise<IResponseStatus>;
 
-  forgotPassword(forgotPassword: ForgotPasswordDto): Promise<void>;
+  forgotPassword(forgotPassword: ForgotPasswordDto): Promise<IResponseStatus>;
 
   resetPassword(token: string, resetPasswordDto: ResetPasswordDto): Promise<void>;
 }
