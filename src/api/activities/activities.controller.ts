@@ -34,9 +34,7 @@ export class ActivitiesController implements IActivitesController {
     @GetCurrentUser() user: User,
     @Body() body,
   ) {
-    console.log("THIS IS THE FIRST LOG");
     const { activityType, resourceType } = body;
-    console.log("SECOND LOG IN ACTIVITIESSSS", activityType, resourceType);
     return this.activitiesService.createActivity(
       roomId,
       user.uuid,
