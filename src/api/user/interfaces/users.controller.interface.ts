@@ -13,7 +13,7 @@ export interface IUsersController {
 
   deleteMe(user: User): Promise<IResponseStatus>;
 
-  forgotPassword(body: ForgotPasswordDto): Promise<void>;
+  forgotPassword(body: ForgotPasswordDto): Promise<IResponseStatus>;
 
   resetPassword(token: string, body: ResetPasswordDto): Promise<void>;
 }
