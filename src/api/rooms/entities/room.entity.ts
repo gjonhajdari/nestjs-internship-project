@@ -1,8 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { NoteVote } from "src/api/notes/entities/note-vote.entity";
 import { BeforeInsert, Column, Entity, OneToMany } from "typeorm";
 import { AuditEntity } from "../../../common/db/customBaseEntites/AuditEntity";
 import { slug } from "../../../utils/slug";
+import { Activity } from "../../activities/entities/activity.entity";
+import { NoteVote } from "../../notes/entities/note-vote.entity";
 import { Note } from "../../notes/entities/note.entity";
 import { RoomUsers } from "./room-users.entity";
 
@@ -49,6 +50,12 @@ export class Room extends AuditEntity {
     (vote) => vote.room,
   )
   noteVotes: NoteVote[];
+
+  @OneToMany(
+    () => Activity,
+    (activity) => activity.room,
+  )
+  activities: Activity;
 
   @BeforeInsert()
   generateSlug() {
