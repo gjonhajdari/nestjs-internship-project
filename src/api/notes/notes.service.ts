@@ -6,7 +6,7 @@ import {
 } from "@nestjs/common";
 
 import { DataSource, EntityManager } from "typeorm";
-import { IDeleteStatus } from "../../common/interfaces/DeleteStatus.interface";
+import { IResponseStatus } from "../../common/interfaces/ResponseStatus.interface";
 import { Comment } from "../comments/entities/comment.entity";
 import { RoomsService } from "../rooms/rooms.service";
 import { User } from "../user/entities/user.entity";
@@ -186,7 +186,7 @@ export class NotesService implements INotesService {
    * @throws {ForbiddenException} - If the user is not authorized to delete the note
    * @throws {InternalServerErrorException} - If an error occurs while removing the note.
    */
-  async deleteNote(noteId: string): Promise<IDeleteStatus> {
+  async deleteNote(noteId: string): Promise<IResponseStatus> {
     const note = await this.findById(noteId);
 
     try {

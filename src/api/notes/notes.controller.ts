@@ -30,7 +30,7 @@ import {
 import { InternalErrorResponse } from "src/common/interfaces/responses/internal-error.response";
 import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
 import { RolesGuard } from "../../common/guards/roles.guard";
-import { IDeleteStatus } from "../../common/interfaces/DeleteStatus.interface";
+import { IResponseStatus } from "../../common/interfaces/ResponseStatus.interface";
 import { BadRequestResponse } from "../../common/interfaces/responses/bad-request.response";
 import { DeletedResponse } from "../../common/interfaces/responses/deleted.response";
 import { ForbiddenResponse } from "../../common/interfaces/responses/forbidden.response";
@@ -167,7 +167,9 @@ export class NotesController implements INotesController {
     type: InternalErrorResponse,
   })
   @HttpCode(HttpStatus.OK)
-  async delete(@Param("noteId", new ParseUUIDPipe()) noteId: string): Promise<IDeleteStatus> {
+  async delete(
+    @Param("noteId", new ParseUUIDPipe()) noteId: string,
+  ): Promise<IResponseStatus> {
     return await this.notesService.deleteNote(noteId);
   }
 
