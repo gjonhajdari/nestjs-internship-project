@@ -46,7 +46,7 @@ export class CreateNoteDto {
   @ApiPropertyOptional({
     type: Number,
     description: "X coordinate of the note (between 0 and 5000).",
-    example: 1200,
+    example: 1000,
     minimum: 0,
     maximum: 5000,
     nullable: true,
@@ -56,13 +56,13 @@ export class CreateNoteDto {
   @IsOptional()
   @IsInt()
   @Min(0)
-  @Max(5000)
+  @Max(2800)
   @ApiPropertyOptional({
     type: Number,
-    description: "Y coordinate of the note (between 0 and 5000).",
-    example: 3400,
+    description: "Y coordinate of the note (between 0 and 2800).",
+    example: 500,
     minimum: 0,
-    maximum: 5000,
+    maximum: 2800,
     nullable: true,
   })
   yAxis?: number;

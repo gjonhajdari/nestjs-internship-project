@@ -75,11 +75,11 @@ export class Note extends AuditEntity {
   xAxis?: number;
 
   @Column({ name: "y_axis", type: "int", nullable: true })
-  @Check('"y_axis" >= 0 AND "y_axis" <= 5000')
+  @Check('"y_axis" >= 0 AND "y_axis" <= 2800')
   @ApiPropertyOptional({
     type: Number,
     description: "The Y coordinate for the note on the display. It should be an integer.",
-    example: 2500,
+    example: 500,
     required: false,
   })
   yAxis?: number;
