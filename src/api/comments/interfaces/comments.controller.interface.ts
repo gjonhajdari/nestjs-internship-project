@@ -1,5 +1,5 @@
 import { User } from "src/api/user/entities/user.entity";
-import { IDeleteStatus } from "../../../common/interfaces/DeleteStatus.interface";
+import { IResponseStatus } from "../../../common/interfaces/ResponseStatus.interface";
 import { CreateCommentDto } from "../dtos/create-comment.dto";
 import { UpdateCommentDto } from "../dtos/update-comment.dto";
 import { Comment } from "../entities/comment.entity";
@@ -11,5 +11,5 @@ export interface ICommentsController {
 
   update(user: User, commendId: string, body: UpdateCommentDto): Promise<Comment>;
 
-  delete(commentId: string): Promise<IDeleteStatus>;
+  delete(commentId: string): Promise<IResponseStatus>;
 }

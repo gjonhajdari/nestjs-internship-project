@@ -25,7 +25,7 @@ import {
 import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
 import { Roles } from "../../common/decorators/roles.decorator";
 import { RolesGuard } from "../../common/guards/roles.guard";
-import { IDeleteStatus } from "../../common/interfaces/DeleteStatus.interface";
+import { IResponseStatus } from "../../common/interfaces/ResponseStatus.interface";
 import { BadRequestResponse } from "../../common/interfaces/responses/bad-request.response";
 import { DeletedResponse } from "../../common/interfaces/responses/deleted.response";
 import { GetRoomsResponse } from "../../common/interfaces/responses/get-rooms.response";
@@ -151,7 +151,9 @@ export class RoomsController implements IRoomsController {
   })
   @Roles(RoomRoles.HOST)
   @Delete(":roomId")
-  async delete(@Param("roomId", new ParseUUIDPipe()) roomId: string): Promise<IDeleteStatus> {
+  async delete(
+    @Param("roomId", new ParseUUIDPipe()) roomId: string,
+  ): Promise<IResponseStatus> {
     return this.roomsService.deleteRoom(roomId);
   }
 
@@ -199,7 +201,7 @@ export class RoomsController implements IRoomsController {
   async leave(
     @GetCurrentUser() user: User,
     @Param("roomId", new ParseUUIDPipe()) roomId: string,
-  ): Promise<IDeleteStatus> {
+  ): Promise<IResponseStatus> {
     const { uuid } = user;
     return this.roomsService.leaveRoom(uuid, roomId);
   }
@@ -226,7 +228,7 @@ export class RoomsController implements IRoomsController {
   async removeFromRoom(
     @Query("userId", new ParseUUIDPipe()) userId: string,
     @Param("roomId", new ParseUUIDPipe()) roomId: string,
-  ): Promise<IDeleteStatus> {
+  ): Promise<IResponseStatus> {
     return this.roomsService.leaveRoom(userId, roomId);
   }
 }

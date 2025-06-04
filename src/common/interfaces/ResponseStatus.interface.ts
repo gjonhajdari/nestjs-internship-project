@@ -1,9 +1,9 @@
 import { ResourceType } from "../types/ResourceType";
 
-export interface IDeleteStatus {
+export interface IResponseStatus {
   success: boolean;
   message: string;
-  resourceType: ResourceType;
+  resourceType?: ResourceType;
   resourceId?: string;
   timestamp?: Date;
 }

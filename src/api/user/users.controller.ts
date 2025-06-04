@@ -21,10 +21,11 @@ import {
   ApiTags,
   ApiUnprocessableEntityResponse,
 } from "@nestjs/swagger";
+import { EmailSentResponse } from "src/common/interfaces/responses/email-sent.response";
 import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
 import { Public } from "../../common/decorators/public.decorator";
 import { PermissionsGuard } from "../../common/guards/permissions.guard";
-import { IDeleteStatus } from "../../common/interfaces/DeleteStatus.interface";
+import { IResponseStatus } from "../../common/interfaces/ResponseStatus.interface";
 import { BadRequestResponse } from "../../common/interfaces/responses/bad-request.response";
 import { DeletedResponse } from "../../common/interfaces/responses/deleted.response";
 import { NotFoundResponse } from "../../common/interfaces/responses/not-found.response";
@@ -126,7 +127,7 @@ export class UsersController implements IUsersController {
     type: NotFoundResponse,
   })
   @Delete("/me")
-  async deleteMe(@GetCurrentUser() user: User): Promise<IDeleteStatus> {
+  async deleteMe(@GetCurrentUser() user: User): Promise<IResponseStatus> {
     return await this.usersService.deleteUser(user.uuid);
   }
 
@@ -136,6 +137,7 @@ export class UsersController implements IUsersController {
   })
   @ApiOkResponse({
     description: "A 200 response if the email is sent successfully",
+    type: EmailSentResponse,
   })
   @ApiNotFoundResponse({
     description: "A 404 error if the user doesn't exist",
@@ -143,7 +145,7 @@ export class UsersController implements IUsersController {
   })
   @Public()
   @Post("forgot")
-  async forgotPassword(@Body() body: ForgotPasswordDto): Promise<void> {
+  async forgotPassword(@Body() body: ForgotPasswordDto): Promise<IResponseStatus> {
     return await this.usersService.forgotPassword(body);
   }
 
