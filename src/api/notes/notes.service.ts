@@ -7,6 +7,7 @@ import {
 } from "@nestjs/common";
 
 import { DataSource, EntityManager } from "typeorm";
+import { ResourceType } from "../../common/enums/resource-type.enum";
 import { IDeleteStatus } from "../../common/interfaces/DeleteStatus.interface";
 import { RoomsService } from "../rooms/rooms.service";
 import { User } from "../user/entities/user.entity";
@@ -183,7 +184,7 @@ export class NotesService implements INotesService {
 
       return {
         success: true,
-        resourceType: "note",
+        resourceType: ResourceType.NOTE,
         resourceId: note.uuid,
         message: "Note deleted successfully",
         timestamp: new Date(),

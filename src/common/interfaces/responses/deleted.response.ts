@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { ResourceType } from "../../types/ResourceType";
+import { ResourceType } from "../../enums/resource-type.enum";
 import { IDeleteStatus } from "../DeleteStatus.interface";
 
 export class DeletedResponse implements IDeleteStatus {
