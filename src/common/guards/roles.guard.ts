@@ -1,4 +1,4 @@
-import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
+import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from "@nestjs/common";
 import { ModuleRef, Reflector } from "@nestjs/core";
 import { RoomRoles } from "src/api/rooms/enums/room-roles.enum";
 import { RoomUsersRepository } from "src/api/rooms/repository/room-users.repository";
@@ -20,14 +20,15 @@ export class RolesGuard implements CanActivate {
       this.roomUsersRepository = this.moduleRef.get(RoomUsersRepository, { strict: false });
     }
 
-    const roles = this.reflector.get<RoomRoles[]>("roles", context.getHandler());
-    if (!roles) return true;
-
     const request = context.switchToHttp().getRequest();
     const user = request.user;
     if (!user) return false;
 
     const roomId = request.params.roomId;
+    const roles = this.reflector.get<RoomRoles[]>("roles", context.getHandler());
+
+    if (!roomId && !roles) return true;
+
     const room = await this.roomsService.findById(roomId);
 
     const roomUser = await this.roomUsersRepository.findOne({
@@ -37,7 +38,8 @@ export class RolesGuard implements CanActivate {
       },
     });
 
-    if (!roomUser) return false;
+    if (!roomUser) throw new ForbiddenException("You don't have access to this room");
+    if (!roles) return true;
 
     return roles.includes(roomUser.role);
   }
