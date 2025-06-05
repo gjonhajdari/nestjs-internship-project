@@ -12,6 +12,7 @@ import { CommentsRepository } from "./repository/comments.repository";
     NotesModule,
     UserModule,
   ],
+  exports: [CommentsService],
   providers: [CommentsService],
   controllers: [CommentsController],
 })
