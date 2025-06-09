@@ -82,6 +82,14 @@ export class User extends AuditEntity {
   @Exclude()
   hashedRefreshToken: string;
 
+  @Column({
+    type: "boolean",
+    nullable: false,
+    default: false,
+    name: "is_verified",
+  })
+  isVerified: boolean;
+
   @OneToMany(
     () => Note,
     (note) => note.author,
