@@ -180,8 +180,13 @@ export class NotesController implements INotesController {
       "Increments the vote count on the specified note by 1, returns a success, message & switched vote status",
   })
   @ApiCreatedResponse({
-    description: "A 201 response if the vote is added successfully",
-    type: Boolean,
+    description: "Vote added successfully",
+    schema: {
+      example: {
+        success: true,
+        message: "John added new vote!",
+      },
+    },
   })
   @ApiBadRequestResponse({
     description:
@@ -215,8 +220,13 @@ export class NotesController implements INotesController {
       "Decrements the vote count on the specified note by 1, returns success & message",
   })
   @ApiOkResponse({
-    description: "A 200 response if the vote is removed successfully",
-    type: Boolean,
+    description: "Vote removed successfully",
+    schema: {
+      example: {
+        success: true,
+        message: "John removed vote!",
+      },
+    },
   })
   @ApiBadRequestResponse({
     description: "A 400 error if missing user or room information",

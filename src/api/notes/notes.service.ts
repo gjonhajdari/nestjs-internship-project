@@ -70,7 +70,7 @@ export class NotesService implements INotesService {
       .innerJoinAndSelect("note.room", "room")
       .where("note.uuid = :noteId", { noteId })
       .setLock("pessimistic_write")
-      .getOne();
+      .getOneOrFail();
 
     if (!note) throw new NotFoundException("Note does not exist");
 
@@ -147,14 +147,14 @@ export class NotesService implements INotesService {
   }
 
   /**
-   * Updates a note in the database with the new given attributes.
+   * Updates a note in the database with the new given attributes
    *
-   * @param noteId - The unique UUID of the note.
-   * @param payload - The new attributes of the note to update.
-   * @param currentUser - The user attempting to update the note.
-   * @returns Promise that resolves to a success message and the updated note.
-   * @throws {NotFoundException} - If no note is found with the given UUID.
-   * @throws {InternalServerErrorException} - If an error occurs while updating the note in the database.
+   * @param noteId - The unique UUID of the note
+   * @param payload - The new attributes of the note to update (excluding totalVotes)
+   * @param currentUser - The user performing the update.
+   * @returns Promise resolving to the updated note and the user who updated it
+   * @throws {NotFoundException} - If the note is not found
+   * @throws {InternalServerErrorException} - If an error occurs while updating the note to the database
    */
   async updateNote(
     noteId: string,
@@ -163,11 +163,16 @@ export class NotesService implements INotesService {
   ): Promise<IUpdateNote> {
     const note = await this.findById(noteId);
 
+    const { totalVotes, ...safePayload } = payload as Note;
+
     try {
-      await this.notesRepository.update(note.id, { ...payload });
+      await this.notesRepository.update({ id: note.id }, safePayload);
       const updatedNote = await this.findById(noteId);
 
-      return { message: `${currentUser.firstName} has updated note!`, note: updatedNote };
+      return {
+        note: updatedNote,
+        updatedBy: currentUser,
+      };
     } catch (error) {
       throw new InternalServerErrorException("An error occurred while updating the note");
     }

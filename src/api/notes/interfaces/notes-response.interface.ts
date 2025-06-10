@@ -1,8 +1,9 @@
+import { User } from "../../user/entities/user.entity";
 import { Note } from "../entities/note.entity";
 
 export interface IUpdateNote {
-  message: string;
   note: Note;
+  updatedBy: User;
 }
 
 export interface IRemoveVoteNote {
