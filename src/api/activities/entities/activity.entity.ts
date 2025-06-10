@@ -36,6 +36,17 @@ export class Activity extends AuditEntity {
   })
   resourceType: ResourceType;
 
+  @Column({
+    name: "resource_id",
+    type: "uuid",
+    nullable: false,
+  })
+  @ApiProperty({
+    type: "uuid",
+    description: "UUID of the affected resource",
+  })
+  resourceId: string;
+
   @ManyToOne(
     () => User,
     (user) => user.activities,

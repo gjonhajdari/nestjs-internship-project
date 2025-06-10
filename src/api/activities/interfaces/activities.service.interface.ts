@@ -10,6 +10,7 @@ export interface IActivitiesService {
     userId: string,
     activityType: ActivityType,
     resourceType: ResourceType,
+    resourceId: string,
   ): Promise<Activity>;
   deleteActivities(roomId: string): Promise<boolean>;
 }

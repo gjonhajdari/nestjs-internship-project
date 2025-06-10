@@ -71,6 +71,7 @@ export class ActivitiesService implements IActivitiesService {
     userId: string,
     activityType: ActivityType,
     resourceType: ResourceType,
+    resourceId: string,
   ): Promise<Activity> {
     const user = await this.usersService.findOne(userId);
     const room = await this.roomsService.findById(roomId);
@@ -80,6 +81,7 @@ export class ActivitiesService implements IActivitiesService {
       user,
       activityType,
       resourceType,
+      resourceId,
     });
     const [newActivity, error] = await tryCatch(this.activitiesRepository.save(activity));
     if (error)

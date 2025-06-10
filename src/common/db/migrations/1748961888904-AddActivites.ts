@@ -5,13 +5,13 @@ export class AddActivites1748961888904 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `CREATE TYPE "public"."activities_activity_type_enum" AS ENUM('create', 'update', 'delete')`,
+      `CREATE TYPE "public"."activities_activity_type_enum" AS ENUM('added', 'updated', 'deleted')`,
     );
     await queryRunner.query(
-      `CREATE TYPE "public"."activities_resource_type_enum" AS ENUM('user', 'room', 'comment', 'note')`,
+      `CREATE TYPE "public"."activities_resource_type_enum" AS ENUM('user', 'room', 'comment', 'note', 'vote')`,
     );
     await queryRunner.query(
-      `CREATE TABLE "activities" ("id" SERIAL NOT NULL, "uuid" uuid NOT NULL DEFAULT gen_random_uuid(), "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP, "activity_type" "public"."activities_activity_type_enum" NOT NULL, "resource_type" "public"."activities_resource_type_enum" NOT NULL, "userId" integer NOT NULL, "roomId" integer NOT NULL, CONSTRAINT "PK_7f4004429f731ffb9c88eb486a8" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "activities" ("id" SERIAL NOT NULL, "uuid" uuid NOT NULL DEFAULT gen_random_uuid(), "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP, "activity_type" "public"."activities_activity_type_enum" NOT NULL, "resource_type" "public"."activities_resource_type_enum" NOT NULL, "resource_id" uuid NOT NULL, "userId" integer NOT NULL, "roomId" integer NOT NULL, CONSTRAINT "PK_7f4004429f731ffb9c88eb486a8" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE UNIQUE INDEX "IDX_1c92642081b03303d870a272d7" ON "activities" ("uuid") `,

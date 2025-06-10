@@ -34,12 +34,13 @@ export class ActivitiesController implements IActivitesController {
     @GetCurrentUser() user: User,
     @Body() body,
   ) {
-    const { activityType, resourceType } = body;
+    const { activityType, resourceType, resourceId } = body;
     return this.activitiesService.createActivity(
       roomId,
       user.uuid,
       activityType,
       resourceType,
+      resourceId,
     );
   }
 

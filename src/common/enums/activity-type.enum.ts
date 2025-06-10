@@ -1,5 +1,5 @@
 export enum ActivityType {
   CREATE = "added",
-  UPDATE = "edited",
+  UPDATE = "updated",
   DELETE = "deleted",
 }
