@@ -8,7 +8,7 @@ import { RoomRoles } from "../enums/room-roles.enum";
 export interface IRoomsService {
   findById(roomId: string): Promise<Room>;
 
-  findRooms(userId: string): Promise<{ room: Room; role: RoomRoles }[]>;
+  findRooms(userId: string, isActive: boolean): Promise<{ room: Room; role: RoomRoles }[]>;
 
   createRoom(payload: CreateRoomDto, userId: string): Promise<Room>;
 

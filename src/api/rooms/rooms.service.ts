@@ -50,10 +50,13 @@ export class RoomsService implements IRoomsService {
    * @returns Promise that resolves to an array of rooms
    * @throws {InternalServerErrorException} - If there was an error processing the request
    */
-  async findRooms(userId: string): Promise<{ room: Room; role: RoomRoles }[]> {
+  async findRooms(
+    userId: string,
+    isActive: boolean,
+  ): Promise<{ room: Room; role: RoomRoles }[]> {
     const [roomUsers, error] = await tryCatch(
       this.roomUsersRepository.find({
-        where: { user: { uuid: userId } },
+        where: { user: { uuid: userId }, room: { isActive } },
         relations: ["room"],
       }),
     );
