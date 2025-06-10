@@ -1,3 +1,4 @@
+import * as crypto from "node:crypto";
 import { EventEmitter } from "node:events";
 import { tryCatch } from "@maxmorozoff/try-catch-tuple";
 import {
@@ -238,5 +239,37 @@ export class AuthService implements IAuthService {
       accessToken: at,
       refreshToken: rt,
     };
+  }
+
+  /**
+   * Generates a verification code for a user and saves it in the database
+   *
+   * @param userId - The unique UUID of the user
+   * @returns Promise that resolves to the generated verification code
+   *
+   * @throws {InternalServerErrorException} - If there was an error generating the verification code
+   */
+  async generateVerificationCode(user: User): Promise<number> {
+    const code = crypto.randomInt(100000, 999999);
+
+    const expiresAt = new Date();
+    expiresAt.setMinutes(expiresAt.getMinutes() + this.VERIFICATION_TIME);
+
+    const [_, error] = await tryCatch(
+      this.verifyEmailRepository.save(
+        this.verifyEmailRepository.create({
+          code,
+          expiresAt,
+          user,
+        }),
+      ),
+    );
+
+    if (error)
+      throw new InternalServerErrorException(
+        "There was an error generating the verification code",
+      );
+
+    return code;
   }
 }
