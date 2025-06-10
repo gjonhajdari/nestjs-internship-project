@@ -5,7 +5,9 @@ import {
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
   UnauthorizedException,
+  UnprocessableEntityException,
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -27,6 +29,7 @@ import { RegisterDTO } from "./dtos/register.dto";
 import { VerifyEmailDto } from "./dtos/verify-email.dto";
 import { IAuthService } from "./interfaces/auth.service.interface";
 import { JwtPayload } from "./interfaces/jwt-payload.inteface";
+import { ValidateOptions } from "./interfaces/validate-options.interface";
 import { Tokens } from "./types/tokens.types";
 import { TTokensUser } from "./types/user-tokens.type";
 
@@ -172,11 +175,28 @@ export class AuthService implements IAuthService {
   /**
    * Validates a user by checking if the user exists in the database
    *
-   * @param userId - The unique UUID of the user
+   * @param identifier - The unique UUID or email of the user
+   * @param options - Optional parameters to customize the validation
    * @returns Promise that resolves to the found user
+   * @throws {NotFoundException} - If user does not exist
+   * @throws {UnprocessableEntityException} - If there was an error processing the request
    */
-  private async validateUser(userId: string): Promise<User> {
-    return await this.userRepository.findOneBy({ uuid: userId });
+  private async validateUser(identifier: string, options?: ValidateOptions): Promise<User> {
+    const { message, ...whereOptions } = options || {};
+
+    const isEmail = identifier.includes("@");
+    const conditions = isEmail
+      ? { email: identifier, ...whereOptions }
+      : { uuid: identifier, ...whereOptions };
+
+    const [user, error] = await tryCatch(this.userRepository.findOneBy(conditions));
+
+    if (!user) throw new NotFoundException(message ?? "User does not exist");
+
+    if (error)
+      throw new UnprocessableEntityException("There was an error processing your request");
+
+    return user;
   }
 
   /**
