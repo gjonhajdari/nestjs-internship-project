@@ -27,7 +27,6 @@ import { jwtConstants } from "./constants/constants";
 import { LoginDto } from "./dtos/login.dto";
 import { RefreshTokenDto } from "./dtos/refresh-token.dto";
 import { RegisterDTO } from "./dtos/register.dto";
-import { VerifyEmailDto } from "./dtos/verify-email.dto";
 import { IAuthService } from "./interfaces/auth.service.interface";
 import { JwtPayload } from "./interfaces/jwt-payload.inteface";
 import { ValidateOptions } from "./interfaces/validate-options.interface";
@@ -76,6 +75,33 @@ export class AuthService implements IAuthService {
     return tokens;
   }
 
+  /**
+   * Verifies a user's email using the provided code
+   *
+   * @param payload - The required data to verify a user's email
+   * @returns Promise that resolves to the access and refresh tokens, and the user object
+   * @throws {BadRequestException} - If user does not exist or is already verified
+   * @throws {BadRequestException} - If validation code is invalid
+   * @throws {UnprocessableEntityException} - If verification code has expired
+   */
+  async verifyEmail(email: string, code: number): Promise<TTokensUser> {
+    const user = await this.validateUser(email, {
+      isVerified: false,
+      message: "User does not exist or is already verified",
+    });
+
+    const validationCode = await this.verifyEmailRepository.findOne({
+      where: { user: { id: user.id }, code: code },
+    });
+
+    if (!validationCode) throw new BadRequestException("Invalid validation code");
+    if (validationCode.expiresAt < new Date())
+      throw new UnprocessableEntityException("Verification code has expired");
+
+    const tokens = await this.getTokens(user.uuid);
+    await this.updateRtHash(user.uuid, tokens.refreshToken, true);
+    return { ...tokens, user };
+  }
   /**
    * Sends a verification email to the user with a verification code
    *
@@ -169,8 +195,6 @@ export class AuthService implements IAuthService {
     return tokens;
   }
 
-  async verifyEmail(payload: VerifyEmailDto) {}
-
   /**
    * Validates a user by checking if the user exists in the database
    *
@@ -204,11 +228,13 @@ export class AuthService implements IAuthService {
    * @param userId - The unique UUID of the user
    * @param rt - The refresh token
    */
-  private async updateRtHash(userId: string, rt: string): Promise<void> {
+  private async updateRtHash(userId: string, rt: string, verified?: boolean): Promise<void> {
     const newHashRt = await hashDataArgon(rt);
     const user = await this.validateUser(userId);
     user.hashedRefreshToken = newHashRt;
+
     await this.userRepository.save(user);
+    if (verified) user.isVerified = verified;
   }
 
   /**
