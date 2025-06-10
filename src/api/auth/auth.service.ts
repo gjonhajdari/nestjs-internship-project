@@ -71,28 +71,26 @@ export class AuthService implements IAuthService {
 
     const tokens = await this.getTokens(user.uuid);
     await this.updateRtHash(user.uuid, tokens.refreshToken);
-
-    const code = Math.floor(100000 + Math.random() * 900000);
-
-    const expiresAt = new Date();
-    expiresAt.setMinutes(expiresAt.getMinutes() + this.VERIFICATION_TIME);
-
-    const [_, verificationError] = await tryCatch(
-      this.verifyEmailRepository.save(
-        this.verifyEmailRepository.create({
-          code,
-          expiresAt,
-          user,
-        }),
-      ),
-    );
-
-    if (userError || verificationError)
-      throw new InternalServerErrorException(userError.message ?? verificationError.message);
-
-    this.emitter.emit("verifyMail", { code, user });
+    await this.sendVerificationEmail(user.uuid);
 
     return tokens;
+  }
+
+  /**
+   * Sends a verification email to the user with a verification code
+   *
+   * @param userId - The unique UUID of the user
+   * @throws {BadRequestException} - If user does not exist or is already verified
+   */
+  async sendVerificationEmail(userId: string): Promise<void> {
+    const user = await this.validateUser(userId, {
+      isVerified: false,
+      message: "User does not exist or is already verified",
+    });
+
+    const code = await this.generateVerificationCode(user);
+
+    this.emitter.emit("verifyMail", { code, user });
   }
 
   /**
