@@ -38,6 +38,7 @@ export class NotesGateway extends BaseWebsocketGateway {
         user.uuid,
         ActivityType.CREATE,
         ResourceType.NOTE,
+        newNote.uuid,
       );
 
       this.server.to(roomId).emit("created", plainToInstance(Note, newNote));
@@ -66,6 +67,7 @@ export class NotesGateway extends BaseWebsocketGateway {
         user.uuid,
         ActivityType.UPDATE,
         ResourceType.NOTE,
+        updatedNote.uuid,
       );
 
       this.server.to(roomId).emit("updated", plainToInstance(Note, updatedNote));
@@ -90,6 +92,7 @@ export class NotesGateway extends BaseWebsocketGateway {
         user.uuid,
         ActivityType.DELETE,
         ResourceType.NOTE,
+        noteId,
       );
 
       this.server.to(roomId).emit("deleted", deletedNote);
