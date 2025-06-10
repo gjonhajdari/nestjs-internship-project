@@ -40,11 +40,7 @@ import { User } from "../user/entities/user.entity";
 import { CreateNoteDto } from "./dtos/create-note.dto";
 import { UpdateNoteDto } from "./dtos/update-note.dto";
 import { Note } from "./entities/note.entity";
-import {
-  IAddVoteNote,
-  IRemoveVoteNote,
-  IUpdateNote,
-} from "./interfaces/notes-response.interface";
+import { IAddVoteNote, IRemoveVoteNote } from "./interfaces/notes-response.interface";
 import { INotesController } from "./interfaces/notes.controller.interface";
 import { NotesService } from "./notes.service";
 
@@ -135,7 +131,7 @@ export class NotesController implements INotesController {
     @Param("noteId", new ParseUUIDPipe()) noteId: string,
     @Body() body: UpdateNoteDto,
     @GetCurrentUser() currentUser: User,
-  ): Promise<IUpdateNote> {
+  ): Promise<Note> {
     return await this.notesService.updateNote(noteId, body, currentUser);
   }
 

@@ -16,11 +16,7 @@ import { CreateNoteDto } from "./dtos/create-note.dto";
 import { UpdateNoteDto } from "./dtos/update-note.dto";
 import { NoteVote } from "./entities/note-vote.entity";
 import { Note } from "./entities/note.entity";
-import {
-  IAddVoteNote,
-  IRemoveVoteNote,
-  IUpdateNote,
-} from "./interfaces/notes-response.interface";
+import { IAddVoteNote, IRemoveVoteNote } from "./interfaces/notes-response.interface";
 import { INotesService } from "./interfaces/notes.service.interface";
 import { NotesRepository } from "./repository/notes.repository";
 
@@ -156,18 +152,14 @@ export class NotesService implements INotesService {
    * @throws {NotFoundException} - If no note is found with the given UUID.
    * @throws {InternalServerErrorException} - If an error occurs while updating the note in the database.
    */
-  async updateNote(
-    noteId: string,
-    payload: UpdateNoteDto,
-    currentUser: User,
-  ): Promise<IUpdateNote> {
+  async updateNote(noteId: string, payload: UpdateNoteDto, currentUser: User): Promise<Note> {
     const note = await this.findById(noteId);
 
     try {
       await this.notesRepository.update(note.id, { ...payload });
       const updatedNote = await this.findById(noteId);
 
-      return { message: `${currentUser.firstName} has updated note!`, note: updatedNote };
+      return updatedNote;
     } catch (error) {
       throw new InternalServerErrorException("An error occurred while updating the note");
     }
