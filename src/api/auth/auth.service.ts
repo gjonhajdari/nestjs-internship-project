@@ -1,3 +1,5 @@
+import { EventEmitter } from "node:events";
+import { tryCatch } from "@maxmorozoff/try-catch-tuple";
 import {
   BadRequestException,
   ForbiddenException,
@@ -7,6 +9,7 @@ import {
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
+import { InjectEventEmitter } from "nest-emitter";
 import { Repository } from "typeorm";
 import {
   compareHashedDataArgon,
@@ -15,10 +18,13 @@ import {
   hashDataBrypt,
 } from "../../services/providers";
 import { User } from "../user/entities/user.entity";
+import { VerifyEmail } from "../user/entities/verify-email.entity";
+import { UsersRepository } from "../user/repository/users.repository";
 import { jwtConstants } from "./constants/constants";
 import { LoginDto } from "./dtos/login.dto";
 import { RefreshTokenDto } from "./dtos/refresh-token.dto";
 import { RegisterDTO } from "./dtos/register.dto";
+import { VerifyEmailDto } from "./dtos/verify-email.dto";
 import { IAuthService } from "./interfaces/auth.service.interface";
 import { JwtPayload } from "./interfaces/jwt-payload.inteface";
 import { Tokens } from "./types/tokens.types";
@@ -26,9 +32,15 @@ import { TTokensUser } from "./types/user-tokens.type";
 
 @Injectable()
 export class AuthService implements IAuthService {
+  readonly VERIFICATION_TIME = Number.parseInt(process.env.VERIFICATION_EXPIRATION_MINUTES);
+
   constructor(
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private userRepository: UsersRepository,
+
+    @InjectRepository(VerifyEmail)
+    private verifyEmailRepository: Repository<VerifyEmail>,
+
+    @InjectEventEmitter() private readonly emitter: EventEmitter,
 
     private jwtService: JwtService,
   ) {}
@@ -46,20 +58,37 @@ export class AuthService implements IAuthService {
 
     // const userRoleKey = UserRoles[registerDto.role];
     // const userPermissions = RolePermissions[userRoleKey];
+    const createdUser = this.userRepository.create({
+      ...registerDto,
+      // permissions: userPermissions,
+    });
 
-    try {
-      const user = await this.userRepository.save(
-        this.userRepository.create({
-          ...registerDto,
-          // permissions: userPermissions,
+    const [user, userError] = await tryCatch(await this.userRepository.save(createdUser));
+
+    const tokens = await this.getTokens(user.uuid);
+    await this.updateRtHash(user.uuid, tokens.refreshToken);
+
+    const code = Math.floor(100000 + Math.random() * 900000);
+
+    const expiresAt = new Date();
+    expiresAt.setMinutes(expiresAt.getMinutes() + this.VERIFICATION_TIME);
+
+    const [_, verificationError] = await tryCatch(
+      this.verifyEmailRepository.save(
+        this.verifyEmailRepository.create({
+          code,
+          expiresAt,
+          user,
         }),
-      );
-      const tokens = await this.getTokens(user.uuid);
-      await this.updateRtHash(user.uuid, tokens.refreshToken);
-      return tokens;
-    } catch (_error) {
-      throw new InternalServerErrorException("User registration failed");
-    }
+      ),
+    );
+
+    if (userError || verificationError)
+      throw new InternalServerErrorException(userError.message ?? verificationError.message);
+
+    this.emitter.emit("verifyMail", { code, user });
+
+    return tokens;
   }
 
   /**
@@ -71,9 +100,12 @@ export class AuthService implements IAuthService {
    * @throws {BadRequestException} - If user credentials are invalid
    */
   async login(loginDto: LoginDto): Promise<TTokensUser> {
-    const user: User = await this.userRepository.findOneBy({
-      email: loginDto.email,
+    const user: User = await this.userRepository.findOne({
+      where: {
+        email: loginDto.email,
+      },
     });
+
     if (!user) {
       throw new BadRequestException("Wrong credentials!");
     }
@@ -134,6 +166,8 @@ export class AuthService implements IAuthService {
     await this.updateRtHash(user.uuid, tokens.refreshToken);
     return tokens;
   }
+
+  async verifyEmail(payload: VerifyEmailDto) {}
 
   /**
    * Validates a user by checking if the user exists in the database
