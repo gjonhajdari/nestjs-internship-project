@@ -4,6 +4,7 @@ import {
   Controller,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
   UseGuards,
   UseInterceptors,
@@ -21,6 +22,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
+import { EmailValidationPipe } from "src/common/pipes/email-validation.pipe";
 import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
 import { Public } from "../../common/decorators/public.decorator";
 import { AccessTokenGuard } from "../../common/guards/access-token.guard";
@@ -35,8 +37,10 @@ import { AuthService } from "./auth.service";
 import { LoginDto } from "./dtos/login.dto";
 import { RefreshTokenDto } from "./dtos/refresh-token.dto";
 import { RegisterDTO } from "./dtos/register.dto";
+import { VerifyEmailDto } from "./dtos/verify-email.dto";
 import { IAuthController } from "./interfaces/auth.controller.interface";
 import { Tokens } from "./types/tokens.types";
+import { TTokensUser } from "./types/user-tokens.type";
 
 @ApiBearerAuth()
 @ApiTags("Auth")
@@ -116,5 +120,22 @@ export class AuthController implements IAuthController {
   @HttpCode(HttpStatus.OK)
   async refreshToken(@Body() body: RefreshTokenDto): Promise<Tokens> {
     return await this.authService.refreshToken(body);
+  }
+
+  @Public()
+  @Post("verify-email/:email")
+  @HttpCode(HttpStatus.OK)
+  async verifyEmail(
+    @Param("email", EmailValidationPipe) email: string,
+    @Body() body: VerifyEmailDto,
+  ): Promise<TTokensUser> {
+    return this.authService.verifyEmail(email, body.code);
+  }
+
+  @Public()
+  @Post("resend-verification/:email")
+  @HttpCode(HttpStatus.OK)
+  async resendVerifyEmail(@Param("email", EmailValidationPipe) email: string): Promise<void> {
+    return this.authService.sendVerificationEmail(email);
   }
 }
