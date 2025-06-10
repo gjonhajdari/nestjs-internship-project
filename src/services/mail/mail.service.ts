@@ -39,7 +39,7 @@ export class MailService {
           email: payload.user.email,
           code: payload.code,
           expiration: this.EXPIRES_AT,
-          verifyLink: `${this.FRONT_APP_URL}/verify-email?user=${payload.user.uuid}&code=${payload.code}`,
+          verifyLink: `${this.FRONT_APP_URL}/verify-email?email=${payload.user.email}&code=${payload.code}`,
         },
       })
       .then((data) => data)
