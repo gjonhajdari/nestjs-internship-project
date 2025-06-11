@@ -33,7 +33,7 @@ export class MailService {
       .sendMail({
         to: payload.user.email,
         from: this.getFromEmail(),
-        subject: this.getSubject("Verify Email"),
+        subject: this.getSubject("Stuck - Verify your email address"),
         template: this.getEmailTemplatePath("verifyEmail"),
         context: {
           email: payload.user.email,
