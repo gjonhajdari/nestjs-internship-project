@@ -66,7 +66,7 @@ export class AuthService implements IAuthService {
       // permissions: userPermissions,
     });
 
-    const [user, userError] = await tryCatch(await this.userRepository.save(createdUser));
+    const [user, userError] = await tryCatch(this.userRepository.save(createdUser));
 
     const tokens = await this.getTokens(user.uuid);
     await this.updateRtHash(user.uuid, tokens.refreshToken);
