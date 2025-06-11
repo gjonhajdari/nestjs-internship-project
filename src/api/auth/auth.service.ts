@@ -231,10 +231,11 @@ export class AuthService implements IAuthService {
   private async updateRtHash(userId: string, rt: string, verified?: boolean): Promise<void> {
     const newHashRt = await hashDataArgon(rt);
     const user = await this.validateUser(userId);
+
     user.hashedRefreshToken = newHashRt;
+    if (verified) user.isVerified = verified;
 
     await this.userRepository.save(user);
-    if (verified) user.isVerified = verified;
   }
 
   /**
