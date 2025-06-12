@@ -3,7 +3,11 @@ import { IsEmail, IsNotEmpty, IsString, Matches } from "class-validator";
 import { SameAs } from "../../../common/decorators/validation.decorator";
 
 export class ForgotPasswordDto {
-  @ApiProperty()
+  @ApiProperty({
+    type: String,
+    description: "User's email address",
+    example: "test@test.com",
+  })
   @IsEmail()
   email: string;
 }

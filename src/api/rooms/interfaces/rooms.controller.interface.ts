@@ -1,4 +1,4 @@
-import { IDeleteStatus } from "../../../common/interfaces/DeleteStatus.interface";
+import { IResponseStatus } from "../../../common/interfaces/ResponseStatus.interface";
 import { User } from "../../user/entities/user.entity";
 import { CreateRoomDto } from "../dtos/create-room.dto";
 import { UpdateRoomDto } from "../dtos/update-room.dto";
@@ -15,11 +15,11 @@ export interface IRoomsController {
 
   update(roomId: string, body: UpdateRoomDto): Promise<Room>;
 
-  delete(roomId: string): Promise<IDeleteStatus>;
+  delete(roomId: string): Promise<IResponseStatus>;
 
   join(user: User, roomId: string): Promise<RoomUsers>;
 
-  leave(user: User, roomId: string): Promise<IDeleteStatus>;
+  leave(user: User, roomId: string): Promise<IResponseStatus>;
 
-  removeFromRoom(userId: string, roomId: string): Promise<IDeleteStatus>;
+  removeFromRoom(userId: string, roomId: string): Promise<IResponseStatus>;
 }
