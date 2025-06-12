@@ -13,6 +13,7 @@ import {
 import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
 import { InjectEventEmitter } from "nest-emitter";
+import { IResponseStatus } from "src/common/interfaces/ResponseStatus.interface";
 import { Repository } from "typeorm";
 import {
   compareHashedDataArgon,
@@ -55,7 +56,7 @@ export class AuthService implements IAuthService {
    * @returns Promise that resolves to the access and refresh tokens
    * @throws {InternalServerErrorException} - If user registration fails
    */
-  async signup(registerDto: RegisterDTO): Promise<Tokens> {
+  async signup(registerDto: RegisterDTO): Promise<IResponseStatus> {
     registerDto.password = await hashDataBrypt(registerDto.password);
     delete registerDto.passwordConfirm;
 
@@ -72,7 +73,13 @@ export class AuthService implements IAuthService {
     await this.updateRtHash(user.uuid, tokens.refreshToken);
     await this.sendVerificationEmail(user.uuid);
 
-    return tokens;
+    return {
+      success: true,
+      message: "User registered successfully. Please verify your email.",
+      resourceId: user.uuid,
+      resourceType: "user",
+      timestamp: new Date(),
+    };
   }
 
   /**
@@ -108,7 +115,7 @@ export class AuthService implements IAuthService {
    * @param userId - The unique UUID of the user
    * @throws {BadRequestException} - If user does not exist or is already verified
    */
-  async sendVerificationEmail(userId: string): Promise<void> {
+  async sendVerificationEmail(userId: string): Promise<IResponseStatus> {
     const user = await this.validateUser(userId, {
       isVerified: false,
       message: "User does not exist or is already verified",
@@ -117,6 +124,14 @@ export class AuthService implements IAuthService {
     const code = await this.generateVerificationCode(user);
 
     this.emitter.emit("verifyMail", { code, user });
+
+    return {
+      success: true,
+      message: "Email sent successfully. Please check your inbox.",
+      resourceId: user.uuid,
+      resourceType: "user",
+      timestamp: new Date(),
+    };
   }
 
   /**

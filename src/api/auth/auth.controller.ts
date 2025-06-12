@@ -23,6 +23,7 @@ import {
   ApiUnauthorizedResponse,
   ApiUnprocessableEntityResponse,
 } from "@nestjs/swagger";
+import { IResponseStatus } from "src/common/interfaces/ResponseStatus.interface";
 import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
 import { Public } from "../../common/decorators/public.decorator";
 import { AccessTokenGuard } from "../../common/guards/access-token.guard";
@@ -67,7 +68,7 @@ export class AuthController implements IAuthController {
   @Public()
   @Post("register")
   @HttpCode(HttpStatus.CREATED)
-  async register(@Body() registerDto: RegisterDTO): Promise<Tokens> {
+  async register(@Body() registerDto: RegisterDTO): Promise<IResponseStatus> {
     return await this.authService.signup(registerDto);
   }
 
@@ -168,7 +169,9 @@ export class AuthController implements IAuthController {
   @Public()
   @Post("resend-verification/:email")
   @HttpCode(HttpStatus.OK)
-  async resendVerifyEmail(@Param("email", EmailValidationPipe) email: string): Promise<void> {
+  async resendVerifyEmail(
+    @Param("email", EmailValidationPipe) email: string,
+  ): Promise<IResponseStatus> {
     return this.authService.sendVerificationEmail(email);
   }
 }
