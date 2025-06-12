@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { CustomRepositoryModule } from "../../common/db/CustomRepository.module";
 import { NotesModule } from "../notes/notes.module";
+import { RoomsModule } from "../rooms/rooms.module";
 import { UserModule } from "../user/users.module";
 import { CommentsController } from "./comments.controller";
 import { CommentsService } from "./comments.service";
@@ -11,6 +12,7 @@ import { CommentsRepository } from "./repository/comments.repository";
     CustomRepositoryModule.forCustomRepository([CommentsRepository]),
     NotesModule,
     UserModule,
+    RoomsModule,
   ],
   providers: [CommentsService],
   controllers: [CommentsController],

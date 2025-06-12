@@ -1,5 +1,5 @@
-import { User } from "src/api/user/entities/user.entity";
 import { IResponseStatus } from "../../../common/interfaces/ResponseStatus.interface";
+import { User } from "../../user/entities/user.entity";
 import { CreateCommentDto } from "../dtos/create-comment.dto";
 import { UpdateCommentDto } from "../dtos/update-comment.dto";
 import { Comment } from "../entities/comment.entity";

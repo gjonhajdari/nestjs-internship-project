@@ -12,7 +12,10 @@ export class NoteVote {
   @Exclude()
   id: number;
 
-  @ManyToOne(() => User)
+  @ManyToOne(
+    () => User,
+    (user) => user.noteVotes,
+  )
   @JoinColumn({ name: "user_id" })
   @ApiProperty({
     type: () => User,
@@ -21,7 +24,11 @@ export class NoteVote {
   })
   user: User;
 
-  @ManyToOne(() => Note)
+  @ManyToOne(
+    () => Note,
+    (note) => note.noteVotes,
+    { onDelete: "CASCADE" },
+  )
   @JoinColumn({ name: "note_id" })
   @ApiProperty({
     type: () => Note,
@@ -30,7 +37,10 @@ export class NoteVote {
   })
   note: Note;
 
-  @ManyToOne(() => Room)
+  @ManyToOne(
+    () => Room,
+    (room) => room.noteVotes,
+  )
   @JoinColumn({ name: "room_id" })
   @ApiProperty({
     type: () => Room,

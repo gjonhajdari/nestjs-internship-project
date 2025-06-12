@@ -1,8 +1,8 @@
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from "@nestjs/common";
 import { ModuleRef, Reflector } from "@nestjs/core";
-import { RoomRoles } from "src/api/rooms/enums/room-roles.enum";
-import { RoomUsersRepository } from "src/api/rooms/repository/room-users.repository";
-import { RoomsService } from "src/api/rooms/rooms.service";
+import { RoomRoles } from "../../api/rooms/enums/room-roles.enum";
+import { RoomUsersRepository } from "../../api/rooms/repository/room-users.repository";
+import { RoomsService } from "../../api/rooms/rooms.service";
 
 @Injectable()
 export class RolesGuard implements CanActivate {

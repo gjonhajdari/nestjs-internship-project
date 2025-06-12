@@ -1,9 +1,9 @@
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from "@nestjs/common";
-import { NotesService } from "src/api/notes/notes.service";
-import { RoomUsers } from "src/api/rooms/entities/room-users.entity";
-import { RoomRoles } from "src/api/rooms/enums/room-roles.enum";
-import { User } from "src/api/user/entities/user.entity";
 import { DataSource } from "typeorm";
+import { NotesService } from "../../api/notes/notes.service";
+import { RoomUsers } from "../../api/rooms/entities/room-users.entity";
+import { RoomRoles } from "../../api/rooms/enums/room-roles.enum";
+import { User } from "../../api/user/entities/user.entity";
 
 @Injectable()
 export class DeleteNoteGuard implements CanActivate {

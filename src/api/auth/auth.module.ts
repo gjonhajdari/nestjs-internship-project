@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { CustomRepositoryModule } from "src/common/db/CustomRepository.module";
+import { CustomRepositoryModule } from "../../common/db/CustomRepository.module";
 import { User } from "../user/entities/user.entity";
 import { VerifyEmail } from "../user/entities/verify-email.entity";
 import { UsersRepository } from "../user/repository/users.repository";
