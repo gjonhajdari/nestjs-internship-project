@@ -9,7 +9,7 @@ import { ActivitiesService } from "src/api/activities/activities.service";
 import { RoomsService } from "../api/rooms/rooms.service";
 import { BaseWebsocketGateway } from "./base-websocket.gateway";
 
-@WebSocketGateway({ namespace: "rooms" })
+@WebSocketGateway()
 export class RoomsGateway extends BaseWebsocketGateway {
   constructor(
     private roomsService: RoomsService,
@@ -18,7 +18,7 @@ export class RoomsGateway extends BaseWebsocketGateway {
     super();
   }
 
-  @SubscribeMessage("join")
+  @SubscribeMessage("rooms/join")
   async handleJoinRoom(
     @MessageBody() data: { roomId: string },
     @ConnectedSocket() socket: Socket,
@@ -28,7 +28,7 @@ export class RoomsGateway extends BaseWebsocketGateway {
       const userId = (socket as any).user;
 
       socket.join(roomId);
-      this.server.to(roomId).emit("joined", { userId });
+      this.server.to(roomId).emit("rooms/joined", { userId });
     } catch (error) {
       socket.emit("error", {
         message: "Failed to join room",
@@ -37,7 +37,7 @@ export class RoomsGateway extends BaseWebsocketGateway {
     }
   }
 
-  @SubscribeMessage("leave")
+  @SubscribeMessage("rooms/leave")
   async handleLeaveRoom(
     @MessageBody() data: { roomId: string },
     @ConnectedSocket() socket: Socket,
@@ -45,6 +45,6 @@ export class RoomsGateway extends BaseWebsocketGateway {
     const { roomId } = data;
     const userId = (socket as any).user;
     socket.leave(roomId);
-    this.server.to(roomId).emit("left", { userId: userId });
+    this.server.to(roomId).emit("rooms/left", { userId: userId });
   }
 }

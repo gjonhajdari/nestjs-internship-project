@@ -13,7 +13,7 @@ import { CommentsService } from "../api/comments/comments.service";
 import { CreateCommentDto } from "../api/comments/dtos/create-comment.dto";
 import { BaseWebsocketGateway } from "./base-websocket.gateway";
 
-@WebSocketGateway({ namespace: "comments" })
+@WebSocketGateway()
 export class CommentsGateway extends BaseWebsocketGateway {
   constructor(
     private commentsService: CommentsService,
@@ -22,7 +22,7 @@ export class CommentsGateway extends BaseWebsocketGateway {
     super();
   }
 
-  @SubscribeMessage("create")
+  @SubscribeMessage("comments/create")
   async handleNewComment(
     @MessageBody() data: { roomId: string; payload: CreateCommentDto },
     @ConnectedSocket() socket: Socket,
@@ -31,13 +31,13 @@ export class CommentsGateway extends BaseWebsocketGateway {
     const { roomId, payload } = data;
     try {
       const newComment = await this.commentsService.createComment(id, payload);
-      this.server.to(roomId).emit("created", plainToInstance(Comment, newComment));
+      this.server.to(roomId).emit("comments/created", plainToInstance(Comment, newComment));
     } catch (error) {
       socket.emit("Error in handleNewComment", error.message);
     }
   }
 
-  @SubscribeMessage("update")
+  @SubscribeMessage("comments/update")
   async handleEditComment(
     @MessageBody() data: { roomId: string; commentId: string; payload: UpdateCommentDto },
     @ConnectedSocket() socket: Socket,
@@ -46,13 +46,15 @@ export class CommentsGateway extends BaseWebsocketGateway {
     const { roomId, commentId, payload } = data;
     try {
       const updatedComment = await this.commentsService.updateComment(id, commentId, payload);
-      this.server.to(roomId).emit("updated", plainToInstance(Comment, updatedComment));
+      this.server
+        .to(roomId)
+        .emit("comments/updated", plainToInstance(Comment, updatedComment));
     } catch (error) {
       socket.emit("Error in handleEditComment", error.message);
     }
   }
 
-  @SubscribeMessage("delete")
+  @SubscribeMessage("comments/delete")
   async handleDeleteComment(
     @MessageBody() data: { roomId: string; commentId: string },
     @ConnectedSocket() socket: Socket,
@@ -61,7 +63,7 @@ export class CommentsGateway extends BaseWebsocketGateway {
     const { roomId, commentId } = data;
     try {
       const deletedComment = await this.commentsService.deleteComment(commentId);
-      this.server.to(roomId).emit("deleted", deletedComment);
+      this.server.to(roomId).emit("comments/deleted", deletedComment);
     } catch (error) {
       socket.emit("Error in handleDeleteComment", error.message);
     }

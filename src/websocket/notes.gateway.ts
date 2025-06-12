@@ -16,7 +16,7 @@ import { NotesService } from "../api/notes/notes.service";
 import { UsersService } from "../api/user/users.service";
 import { BaseWebsocketGateway } from "./base-websocket.gateway";
 
-@WebSocketGateway({ namespace: "notes" })
+@WebSocketGateway()
 export class NotesGateway extends BaseWebsocketGateway {
   constructor(
     private notesService: NotesService,
@@ -26,7 +26,7 @@ export class NotesGateway extends BaseWebsocketGateway {
     super();
   }
 
-  @SubscribeMessage("create")
+  @SubscribeMessage("notes/create")
   async handleNewNote(@MessageBody() data: CreateNoteDto, @ConnectedSocket() socket: Socket) {
     const { id } = (socket as any).user;
     const user = await this.usersService.findOne(id);
@@ -41,7 +41,7 @@ export class NotesGateway extends BaseWebsocketGateway {
         newNote.uuid,
       );
 
-      this.server.to(roomId).emit("created", plainToInstance(Note, newNote));
+      this.server.to(roomId).emit("notes/created", plainToInstance(Note, newNote));
       this.emitActivity(roomId, activity);
     } catch (error) {
       socket.emit("error", {
@@ -51,7 +51,7 @@ export class NotesGateway extends BaseWebsocketGateway {
     }
   }
 
-  @SubscribeMessage("update")
+  @SubscribeMessage("notes/update")
   async handleUpdateNote(
     @MessageBody()
     data: { roomId: string; noteId: string; updates: UpdateNoteDto },
@@ -70,14 +70,14 @@ export class NotesGateway extends BaseWebsocketGateway {
         updatedNote.uuid,
       );
 
-      this.server.to(roomId).emit("updated", plainToInstance(Note, updatedNote));
+      this.server.to(roomId).emit("notes/updated", plainToInstance(Note, updatedNote));
       this.emitActivity(roomId, activity);
     } catch (error) {
       socket.emit("Error in handleUpdateNote", error.message);
     }
   }
 
-  @SubscribeMessage("delete")
+  @SubscribeMessage("notes/delete")
   async handleDeleteNote(
     @MessageBody() data: { roomId: string; noteId: string },
     @ConnectedSocket() socket: Socket,
@@ -95,7 +95,7 @@ export class NotesGateway extends BaseWebsocketGateway {
         noteId,
       );
 
-      this.server.to(roomId).emit("deleted", deletedNote);
+      this.server.to(roomId).emit("notes/deleted", deletedNote);
       this.emitActivity(roomId, activity);
     } catch (error) {
       socket.emit("Error in handleDeleteNote", error.message);
