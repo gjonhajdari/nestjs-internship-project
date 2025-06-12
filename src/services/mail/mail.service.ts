@@ -1,6 +1,6 @@
 import { MailerService } from "@nestjs-modules/mailer";
 import { Inject, Injectable } from "@nestjs/common";
-import { ForgotPasswordEmail } from "../../common/interfaces/ForgotPasswordEmail.interface";
+import { EmailWithToken } from "../../common/interfaces/EmailWithToken.interface";
 
 @Injectable()
 export class MailService {
@@ -9,16 +9,16 @@ export class MailService {
   readonly fromEmail: string = process.env.SENDER_MAIL;
   readonly FRONT_APP_URL: string = process.env.FRONT_APP_URL;
 
-  public forgotPassword(userToken: ForgotPasswordEmail) {
+  public forgotPassword(payload: EmailWithToken) {
     this.mailerService
       .sendMail({
-        to: userToken.user.email,
+        to: payload.user.email,
         from: this.getFromEmail(),
         subject: this.getSubject("Reset Password"),
         template: this.getEmailTemplatePath("forgotPassword"),
         context: {
-          user: userToken.user.email,
-          link: `${this.FRONT_APP_URL}/reset-password?token=${userToken.token}&name=${userToken.user.firstName}`,
+          name: payload.user.firstName,
+          link: `${this.FRONT_APP_URL}/reset-password?token=${payload.token}&name=${payload.user.firstName}`,
         },
       })
       .then((data) => data)
