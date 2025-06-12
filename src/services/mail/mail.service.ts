@@ -1,6 +1,6 @@
 import { MailerService } from "@nestjs-modules/mailer";
 import { Inject, Injectable } from "@nestjs/common";
-import { EmailWithToken } from "../../common/interfaces/EmailWithToken.interface";
+import { VerifyMail } from "../../api/auth/interfaces/verify-mail.interface";
 
 @Injectable()
 export class MailService {
@@ -8,6 +8,7 @@ export class MailService {
 
   readonly fromEmail: string = process.env.SENDER_MAIL;
   readonly FRONT_APP_URL: string = process.env.FRONT_APP_URL;
+  readonly EXPIRES_AT: string = process.env.VERIFICATION_EXPIRATION_MINUTES;
 
   public forgotPassword(payload: EmailWithToken) {
     this.mailerService
@@ -19,6 +20,26 @@ export class MailService {
         context: {
           name: payload.user.firstName,
           link: `${this.FRONT_APP_URL}/reset-password?token=${payload.token}&name=${payload.user.firstName}`,
+        },
+      })
+      .then((data) => data)
+      .catch((error) => {
+        throw error;
+      });
+  }
+
+  public verifyEmail(payload: VerifyMail) {
+    this.mailerService
+      .sendMail({
+        to: payload.user.email,
+        from: this.getFromEmail(),
+        subject: this.getSubject("Stuck - Verify your email address"),
+        template: this.getEmailTemplatePath("verifyEmail"),
+        context: {
+          email: payload.user.email,
+          code: payload.code,
+          expiration: this.EXPIRES_AT,
+          verifyLink: `${this.FRONT_APP_URL}/verify-email?email=${payload.user.email}&code=${payload.code}`,
         },
       })
       .then((data) => data)

@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiProperty } from "@nestjs/swagger";
 import { Exclude } from "class-transformer";
 import { Matches } from "class-validator";
 import { Comment } from "src/api/comments/entities/comment.entity";
@@ -82,6 +82,14 @@ export class User extends AuditEntity {
   @Exclude()
   hashedRefreshToken: string;
 
+  @Column({
+    type: "boolean",
+    nullable: false,
+    default: false,
+    name: "is_verified",
+  })
+  isVerified: boolean;
+
   @OneToMany(
     () => Note,
     (note) => note.author,
@@ -104,9 +112,5 @@ export class User extends AuditEntity {
     () => NoteVote,
     (noteVote) => noteVote.user,
   )
-  @ApiPropertyOptional({
-    type: () => [NoteVote],
-    description: "Votes cast by the user on notes",
-  })
   noteVotes: NoteVote[];
 }
