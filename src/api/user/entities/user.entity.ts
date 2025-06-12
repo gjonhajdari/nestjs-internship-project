@@ -1,12 +1,13 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Exclude } from "class-transformer";
 import { Matches } from "class-validator";
-import { Comment } from "src/api/comments/entities/comment.entity";
-import { NoteVote } from "src/api/notes/entities/note-vote.entity";
-import { Note } from "src/api/notes/entities/note.entity";
-import { RoomUsers } from "src/api/rooms/entities/room-users.entity";
 import { Column, Entity, OneToMany } from "typeorm";
 import { AuditEntity } from "../../../common/db/customBaseEntites/AuditEntity";
+import { Activity } from "../../activities/entities/activity.entity";
+import { Comment } from "../../comments/entities/comment.entity";
+import { NoteVote } from "../../notes/entities/note-vote.entity";
+import { Note } from "../../notes/entities/note.entity";
+import { RoomUsers } from "../../rooms/entities/room-users.entity";
 
 @Entity("users")
 export class User extends AuditEntity {
@@ -113,4 +114,10 @@ export class User extends AuditEntity {
     (noteVote) => noteVote.user,
   )
   noteVotes: NoteVote[];
+
+  @OneToMany(
+    () => Activity,
+    (activity) => activity.user,
+  )
+  activities: Activity;
 }

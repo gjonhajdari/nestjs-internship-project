@@ -1,4 +1,4 @@
-import { ResourceType } from "../types/ResourceType";
+import { ResourceType } from "../enums/resource-type.enum";
 
 export interface IResponseStatus {
   success: boolean;
