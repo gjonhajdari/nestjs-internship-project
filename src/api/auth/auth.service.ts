@@ -13,8 +13,9 @@ import {
 import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
 import { InjectEventEmitter } from "nest-emitter";
-import { IResponseStatus } from "src/common/interfaces/ResponseStatus.interface";
 import { Repository } from "typeorm";
+import { ResourceType } from "../../common/enums/resource-type.enum";
+import { IResponseStatus } from "../../common/interfaces/ResponseStatus.interface";
 import {
   compareHashedDataArgon,
   compareHashedDataBcrypt,
@@ -77,7 +78,7 @@ export class AuthService implements IAuthService {
       success: true,
       message: "User registered successfully. Please verify your email.",
       resourceId: user.uuid,
-      resourceType: "user",
+      resourceType: ResourceType.USER,
       timestamp: new Date(),
     };
   }
@@ -129,7 +130,7 @@ export class AuthService implements IAuthService {
       success: true,
       message: "Email sent successfully. Please check your inbox.",
       resourceId: user.uuid,
-      resourceType: "user",
+      resourceType: ResourceType.USER,
       timestamp: new Date(),
     };
   }
