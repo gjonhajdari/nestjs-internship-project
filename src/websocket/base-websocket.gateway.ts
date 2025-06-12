@@ -7,7 +7,7 @@ import {
 } from "@nestjs/websockets";
 import * as jwt from "jsonwebtoken";
 import { Server, Socket } from "socket.io";
-import { WsAuthGuard } from "src/common/ws-guards/auth.guard";
+import { WsAuthGuard } from "../common/ws-guards/auth.guard";
 import { EmitEvents, ListenEvents } from "./interfaces/websocket-events.interface";
 
 @WebSocketGateway()

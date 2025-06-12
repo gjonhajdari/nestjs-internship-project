@@ -6,14 +6,14 @@ import {
 } from "@nestjs/websockets";
 import { plainToInstance } from "class-transformer";
 import { Socket } from "socket.io";
-import { ActivitiesService } from "src/api/activities/activities.service";
-import { Note } from "src/api/notes/entities/note.entity";
-import { ActivityType } from "src/common/enums/activity-type.enum";
-import { ResourceType } from "src/common/enums/resource-type.enum";
+import { ActivitiesService } from "../api/activities/activities.service";
 import { CreateNoteDto } from "../api/notes/dtos/create-note.dto";
 import { UpdateNoteDto } from "../api/notes/dtos/update-note.dto";
+import { Note } from "../api/notes/entities/note.entity";
 import { NotesService } from "../api/notes/notes.service";
 import { UsersService } from "../api/user/users.service";
+import { ActivityType } from "../common/enums/activity-type.enum";
+import { ResourceType } from "../common/enums/resource-type.enum";
 import { BaseWebsocketGateway } from "./base-websocket.gateway";
 
 @WebSocketGateway()
@@ -99,6 +99,57 @@ export class NotesGateway extends BaseWebsocketGateway {
       this.emitActivity(roomId, activity);
     } catch (error) {
       socket.emit("Error in handleDeleteNote", error.message);
+    }
+  }
+
+  @SubscribeMessage("notes/vote")
+  async handleAddVote(
+    @MessageBody() data: { roomId: string; noteId: string },
+    @ConnectedSocket() socket: Socket,
+  ) {
+    const { id } = (socket as any).user;
+    const user = await this.usersService.findOne(id);
+    const { roomId, noteId } = data;
+
+    try {
+      const vote = await this.notesService.addVote(noteId, user);
+      const activity = await this.activitiesService.createActivity(
+        roomId,
+        user.uuid,
+        ActivityType.CREATE,
+        ResourceType.VOTE,
+        noteId,
+      );
+
+      this.server.to(roomId).emit("notes/voted", vote);
+      this.emitActivity(roomId, activity);
+    } catch (error) {
+      socket.emit("Error in handleAddVote", error.message);
+    }
+  }
+  @SubscribeMessage("notes/removeVote")
+  async handleRemoveVote(
+    @MessageBody() data: { roomId: string; noteId: string },
+    @ConnectedSocket() socket: Socket,
+  ) {
+    const { id } = (socket as any).user;
+    const user = await this.usersService.findOne(id);
+    const { roomId, noteId } = data;
+
+    try {
+      const vote = await this.notesService.removeVote(noteId, user);
+      const activity = await this.activitiesService.createActivity(
+        roomId,
+        user.uuid,
+        ActivityType.DELETE,
+        ResourceType.VOTE,
+        noteId,
+      );
+
+      this.server.to(roomId).emit("notes/removed", vote);
+      this.emitActivity(roomId, activity);
+    } catch (error) {
+      socket.emit("Error in handleRemoveVote", error.message);
     }
   }
 }
