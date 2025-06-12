@@ -10,7 +10,7 @@ import {
   UseInterceptors,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
-import { GetCurrentUser } from "src/common/decorators/get-current-user.decorator";
+import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
 import { User } from "../user/entities/user.entity";
 import { ActivitiesService } from "./activities.service";
 import { Activity } from "./entities/activity.entity";

@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { CustomRepositoryModule } from "src/common/db/CustomRepository.module";
+import { CustomRepositoryModule } from "../../common/db/CustomRepository.module";
 import { RoomsModule } from "../rooms/rooms.module";
 import { UserModule } from "../user/users.module";
 import { ActivitiesController } from "./activities.controller";

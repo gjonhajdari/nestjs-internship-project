@@ -1,5 +1,5 @@
-import { ActivityType } from "src/common/enums/activity-type.enum";
-import { ResourceType } from "src/common/enums/resource-type.enum";
+import { ActivityType } from "../../../common/enums/activity-type.enum";
+import { ResourceType } from "../../../common/enums/resource-type.enum";
 import { Activity } from "../entities/activity.entity";
 
 export interface IActivitiesService {

@@ -1,10 +1,10 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Room } from "src/api/rooms/entities/room.entity";
-import { User } from "src/api/user/entities/user.entity";
-import { AuditEntity } from "src/common/db/customBaseEntites/AuditEntity";
-import { ResourceType } from "src/common/enums/resource-type.enum";
 import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
+import { AuditEntity } from "../../../common/db/customBaseEntites/AuditEntity";
 import { ActivityType } from "../../../common/enums/activity-type.enum";
+import { ResourceType } from "../../../common/enums/resource-type.enum";
+import { Room } from "../../rooms/entities/room.entity";
+import { User } from "../../user/entities/user.entity";
 
 @Entity("activities")
 export class Activity extends AuditEntity {
