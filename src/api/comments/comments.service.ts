@@ -5,6 +5,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from "@nestjs/common";
+import { ResourceType } from "../../common/enums/resource-type.enum";
 import { IResponseStatus } from "../../common/interfaces/ResponseStatus.interface";
 import { NotesService } from "../notes/notes.service";
 import { UsersService } from "../user/users.service";
@@ -155,7 +156,7 @@ export class CommentsService implements ICommentsService {
 
     return {
       success: true,
-      resourceType: "comment",
+      resourceType: ResourceType.COMMENT,
       resourceId: comment.uuid,
       message: "Comment deleted successfully",
       timestamp: new Date(),

@@ -7,6 +7,7 @@ import { APP_GUARD } from "@nestjs/core";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { NestEmitterModule } from "nest-emitter";
 import { DataSourceOptions } from "typeorm";
+import { ActivitiesModule } from "./api/activities/activities.module";
 import { AuthModule } from "./api/auth/auth.module";
 import { CommentsModule } from "./api/comments/comments.module";
 import { NotesModule } from "./api/notes/notes.module";
@@ -50,6 +51,7 @@ import { MailService } from "./services/mail/mail.service";
     RoomsModule,
     NotesModule,
     CommentsModule,
+    ActivitiesModule,
   ],
   controllers: [AppController],
   providers: [
