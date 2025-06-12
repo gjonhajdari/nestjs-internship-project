@@ -9,7 +9,7 @@ import {
 import { InjectRepository } from "@nestjs/typeorm";
 import { InjectEventEmitter } from "nest-emitter";
 import { Repository } from "typeorm";
-import { IDeleteStatus } from "../../common/interfaces/DeleteStatus.interface";
+import { IResponseStatus } from "../../common/interfaces/ResponseStatus.interface";
 import { compareHashedDataBcrypt, hashDataBrypt } from "../../services/providers";
 import { RegisterDTO } from "../auth/dtos/register.dto";
 import { ForgotPasswordDto, ResetPasswordDto } from "./dtos/password-reset.dto";
@@ -106,7 +106,7 @@ export class UsersService implements IUsersService {
    * @param userId - The unique UUID of the user
    * @throws {NotFoundException} - If no user with the given UUID is found
    */
-  async deleteUser(userId: string): Promise<IDeleteStatus> {
+  async deleteUser(userId: string): Promise<IResponseStatus> {
     const user = await this.findOne(userId);
     await this.userRepository.softRemove(user);
 
@@ -124,9 +124,9 @@ export class UsersService implements IUsersService {
    *
    * @param paload - Required attributes to send a password change request
    * @returns Promise that resolves to void
-   * @throws {UnprocessableEntityException} - If no user is found with the given email
+   * @throws {NotFoundException} - If no user is found with the given email
    */
-  async forgotPassword(paload: ForgotPasswordDto): Promise<void> {
+  async forgotPassword(paload: ForgotPasswordDto): Promise<IResponseStatus> {
     const user = await this.userRepository.findOne({
       where: { email: paload.email },
     });
@@ -157,6 +157,12 @@ export class UsersService implements IUsersService {
       expiresAt,
       user,
     });
+
+    return {
+      success: true,
+      message: "Email sent successfully",
+      timestamp: new Date(),
+    };
   }
 
   /**
