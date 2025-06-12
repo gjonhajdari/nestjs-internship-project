@@ -1,7 +1,7 @@
 import { MailerService } from "@nestjs-modules/mailer";
 import { Inject, Injectable } from "@nestjs/common";
-import { EmailWithToken } from "src/common/interfaces/EmailWithToken.interface";
 import { VerifyMail } from "../../api/auth/interfaces/verify-mail.interface";
+import { EmailWithToken } from "../../common/interfaces/EmailWithToken.interface";
 
 @Injectable()
 export class MailService {

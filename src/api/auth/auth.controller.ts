@@ -23,8 +23,6 @@ import {
   ApiUnauthorizedResponse,
   ApiUnprocessableEntityResponse,
 } from "@nestjs/swagger";
-import { UnprocessableEntityResponse } from "src/common/interfaces/responses/unprocessable-entity.response";
-import { EmailValidationPipe } from "src/common/pipes/email-validation.pipe";
 import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
 import { Public } from "../../common/decorators/public.decorator";
 import { AccessTokenGuard } from "../../common/guards/access-token.guard";
@@ -33,7 +31,9 @@ import { ForbiddenResponse } from "../../common/interfaces/responses/forbidden.r
 import { InternalErrorResponse } from "../../common/interfaces/responses/internal-error.response";
 import { LoginUserResponse } from "../../common/interfaces/responses/login-user.respons";
 import { UnauthorizedResponse } from "../../common/interfaces/responses/unauthorized.response";
+import { UnprocessableEntityResponse } from "../../common/interfaces/responses/unprocessable-entity.response";
 import { UserTokensResponse } from "../../common/interfaces/responses/user-tokens.response";
+import { EmailValidationPipe } from "../../common/pipes/email-validation.pipe";
 import { User } from "../user/entities/user.entity";
 import { AuthService } from "./auth.service";
 import { LoginDto } from "./dtos/login.dto";

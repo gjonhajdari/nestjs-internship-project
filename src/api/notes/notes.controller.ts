@@ -27,13 +27,13 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
-import { InternalErrorResponse } from "src/common/interfaces/responses/internal-error.response";
 import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
 import { RolesGuard } from "../../common/guards/roles.guard";
 import { IResponseStatus } from "../../common/interfaces/ResponseStatus.interface";
 import { BadRequestResponse } from "../../common/interfaces/responses/bad-request.response";
 import { DeletedResponse } from "../../common/interfaces/responses/deleted.response";
 import { ForbiddenResponse } from "../../common/interfaces/responses/forbidden.response";
+import { InternalErrorResponse } from "../../common/interfaces/responses/internal-error.response";
 import { NotFoundResponse } from "../../common/interfaces/responses/not-found.response";
 import { UnauthorizedResponse } from "../../common/interfaces/responses/unauthorized.response";
 import { User } from "../user/entities/user.entity";
