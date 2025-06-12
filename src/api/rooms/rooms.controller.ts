@@ -49,6 +49,47 @@ export class RoomsController implements IRoomsController {
   constructor(private roomsService: RoomsService) {}
 
   @ApiOperation({
+    summary: "Get all rooms",
+    description: "Retrieves all current user's rooms",
+  })
+  @ApiOkResponse({
+    description: "A 200 response if rooms are found successfully",
+    type: GetRoomsResponse,
+    isArray: true,
+  })
+  @ApiUnauthorizedResponse({
+    description: "A 401 error if no bearer token is provided",
+    type: UnauthorizedResponse,
+  })
+  @Get()
+  async findRooms(@GetCurrentUser() user: User): Promise<{ room: Room; role: RoomRoles }[]> {
+    const { uuid } = user;
+    return this.roomsService.findRooms(uuid, true);
+  }
+
+  @ApiOperation({
+    summary: "Get all archived rooms",
+    description: "Retrieves all current user's rooms",
+  })
+  @ApiOkResponse({
+    description: "A 200 response if archived rooms are found successfully",
+    type: GetRoomsResponse,
+    isArray: true,
+  })
+  @ApiUnauthorizedResponse({
+    description: "A 401 error if no bearer token is provided",
+    type: UnauthorizedResponse,
+  })
+  @Get("archived")
+  async findArchived(
+    @GetCurrentUser() user: User,
+  ): Promise<{ room: Room; role: RoomRoles }[]> {
+    console.log("erdhem deri ketuuuu", user);
+    const { uuid } = user;
+    return await this.roomsService.findRooms(uuid, false);
+  }
+
+  @ApiOperation({
     summary: "Get one room by id",
     description: "Retrieves the room with the specified id and it's relations",
   })
@@ -67,25 +108,6 @@ export class RoomsController implements IRoomsController {
   @Get(":roomId")
   async findById(@Param("roomId", new ParseUUIDPipe()) roomId: string): Promise<Room> {
     return this.roomsService.findById(roomId);
-  }
-
-  @ApiOperation({
-    summary: "Get all rooms",
-    description: "Retrieves all current user's rooms",
-  })
-  @ApiOkResponse({
-    description: "A 200 response if rooms are found successfully",
-    type: GetRoomsResponse,
-    isArray: true,
-  })
-  @ApiUnauthorizedResponse({
-    description: "A 401 error if no bearer token is provided",
-    type: UnauthorizedResponse,
-  })
-  @Get()
-  async findRooms(@GetCurrentUser() user: User): Promise<{ room: Room; role: RoomRoles }[]> {
-    const { uuid } = user;
-    return this.roomsService.findRooms(uuid);
   }
 
   @ApiOperation({
@@ -125,6 +147,7 @@ export class RoomsController implements IRoomsController {
     description: "A 400 error if the request body is invalid",
     type: BadRequestResponse,
   })
+  @Roles(RoomRoles.HOST)
   @Patch(":roomId")
   async update(
     @Param("roomId", new ParseUUIDPipe()) roomId: string,
@@ -204,7 +227,6 @@ export class RoomsController implements IRoomsController {
     return this.roomsService.leaveRoom(uuid, roomId);
   }
 
-  @Roles(RoomRoles.HOST)
   @ApiOperation({
     summary: "Remove user from room",
     description: "Remove a user from a room",
@@ -221,7 +243,7 @@ export class RoomsController implements IRoomsController {
     description: "A 401 error if no bearer token is provided or user is not host",
     type: UnauthorizedResponse,
   })
-  //TODO: add guard
+  @Roles(RoomRoles.HOST)
   @Post(":roomId/remove/")
   async removeFromRoom(
     @Query("userId", new ParseUUIDPipe()) userId: string,
