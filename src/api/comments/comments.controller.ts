@@ -24,6 +24,7 @@ import {
 } from "@nestjs/swagger";
 import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
 import { RolesGuard } from "../../common/guards/roles.guard";
+import { IResponseStatus } from "../../common/interfaces/ResponseStatus.interface";
 import { BadRequestResponse } from "../../common/interfaces/responses/bad-request.response";
 import { DeletedResponse } from "../../common/interfaces/responses/deleted.response";
 import { NotFoundResponse } from "../../common/interfaces/responses/not-found.response";
