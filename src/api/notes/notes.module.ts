@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { CustomRepositoryModule } from "src/common/db/CustomRepository.module";
+import { CustomRepositoryModule } from "../../common/db/CustomRepository.module";
 import { RoomsModule } from "../rooms/rooms.module";
 import { NoteVote } from "./entities/note-vote.entity";
 import { NotesController } from "./notes.controller";

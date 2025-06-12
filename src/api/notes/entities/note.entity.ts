@@ -4,6 +4,7 @@ import { AuditEntity } from "../../../common/db/customBaseEntites/AuditEntity";
 import { Comment } from "../../comments/entities/comment.entity";
 import { Room } from "../../rooms/entities/room.entity";
 import { User } from "../../user/entities/user.entity";
+import { NoteColor } from "../enums/note-color.enum";
 import { NoteVote } from "./note-vote.entity";
 
 @Entity("notes")
@@ -50,8 +51,21 @@ export class Note extends AuditEntity {
   })
   totalVotes: number;
 
+  @Column({
+    type: "enum",
+    enum: NoteColor,
+    default: NoteColor.GREEN,
+    enumName: "note_color",
+  })
+  @ApiPropertyOptional({
+    enum: NoteColor,
+    description: "Color of the note.",
+    default: NoteColor.GREEN,
+  })
+  color?: NoteColor;
+
   @Column({ name: "x_axis", type: "int", nullable: true })
-  @Check('"x_axis" >= 0 AND "x_axis" <= 50000')
+  @Check('"x_axis" >= 0 AND "x_axis" <= 5000')
   @ApiPropertyOptional({
     type: Number,
     description: "The X coordinate for the note on the display. It should be an integer.",
@@ -61,11 +75,11 @@ export class Note extends AuditEntity {
   xAxis?: number;
 
   @Column({ name: "y_axis", type: "int", nullable: true })
-  @Check('"y_axis" >= 0 AND "y_axis" <= 50000')
+  @Check('"y_axis" >= 0 AND "y_axis" <= 2800')
   @ApiPropertyOptional({
     type: Number,
     description: "The Y coordinate for the note on the display. It should be an integer.",
-    example: 2500,
+    example: 500,
     required: false,
   })
   yAxis?: number;
@@ -74,19 +88,11 @@ export class Note extends AuditEntity {
     () => Comment,
     (comment) => comment.note,
   )
-  @ApiPropertyOptional({
-    type: () => [Comment],
-    description: "Comments associated with this note",
-  })
   comments: Comment[];
 
   @OneToMany(
     () => NoteVote,
     (vote) => vote.note,
   )
-  @ApiPropertyOptional({
-    type: () => [NoteVote],
-    description: "Votes cast for this note",
-  })
   noteVotes: NoteVote[];
 }
