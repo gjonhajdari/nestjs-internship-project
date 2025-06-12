@@ -14,6 +14,8 @@ import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
 import { InjectEventEmitter } from "nest-emitter";
 import { Repository } from "typeorm";
+import { ResourceType } from "../../common/enums/resource-type.enum";
+import { IResponseStatus } from "../../common/interfaces/ResponseStatus.interface";
 import {
   compareHashedDataArgon,
   compareHashedDataBcrypt,
@@ -55,7 +57,7 @@ export class AuthService implements IAuthService {
    * @returns Promise that resolves to the access and refresh tokens
    * @throws {InternalServerErrorException} - If user registration fails
    */
-  async signup(registerDto: RegisterDTO): Promise<Tokens> {
+  async signup(registerDto: RegisterDTO): Promise<IResponseStatus> {
     registerDto.password = await hashDataBrypt(registerDto.password);
     delete registerDto.passwordConfirm;
 
@@ -72,7 +74,13 @@ export class AuthService implements IAuthService {
     await this.updateRtHash(user.uuid, tokens.refreshToken);
     await this.sendVerificationEmail(user.uuid);
 
-    return tokens;
+    return {
+      success: true,
+      message: "User registered successfully. Please verify your email.",
+      resourceId: user.uuid,
+      resourceType: ResourceType.USER,
+      timestamp: new Date(),
+    };
   }
 
   /**
@@ -105,11 +113,11 @@ export class AuthService implements IAuthService {
   /**
    * Sends a verification email to the user with a verification code
    *
-   * @param userId - The unique UUID of the user
+   * @param email - The unique email of the user
    * @throws {BadRequestException} - If user does not exist or is already verified
    */
-  async sendVerificationEmail(userId: string): Promise<void> {
-    const user = await this.validateUser(userId, {
+  async sendVerificationEmail(email: string): Promise<IResponseStatus> {
+    const user = await this.validateUser(email, {
       isVerified: false,
       message: "User does not exist or is already verified",
     });
@@ -117,6 +125,14 @@ export class AuthService implements IAuthService {
     const code = await this.generateVerificationCode(user);
 
     this.emitter.emit("verifyMail", { code, user });
+
+    return {
+      success: true,
+      message: "Email sent successfully. Please check your inbox.",
+      resourceId: user.uuid,
+      resourceType: ResourceType.USER,
+      timestamp: new Date(),
+    };
   }
 
   /**
@@ -244,7 +260,7 @@ export class AuthService implements IAuthService {
    * @param userId - The unique UUID of the user
    * @returns Promise that resolves to the access and refresh tokens
    */
-  async getTokens(userId: string): Promise<Tokens> {
+  private async getTokens(userId: string): Promise<Tokens> {
     const jwtPayload: JwtPayload = {
       id: userId,
     };
@@ -269,12 +285,12 @@ export class AuthService implements IAuthService {
   /**
    * Generates a verification code for a user and saves it in the database
    *
-   * @param userId - The unique UUID of the user
+   * @param user - The user object who requests the verification code
    * @returns Promise that resolves to the generated verification code
    *
    * @throws {InternalServerErrorException} - If there was an error generating the verification code
    */
-  async generateVerificationCode(user: User): Promise<number> {
+  private async generateVerificationCode(user: User): Promise<number> {
     const code = crypto.randomInt(100000, 999999);
 
     const expiresAt = new Date();
