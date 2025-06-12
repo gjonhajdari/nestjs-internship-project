@@ -113,11 +113,11 @@ export class AuthService implements IAuthService {
   /**
    * Sends a verification email to the user with a verification code
    *
-   * @param userId - The unique UUID of the user
+   * @param email - The unique email of the user
    * @throws {BadRequestException} - If user does not exist or is already verified
    */
-  async sendVerificationEmail(userId: string): Promise<IResponseStatus> {
-    const user = await this.validateUser(userId, {
+  async sendVerificationEmail(email: string): Promise<IResponseStatus> {
+    const user = await this.validateUser(email, {
       isVerified: false,
       message: "User does not exist or is already verified",
     });

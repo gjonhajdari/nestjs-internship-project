@@ -11,5 +11,5 @@ export interface IAuthService {
   logout: (user: string) => Promise<void>;
   refreshToken: (payoad: RefreshTokenDto) => Promise<Tokens>;
   verifyEmail(email: string, code: number): Promise<TTokensUser>;
-  sendVerificationEmail(userId: string): Promise<IResponseStatus>;
+  sendVerificationEmail(email: string): Promise<IResponseStatus>;
 }
