@@ -11,7 +11,7 @@ import { InjectEventEmitter } from "nest-emitter";
 import { Repository } from "typeorm";
 import { IDeleteStatus } from "../../common/interfaces/DeleteStatus.interface";
 import { compareHashedDataBcrypt, hashDataBrypt } from "../../services/providers";
-import { CreateUserDto } from "./dtos/create-user.dto";
+import { RegisterDTO } from "../auth/dtos/register.dto";
 import { ForgotPasswordDto, ResetPasswordDto } from "./dtos/password-reset.dto";
 import { UpdateUserDto } from "./dtos/update-user.dto";
 import { PasswordReset } from "./entities/reset-password.entity";
@@ -28,7 +28,7 @@ export class UsersService implements IUsersService {
     @InjectEventEmitter() private readonly emitter: EventEmitter,
   ) {}
 
-  async create(payload: CreateUserDto): Promise<User> {
+  async create(payload: RegisterDTO): Promise<User> {
     return await this.userRepository.save(this.userRepository.create(payload));
   }
 
