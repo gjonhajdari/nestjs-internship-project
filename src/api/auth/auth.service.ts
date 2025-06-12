@@ -259,7 +259,7 @@ export class AuthService implements IAuthService {
    * @param userId - The unique UUID of the user
    * @returns Promise that resolves to the access and refresh tokens
    */
-  async getTokens(userId: string): Promise<Tokens> {
+  private async getTokens(userId: string): Promise<Tokens> {
     const jwtPayload: JwtPayload = {
       id: userId,
     };
@@ -284,12 +284,12 @@ export class AuthService implements IAuthService {
   /**
    * Generates a verification code for a user and saves it in the database
    *
-   * @param userId - The unique UUID of the user
+   * @param user - The user object who requests the verification code
    * @returns Promise that resolves to the generated verification code
    *
    * @throws {InternalServerErrorException} - If there was an error generating the verification code
    */
-  async generateVerificationCode(user: User): Promise<number> {
+  private async generateVerificationCode(user: User): Promise<number> {
     const code = crypto.randomInt(100000, 999999);
 
     const expiresAt = new Date();
