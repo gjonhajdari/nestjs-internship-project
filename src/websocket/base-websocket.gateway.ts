@@ -8,12 +8,13 @@ import {
 import * as jwt from "jsonwebtoken";
 import { Server, Socket } from "socket.io";
 import { WsAuthGuard } from "src/common/ws-guards/auth.guard";
+import { EmitEvents, ListenEvents } from "./interfaces/websocket-events.interface";
 
 @WebSocketGateway()
 @UseGuards(WsAuthGuard)
 export class BaseWebsocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
-  server: Server;
+  server: Server<ListenEvents, EmitEvents>;
 
   handleConnection(socket: Socket) {
     const token = socket.handshake.auth?.Authorization?.split(" ")[1];
