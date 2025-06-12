@@ -1,7 +1,7 @@
 // remove eslint comment when you start to populate the interface
 
-import { RegisterDTO } from "src/api/auth/dtos/register.dto";
-import { IResponseStatus } from "src/common/interfaces/ResponseStatus.interface";
+import { IResponseStatus } from "../../../common/interfaces/ResponseStatus.interface";
+import { RegisterDTO } from "../../auth/dtos/register.dto";
 import { ForgotPasswordDto, ResetPasswordDto } from "../dtos/password-reset.dto";
 import { UpdateUserDto } from "../dtos/update-user.dto";
 import { User } from "../entities/user.entity";

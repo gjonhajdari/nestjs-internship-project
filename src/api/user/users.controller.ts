@@ -21,13 +21,13 @@ import {
   ApiTags,
   ApiUnprocessableEntityResponse,
 } from "@nestjs/swagger";
-import { EmailSentResponse } from "src/common/interfaces/responses/email-sent.response";
 import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
 import { Public } from "../../common/decorators/public.decorator";
 import { PermissionsGuard } from "../../common/guards/permissions.guard";
 import { IResponseStatus } from "../../common/interfaces/ResponseStatus.interface";
 import { BadRequestResponse } from "../../common/interfaces/responses/bad-request.response";
 import { DeletedResponse } from "../../common/interfaces/responses/deleted.response";
+import { EmailSentResponse } from "../../common/interfaces/responses/email-sent.response";
 import { NotFoundResponse } from "../../common/interfaces/responses/not-found.response";
 import { UnprocessableEntityResponse } from "../../common/interfaces/responses/unprocessable-entity.response";
 import { ForgotPasswordDto, ResetPasswordDto } from "./dtos/password-reset.dto";
