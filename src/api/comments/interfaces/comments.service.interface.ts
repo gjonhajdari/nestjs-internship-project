@@ -1,4 +1,4 @@
-import { IDeleteStatus } from "../../../common/interfaces/DeleteStatus.interface";
+import { IResponseStatus } from "../../../common/interfaces/ResponseStatus.interface";
 import { CreateCommentDto } from "../dtos/create-comment.dto";
 import { UpdateCommentDto } from "../dtos/update-comment.dto";
 import { Comment } from "../entities/comment.entity";
@@ -16,5 +16,5 @@ export interface ICommentsService {
     payload: UpdateCommentDto,
   ): Promise<Comment>;
 
-  deleteComment(commentId: string): Promise<IDeleteStatus>;
+  deleteComment(commentId: string): Promise<IResponseStatus>;
 }
