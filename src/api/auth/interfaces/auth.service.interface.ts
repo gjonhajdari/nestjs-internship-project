@@ -1,4 +1,4 @@
-import { IResponseStatus } from "src/common/interfaces/ResponseStatus.interface";
+import { IResponseStatus } from "../../../common/interfaces/ResponseStatus.interface";
 import { LoginDto } from "../dtos/login.dto";
 import { RefreshTokenDto } from "../dtos/refresh-token.dto";
 import { RegisterDTO } from "../dtos/register.dto";
