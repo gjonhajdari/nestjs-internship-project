@@ -4,6 +4,7 @@ import {
   Controller,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
   UseGuards,
   UseInterceptors,
@@ -20,7 +21,10 @@ import {
   ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
+  ApiUnprocessableEntityResponse,
 } from "@nestjs/swagger";
+import { UnprocessableEntityResponse } from "src/common/interfaces/responses/unprocessable-entity.response";
+import { EmailValidationPipe } from "src/common/pipes/email-validation.pipe";
 import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
 import { Public } from "../../common/decorators/public.decorator";
 import { AccessTokenGuard } from "../../common/guards/access-token.guard";
@@ -35,8 +39,10 @@ import { AuthService } from "./auth.service";
 import { LoginDto } from "./dtos/login.dto";
 import { RefreshTokenDto } from "./dtos/refresh-token.dto";
 import { RegisterDTO } from "./dtos/register.dto";
+import { VerifyEmailDto } from "./dtos/verify-email.dto";
 import { IAuthController } from "./interfaces/auth.controller.interface";
 import { Tokens } from "./types/tokens.types";
+import { TTokensUser } from "./types/user-tokens.type";
 
 @ApiBearerAuth()
 @ApiTags("Auth")
@@ -48,7 +54,7 @@ export class AuthController implements IAuthController {
 
   @ApiOperation({
     summary: "Register a new user",
-    description: "Registers a new user and returns access and refresh tokens.",
+    description: "Registers a new user and sends a verification code to the user's email.",
   })
   @ApiCreatedResponse({
     description: "A 201 response if the user is registered successfully",
@@ -116,5 +122,53 @@ export class AuthController implements IAuthController {
   @HttpCode(HttpStatus.OK)
   async refreshToken(@Body() body: RefreshTokenDto): Promise<Tokens> {
     return await this.authService.refreshToken(body);
+  }
+
+  @ApiOperation({
+    summary: "Verify user email",
+    description: "Verifies a user's email address using a verification code.",
+  })
+  @ApiOkResponse({
+    description: "A 200 response if the email is verified successfully",
+    type: LoginUserResponse,
+  })
+  @ApiBadRequestResponse({
+    description: "A 400 error if the user doesn't exist or verification code is invalid",
+    type: BadRequestResponse,
+  })
+  @ApiUnprocessableEntityResponse({
+    description: "A 422 error if the verification code is expired",
+    type: UnprocessableEntityResponse,
+  })
+  @Public()
+  @Post("verify-email/:email")
+  @HttpCode(HttpStatus.OK)
+  async verifyEmail(
+    @Param("email", EmailValidationPipe) email: string,
+    @Body() body: VerifyEmailDto,
+  ): Promise<TTokensUser> {
+    return this.authService.verifyEmail(email, body.code);
+  }
+
+  @ApiOperation({
+    summary: "Resend verification email",
+    description: "Sends a new verification email to the user.",
+  })
+  @ApiOkResponse({
+    description: "A 200 response if the verification email is sent successfully",
+  })
+  @ApiBadRequestResponse({
+    description: "A 400 error if the user doesn't exist or is already verified",
+    type: BadRequestResponse,
+  })
+  @ApiUnprocessableEntityResponse({
+    description: "A 422 error if there was an issue processing the request",
+    type: UnprocessableEntityResponse,
+  })
+  @Public()
+  @Post("resend-verification/:email")
+  @HttpCode(HttpStatus.OK)
+  async resendVerifyEmail(@Param("email", EmailValidationPipe) email: string): Promise<void> {
+    return this.authService.sendVerificationEmail(email);
   }
 }
