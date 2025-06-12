@@ -55,10 +55,21 @@ export class UsersService implements IUsersService {
    * @throws {NotFoundException} - If no users are found with the given room UUID
    */
   async findByRoom(roomId: string): Promise<User[]> {
-    const users = await this.userRepository.find({
-      where: { rooms: { room: { uuid: roomId } } },
-      relations: ["rooms"],
-    });
+    const users = await this.userRepository
+      .createQueryBuilder("user")
+      .innerJoin("user.rooms", "roomUser")
+      .innerJoin("roomUser.room", "room")
+      .where("room.uuid = :roomId", { roomId })
+      .select([
+        "user.uuid as uuid",
+        "user.firstName as firstName",
+        "user.lastName as lastName",
+        "user.email as email",
+        "user.createdAt as createdAt",
+        "roomUser.role as role",
+      ])
+      .addSelect("roomUser.role", "role")
+      .getRawMany();
     if (!users || users.length === 0) {
       throw new NotFoundException("This room's users not found!");
     }
