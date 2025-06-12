@@ -52,8 +52,8 @@ import { WebsocketModule } from "./websocket/websocket.module";
     RoomsModule,
     NotesModule,
     CommentsModule,
-    ActivitiesModule,
     WebsocketModule,
+    ActivitiesModule,
   ],
   controllers: [AppController],
   providers: [
