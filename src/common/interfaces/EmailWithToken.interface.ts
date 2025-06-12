@@ -1,6 +1,6 @@
 import { User } from "../../api/user/entities/user.entity";
 
-export interface ForgotPasswordEmail {
+export interface EmailWithToken {
   user: User;
   token: string;
 }
