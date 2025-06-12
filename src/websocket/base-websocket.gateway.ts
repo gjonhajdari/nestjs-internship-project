@@ -15,12 +15,6 @@ export class BaseWebsocketGateway implements OnGatewayConnection, OnGatewayDisco
   @WebSocketServer()
   server: Server;
 
-  private static servers: Server[] = [];
-
-  afterInit(server: Server) {
-    BaseWebsocketGateway.servers.push(server);
-  }
-
   handleConnection(socket: Socket) {
     const token = socket.handshake.auth?.Authorization?.split(" ")[1];
 
@@ -42,8 +36,6 @@ export class BaseWebsocketGateway implements OnGatewayConnection, OnGatewayDisco
   }
 
   protected emitActivity(roomId: string, payload: any) {
-    for (const server of BaseWebsocketGateway.servers) {
-      server.to(roomId).emit("activity", payload);
-    }
+    this.server.to(roomId).emit("activity", payload);
   }
 }
