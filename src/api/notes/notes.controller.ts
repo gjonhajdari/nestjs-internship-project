@@ -27,7 +27,10 @@ import {
   ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
+  ApiUnprocessableEntityResponse,
 } from "@nestjs/swagger";
+import { Response } from "express";
+import { UnprocessableEntityResponse } from "src/common/interfaces/responses/unprocessable-entity.response";
 import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
 import { RolesGuard } from "../../common/guards/roles.guard";
 import { IResponseStatus } from "../../common/interfaces/ResponseStatus.interface";
@@ -250,6 +253,31 @@ export class NotesController implements INotesController {
   ): Promise<IRemoveVoteNote> {
     return await this.notesService.removeVote(noteId, currentUser);
   }
+
+  @ApiOperation({
+    summary: "Export notes",
+    description:
+      "Exports all notes from a specific room in the requested format (JSON, CSV, or Markdown). Returns a file download",
+  })
+  @ApiOkResponse({
+    description: "A 200 response with the exported notes file",
+  })
+  @ApiBadRequestResponse({
+    description: "A 400 error if the export format is invalid",
+    type: BadRequestResponse,
+  })
+  @ApiUnauthorizedResponse({
+    description: "A 401 error if no bearer token is provided",
+    type: UnauthorizedResponse,
+  })
+  @ApiNotFoundResponse({
+    description: "A 404 error if the room is not found",
+    type: NotFoundResponse,
+  })
+  @ApiUnprocessableEntityResponse({
+    description: "A 422 error if there are no notes to export",
+    type: UnprocessableEntityResponse,
+  })
   @Get("export")
   async exportNotes(@Query() query: ExportNotesDto, @Res() res: Response) {
     const { buffer, filename, mimeType } = await this.notesService.exportNotes(query);
