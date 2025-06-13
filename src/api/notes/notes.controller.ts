@@ -11,6 +11,7 @@ import {
   Patch,
   Post,
   Query,
+  Res,
   UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
@@ -38,6 +39,7 @@ import { NotFoundResponse } from "../../common/interfaces/responses/not-found.re
 import { UnauthorizedResponse } from "../../common/interfaces/responses/unauthorized.response";
 import { User } from "../user/entities/user.entity";
 import { CreateNoteDto } from "./dtos/create-note.dto";
+import { ExportNotesDto } from "./dtos/export-notes.dto";
 import { UpdateNoteDto } from "./dtos/update-note.dto";
 import { Note } from "./entities/note.entity";
 import { IAddVoteNote, IRemoveVoteNote } from "./interfaces/notes-response.interface";
@@ -247,5 +249,17 @@ export class NotesController implements INotesController {
     @GetCurrentUser() currentUser: User,
   ): Promise<IRemoveVoteNote> {
     return await this.notesService.removeVote(noteId, currentUser);
+  }
+  @Get("export")
+  async exportNotes(@Query() query: ExportNotesDto, @Res() res: Response) {
+    const { buffer, filename, mimeType } = await this.notesService.exportNotes(query);
+
+    res.set({
+      "Content-Type": mimeType,
+      "Content-Disposition": `attachment; filename="${filename}"`,
+      "Content-Length": buffer.length,
+    });
+
+    res.end(buffer);
   }
 }
