@@ -1,8 +1,17 @@
 import { tryCatch } from "@maxmorozoff/try-catch-tuple";
-import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+  UnprocessableEntityException,
+} from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import * as jwt from "jsonwebtoken";
 import { DataSource, EntityManager } from "typeorm";
 import { ResourceType } from "../../common/enums/resource-type.enum";
 import { IResponseStatus } from "../../common/interfaces/ResponseStatus.interface";
+import { jwtConstants } from "../auth/constants/constants";
 import { User } from "../user/entities/user.entity";
 import { UsersService } from "../user/users.service";
 import { CreateRoomDto } from "./dtos/create-room.dto";
@@ -21,6 +30,7 @@ export class RoomsService implements IRoomsService {
     private roomUsersRepository: RoomUsersRepository,
     private usersService: UsersService,
     private dataSource: DataSource,
+    private jwtService: JwtService,
   ) {}
 
   /**
@@ -187,15 +197,21 @@ export class RoomsService implements IRoomsService {
    * @returns Promise that resolves to the RoomUsers entity
    * @throws {InternalServerErrorException} - If there was an error processing the request
    */
-  async joinRoom(userId: string, roomId: string): Promise<RoomUsers> {
-    const room = await this.findById(roomId);
+  async joinRoom(userId: string, code: string): Promise<RoomUsers> {
+    let payload: any;
+    try {
+      payload = jwt.verify(code, process.env.INVITE_CODE_SECRET);
+    } catch (error) {
+      throw new BadRequestException("Invalid or expired token");
+    }
+    const room = await this.findById(payload.roomId);
     const user = await this.usersService.findOne(userId);
 
     const join = this.roomUsersRepository.create({ user: user, room: room });
 
-    const [roomUser, error] = await tryCatch(this.roomUsersRepository.save(join));
+    const [roomUser, joinError] = await tryCatch(this.roomUsersRepository.save(join));
 
-    if (error)
+    if (joinError)
       throw new InternalServerErrorException("There was an error processing your request");
 
     return roomUser;
@@ -226,5 +242,25 @@ export class RoomsService implements IRoomsService {
       message: `User ${userId} left room ${roomId}`,
       timestamp: new Date(),
     };
+  }
+
+  /**
+   *
+   * @param roomId -UUID of the rooms invite link
+   * @returns - an object with the invite code
+   */
+  async inviteCode(roomId: string): Promise<{ inviteCode: string }> {
+    const [code, error] = await tryCatch(
+      this.jwtService.signAsync(
+        { roomId },
+        {
+          secret: jwtConstants.invite_code_secret,
+          expiresIn: process.env.IC_TOKEN_EXPIRATION_TIME,
+        },
+      ),
+    );
+    if (error)
+      throw new UnprocessableEntityException("There was an error generating yout code");
+    return { inviteCode: code };
   }
 }

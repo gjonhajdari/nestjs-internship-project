@@ -21,6 +21,7 @@ import {
   ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
+  ApiUnprocessableEntityResponse,
 } from "@nestjs/swagger";
 import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
 import { Roles } from "../../common/decorators/roles.decorator";
@@ -63,8 +64,27 @@ export class RoomsController implements IRoomsController {
   })
   @Get()
   async findRooms(@GetCurrentUser() user: User): Promise<{ room: Room; role: RoomRoles }[]> {
-    const { uuid } = user;
-    return this.roomsService.findRooms(uuid, true);
+    return this.roomsService.findRooms(user.uuid, true);
+  }
+
+  @ApiOperation({
+    summary: "Join a room",
+    description: "Join a room as a participant",
+  })
+  @ApiCreatedResponse({
+    description: "A 201 response if the user joined room successfully",
+  })
+  @ApiNotFoundResponse({
+    description: "A 404 error if the room doesn't exist",
+    type: NotFoundResponse,
+  })
+  @ApiUnauthorizedResponse({
+    description: "A 401 error if no bearer token is provided",
+    type: UnauthorizedResponse,
+  })
+  @Post("join/:code")
+  async join(@GetCurrentUser() user: User, @Param("code") code: string): Promise<RoomUsers> {
+    return this.roomsService.joinRoom(user.uuid, code);
   }
 
   @ApiOperation({
@@ -181,27 +201,29 @@ export class RoomsController implements IRoomsController {
   }
 
   @ApiOperation({
-    summary: "Join a room",
-    description: "Join a room as a participant",
+    summary: "Get invite code for a room",
   })
   @ApiCreatedResponse({
-    description: "A 201 response if the user joined room successfully",
+    description: "A 201 response if the code was generated successfully",
+    schema: {
+      type: "object",
+      properties: {
+        inviteCode: {
+          type: "string",
+          example:
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb29tSWQiOiIzYjNiNmY1ZC1jN2U4LTQxNjctOTVkMC1iM2Q3MGM5ZmFhYjAiLCJpYXQiOjE3NDk3OTk5MzEsImV4cCI6MTc0OTgwMTczMX0.CuysO3nnXknV4oYilNIl4HEDJz6tQQedm0zc-yFGrgA",
+        },
+      },
+    },
   })
-  @ApiNotFoundResponse({
-    description: "A 404 error if the room doesn't exist",
-    type: NotFoundResponse,
+  @ApiUnprocessableEntityResponse({
+    description: "A 422 response if the code could not be generated",
   })
-  @ApiUnauthorizedResponse({
-    description: "A 401 error if no bearer token is provided",
-    type: UnauthorizedResponse,
-  })
-  @Post(":roomId/join")
-  async join(
-    @GetCurrentUser() user: User,
+  @Post(":roomId/invite")
+  async invite(
     @Param("roomId", new ParseUUIDPipe()) roomId: string,
-  ): Promise<RoomUsers> {
-    const { uuid } = user;
-    return this.roomsService.joinRoom(uuid, roomId);
+  ): Promise<{ inviteCode: string }> {
+    return await this.roomsService.inviteCode(roomId);
   }
 
   @ApiOperation({
