@@ -14,6 +14,7 @@ import { CommentsRepository } from "./repository/comments.repository";
     UserModule,
     RoomsModule,
   ],
+  exports: [CommentsService],
   providers: [CommentsService],
   controllers: [CommentsController],
 })
