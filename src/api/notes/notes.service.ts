@@ -364,13 +364,17 @@ export class NotesService implements INotesService {
         content = this.parsingProvider.parseXML(room, notes);
         mime = "application/xml";
         break;
+      case "pdf":
+        content = this.parsingProvider.parsePDF(room, notes);
+        mime = "application/pdf";
+        break;
       default:
         throw new BadRequestException(`Unsupported file type: ${fileType}`);
     }
 
     return {
-      buffer: Buffer.from(content, "utf8"),
       filename: `notes-export-${new Date().toISOString().split("T")[0]}.${fileType}`,
+      buffer: Buffer.from(content, fileType === "pdf" ? "base64" : "utf-8"),
       mimeType: mime,
     };
   }
