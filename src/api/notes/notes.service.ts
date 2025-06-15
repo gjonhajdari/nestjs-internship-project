@@ -121,6 +121,7 @@ export class NotesService implements INotesService {
       .leftJoinAndSelect("note.noteVotes", "noteVote")
       .leftJoinAndSelect("noteVote.user", "user")
       .where("note.room_id = :roomId", { roomId: room.id })
+      .orderBy("note.totalVotes", "DESC")
       .getMany();
 
     return notes;
