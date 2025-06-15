@@ -52,16 +52,30 @@ export class RoomsGateway extends BaseWebsocketGateway {
     this.server.to(roomId).emit("rooms/left", { userId: userId });
   }
 
+  //TODO: add host guard
   @SubscribeMessage("rooms/archive")
   async handleArchiveRoom(@MessageBody() data: { roomId: string }) {
     const { roomId } = data;
+    const room = await this.roomsService.updateRoom(roomId, { isActive: false });
     this.server.to(roomId).emit("rooms/archived", { roomId });
   }
 
+  //TODO: add host guard
   @SubscribeMessage("rooms/remove")
   async handleRemoveUser(@MessageBody() data: { roomId: string; userId: string }) {
     const { roomId, userId } = data;
-
+    const user = await this.roomsService.leaveRoom(userId, roomId);
     this.server.to(roomId).emit("rooms/removed", { userId });
+  }
+
+  @SubscribeMessage("rooms/leaveP")
+  async handleleaveRoom(
+    @MessageBody() data: { roomId: string },
+    @ConnectedSocket() socket: Socket,
+  ) {
+    const { roomId } = data;
+    const userId = (socket as any).user;
+    const user = await this.roomsService.leaveRoom(userId, roomId);
+    this.server.to(roomId).emit("rooms/leftP", { userId });
   }
 }
