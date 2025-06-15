@@ -372,9 +372,15 @@ export class NotesService implements INotesService {
         throw new BadRequestException(`Unsupported file type: ${fileType}`);
     }
 
+    const timestamp = new Date()
+      .toISOString()
+      .replace(/T/, "_")
+      .replace(/\..+/, "")
+      .replace(/:/g, "-");
+
     return {
-      filename: `notes-export-${new Date().toISOString().split("T")[0]}.${fileType}`,
       buffer: Buffer.from(content, fileType === "pdf" ? "base64" : "utf-8"),
+      filename: `notes-export-${timestamp}.${fileType}`,
       mimeType: mime,
     };
   }
