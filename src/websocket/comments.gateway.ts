@@ -1,3 +1,4 @@
+import { BadRequestException } from "@nestjs/common";
 import {
   ConnectedSocket,
   MessageBody,
@@ -6,11 +7,14 @@ import {
 } from "@nestjs/websockets";
 import { plainToInstance } from "class-transformer";
 import { Socket } from "socket.io";
-import { ActivitiesService } from "src/api/activities/activities.service";
-import { UpdateCommentDto } from "src/api/comments/dtos/update-comment.dto";
-import { Comment } from "src/api/comments/entities/comment.entity";
+import { ActivityType } from "src/common/enums/activity-type.enum";
+import { ResourceType } from "src/common/enums/resource-type.enum";
+import { ActivitiesService } from "../api/activities/activities.service";
 import { CommentsService } from "../api/comments/comments.service";
 import { CreateCommentDto } from "../api/comments/dtos/create-comment.dto";
+import { UpdateCommentDto } from "../api/comments/dtos/update-comment.dto";
+import { Comment } from "../api/comments/entities/comment.entity";
+import { RoomsService } from "../api/rooms/rooms.service";
 import { BaseWebsocketGateway } from "./base-websocket.gateway";
 
 @WebSocketGateway()
@@ -18,6 +22,7 @@ export class CommentsGateway extends BaseWebsocketGateway {
   constructor(
     private commentsService: CommentsService,
     private activitiesService: ActivitiesService,
+    private roomsService: RoomsService,
   ) {
     super();
   }
@@ -29,11 +34,23 @@ export class CommentsGateway extends BaseWebsocketGateway {
   ) {
     const { id } = (socket as any).user;
     const { roomId, payload } = data;
+    const room = await this.roomsService.findById(roomId);
+    if (room.isActive === false) {
+      throw new BadRequestException();
+    }
     try {
       const newComment = await this.commentsService.createComment(id, payload);
       this.server.to(roomId).emit("comments/created", plainToInstance(Comment, newComment));
+      const activity = await this.activitiesService.createActivity(
+        roomId,
+        id,
+        ActivityType.CREATE,
+        ResourceType.COMMENT,
+        newComment.note.uuid,
+      );
+      this.emitActivity(roomId, activity);
     } catch (error) {
-      socket.emit("Error in handleNewComment", error.message);
+      socket.emit("error", error.message);
     }
   }
 
@@ -44,13 +61,25 @@ export class CommentsGateway extends BaseWebsocketGateway {
   ) {
     const { id } = (socket as any).user;
     const { roomId, commentId, payload } = data;
+    const room = await this.roomsService.findById(roomId);
+    if (room.isActive === false) {
+      throw new BadRequestException();
+    }
     try {
       const updatedComment = await this.commentsService.updateComment(id, commentId, payload);
       this.server
         .to(roomId)
         .emit("comments/updated", plainToInstance(Comment, updatedComment));
+      const activity = await this.activitiesService.createActivity(
+        roomId,
+        id,
+        ActivityType.UPDATE,
+        ResourceType.COMMENT,
+        updatedComment.note.uuid,
+      );
+      this.emitActivity(roomId, activity);
     } catch (error) {
-      socket.emit("Error in handleEditComment", error.message);
+      socket.emit("error", error.message);
     }
   }
 
@@ -61,11 +90,25 @@ export class CommentsGateway extends BaseWebsocketGateway {
   ) {
     const { id } = (socket as any).user;
     const { roomId, commentId } = data;
+    const room = await this.roomsService.findById(roomId);
+    if (room.isActive === false) {
+      throw new BadRequestException();
+    }
+
+    const comment = await this.commentsService.findById(commentId);
     try {
       const deletedComment = await this.commentsService.deleteComment(commentId);
+      const activity = await this.activitiesService.createActivity(
+        roomId,
+        id,
+        ActivityType.DELETE,
+        ResourceType.COMMENT,
+        comment.note.uuid,
+      );
       this.server.to(roomId).emit("comments/deleted", deletedComment);
+      this.emitActivity(roomId, activity);
     } catch (error) {
-      socket.emit("Error in handleDeleteComment", error.message);
+      socket.emit("error", error.message);
     }
   }
 }
