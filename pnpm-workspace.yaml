@@ -3,3 +3,4 @@ onlyBuiltDependencies:
   - '@nestjs/core'
   - argon2
   - bcrypt
+  - core-js
