@@ -1,3 +1,4 @@
+import { BadRequestException } from "@nestjs/common";
 import {
   ConnectedSocket,
   MessageBody,
@@ -11,6 +12,7 @@ import { CreateNoteDto } from "../api/notes/dtos/create-note.dto";
 import { UpdateNoteDto } from "../api/notes/dtos/update-note.dto";
 import { Note } from "../api/notes/entities/note.entity";
 import { NotesService } from "../api/notes/notes.service";
+import { RoomsService } from "../api/rooms/rooms.service";
 import { UsersService } from "../api/user/users.service";
 import { ActivityType } from "../common/enums/activity-type.enum";
 import { ResourceType } from "../common/enums/resource-type.enum";
@@ -22,6 +24,7 @@ export class NotesGateway extends BaseWebsocketGateway {
     private notesService: NotesService,
     private usersService: UsersService,
     private activitiesService: ActivitiesService,
+    private roomsService: RoomsService,
   ) {
     super();
   }
@@ -31,6 +34,10 @@ export class NotesGateway extends BaseWebsocketGateway {
     const { id } = (socket as any).user;
     const user = await this.usersService.findOne(id);
     const { roomId } = data;
+    const room = await this.roomsService.findById(roomId);
+    if (room.isActive === false) {
+      throw new BadRequestException();
+    }
     try {
       const newNote = await this.notesService.createNote(data, user);
       const activity = await this.activitiesService.createActivity(
@@ -60,6 +67,10 @@ export class NotesGateway extends BaseWebsocketGateway {
     const { id } = (socket as any).user;
     const user = await this.usersService.findOne(id);
     const { roomId, noteId, updates } = data;
+    const room = await this.roomsService.findById(roomId);
+    if (room.isActive === false) {
+      throw new BadRequestException();
+    }
     try {
       const updatedNote = await this.notesService.updateNote(noteId, updates, user);
       const activity = await this.activitiesService.createActivity(
@@ -85,6 +96,10 @@ export class NotesGateway extends BaseWebsocketGateway {
     const { id } = (socket as any).user;
     const user = await this.usersService.findOne(id);
     const { roomId, noteId } = data;
+    const room = await this.roomsService.findById(roomId);
+    if (room.isActive === false) {
+      throw new BadRequestException();
+    }
     try {
       const deletedNote = await this.notesService.deleteNote(noteId);
       const activity = await this.activitiesService.createActivity(
@@ -110,7 +125,10 @@ export class NotesGateway extends BaseWebsocketGateway {
     const { id } = (socket as any).user;
     const user = await this.usersService.findOne(id);
     const { roomId, noteId } = data;
-
+    const room = await this.roomsService.findById(roomId);
+    if (room.isActive === false) {
+      throw new BadRequestException();
+    }
     try {
       const vote = await this.notesService.addVote(noteId, user);
       const activity = await this.activitiesService.createActivity(
@@ -135,7 +153,10 @@ export class NotesGateway extends BaseWebsocketGateway {
     const { id } = (socket as any).user;
     const user = await this.usersService.findOne(id);
     const { roomId, noteId } = data;
-
+    const room = await this.roomsService.findById(roomId);
+    if (room.isActive === false) {
+      throw new BadRequestException();
+    }
     try {
       const vote = await this.notesService.removeVote(noteId, user);
       const activity = await this.activitiesService.createActivity(

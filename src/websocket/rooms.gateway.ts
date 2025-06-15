@@ -1,3 +1,4 @@
+import { BadRequestException } from "@nestjs/common";
 import {
   ConnectedSocket,
   MessageBody,
@@ -5,7 +6,7 @@ import {
   WebSocketGateway,
 } from "@nestjs/websockets";
 import { Socket } from "socket.io";
-import { ActivitiesService } from "src/api/activities/activities.service";
+import { ActivitiesService } from "../api/activities/activities.service";
 import { RoomsService } from "../api/rooms/rooms.service";
 import { BaseWebsocketGateway } from "./base-websocket.gateway";
 
@@ -23,10 +24,13 @@ export class RoomsGateway extends BaseWebsocketGateway {
     @MessageBody() data: { roomId: string },
     @ConnectedSocket() socket: Socket,
   ) {
+    const { roomId } = data;
+    const userId = (socket as any).user;
+    const room = await this.roomsService.findById(roomId);
+    if (room.isActive === false) {
+      throw new BadRequestException();
+    }
     try {
-      const { roomId } = data;
-      const userId = (socket as any).user;
-
       socket.join(roomId);
       this.server.to(roomId).emit("rooms/joined", { userId });
     } catch (error) {
