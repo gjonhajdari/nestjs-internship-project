@@ -7,6 +7,8 @@ import {
 } from "@nestjs/websockets";
 import { plainToInstance } from "class-transformer";
 import { Socket } from "socket.io";
+import { ActivityType } from "src/common/enums/activity-type.enum";
+import { ResourceType } from "src/common/enums/resource-type.enum";
 import { ActivitiesService } from "../api/activities/activities.service";
 import { CommentsService } from "../api/comments/comments.service";
 import { CreateCommentDto } from "../api/comments/dtos/create-comment.dto";
@@ -39,8 +41,16 @@ export class CommentsGateway extends BaseWebsocketGateway {
     try {
       const newComment = await this.commentsService.createComment(id, payload);
       this.server.to(roomId).emit("comments/created", plainToInstance(Comment, newComment));
+      const activity = await this.activitiesService.createActivity(
+        roomId,
+        id,
+        ActivityType.CREATE,
+        ResourceType.COMMENT,
+        newComment.note.uuid,
+      );
+      this.emitActivity(roomId, activity);
     } catch (error) {
-      socket.emit("Error in handleNewComment", error.message);
+      socket.emit("error", error.message);
     }
   }
 
@@ -60,8 +70,16 @@ export class CommentsGateway extends BaseWebsocketGateway {
       this.server
         .to(roomId)
         .emit("comments/updated", plainToInstance(Comment, updatedComment));
+      const activity = await this.activitiesService.createActivity(
+        roomId,
+        id,
+        ActivityType.UPDATE,
+        ResourceType.COMMENT,
+        updatedComment.note.uuid,
+      );
+      this.emitActivity(roomId, activity);
     } catch (error) {
-      socket.emit("Error in handleEditComment", error.message);
+      socket.emit("error", error.message);
     }
   }
 
@@ -80,9 +98,17 @@ export class CommentsGateway extends BaseWebsocketGateway {
     const comment = await this.commentsService.findById(commentId);
     try {
       const deletedComment = await this.commentsService.deleteComment(commentId);
+      const activity = await this.activitiesService.createActivity(
+        roomId,
+        id,
+        ActivityType.DELETE,
+        ResourceType.COMMENT,
+        comment.note.uuid,
+      );
       this.server.to(roomId).emit("comments/deleted", deletedComment);
+      this.emitActivity(roomId, activity);
     } catch (error) {
-      socket.emit("Error in handleDeleteComment", error.message);
+      socket.emit("error", error.message);
     }
   }
 }

@@ -84,7 +84,7 @@ export class NotesGateway extends BaseWebsocketGateway {
       this.server.to(roomId).emit("notes/updated", plainToInstance(Note, updatedNote));
       this.emitActivity(roomId, activity);
     } catch (error) {
-      socket.emit("Error in handleUpdateNote", error.message);
+      socket.emit("error", error.message);
     }
   }
 
@@ -113,7 +113,7 @@ export class NotesGateway extends BaseWebsocketGateway {
       this.server.to(roomId).emit("notes/deleted", deletedNote);
       this.emitActivity(roomId, activity);
     } catch (error) {
-      socket.emit("Error in handleDeleteNote", error.message);
+      socket.emit("error", error.message);
     }
   }
 
@@ -142,7 +142,7 @@ export class NotesGateway extends BaseWebsocketGateway {
       this.server.to(roomId).emit("notes/voted", vote);
       this.emitActivity(roomId, activity);
     } catch (error) {
-      socket.emit("Error in handleAddVote", error.message);
+      socket.emit("error", error.message);
     }
   }
   @SubscribeMessage("notes/removeVote")
@@ -170,7 +170,7 @@ export class NotesGateway extends BaseWebsocketGateway {
       this.server.to(roomId).emit("notes/removed", vote);
       this.emitActivity(roomId, activity);
     } catch (error) {
-      socket.emit("Error in handleRemoveVote", error.message);
+      socket.emit("error", error.message);
     }
   }
 }
