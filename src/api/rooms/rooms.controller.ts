@@ -104,7 +104,6 @@ export class RoomsController implements IRoomsController {
   async findArchived(
     @GetCurrentUser() user: User,
   ): Promise<{ room: Room; role: RoomRoles }[]> {
-    console.log("erdhem deri ketuuuu", user);
     const { uuid } = user;
     return await this.roomsService.findRooms(uuid, false);
   }
