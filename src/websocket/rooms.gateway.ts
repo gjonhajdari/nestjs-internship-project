@@ -83,7 +83,7 @@ export class RoomsGateway extends BaseWebsocketGateway {
   }
 
   @SubscribeMessage("rooms/leaveP")
-  async handleleaveRoom(
+  async handleLeaveRoomP(
     @MessageBody() data: { roomId: string },
     @ConnectedSocket() socket: Socket,
   ) {
