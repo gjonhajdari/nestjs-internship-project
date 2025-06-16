@@ -7,7 +7,6 @@ import {
   UnprocessableEntityException,
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import * as jwt from "jsonwebtoken";
 import { DataSource, EntityManager } from "typeorm";
 import { ResourceType } from "../../common/enums/resource-type.enum";
 import { IResponseStatus } from "../../common/interfaces/ResponseStatus.interface";
@@ -200,7 +199,9 @@ export class RoomsService implements IRoomsService {
   async joinRoom(userId: string, code: string): Promise<RoomUsers> {
     let payload: any;
     try {
-      payload = jwt.verify(code, process.env.INVITE_CODE_SECRET);
+      payload = await this.jwtService.verifyAsync(code, {
+        secret: process.env.INVITE_CODE_SECRET,
+      });
     } catch (error) {
       throw new BadRequestException("Invalid or expired token");
     }
@@ -260,7 +261,7 @@ export class RoomsService implements IRoomsService {
       ),
     );
     if (error)
-      throw new UnprocessableEntityException("There was an error generating yout code");
+      throw new UnprocessableEntityException("There was an error generating your code");
     return { inviteCode: code };
   }
 }
