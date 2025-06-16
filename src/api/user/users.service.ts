@@ -13,7 +13,8 @@ import { ResourceType } from "../../common/enums/resource-type.enum";
 import { IResponseStatus } from "../../common/interfaces/ResponseStatus.interface";
 import { compareHashedDataBcrypt, hashDataBrypt } from "../../services/providers";
 import { RegisterDTO } from "../auth/dtos/register.dto";
-import { ForgotPasswordDto, ResetPasswordDto } from "./dtos/password-reset.dto";
+import { ForgotPasswordDto, ResetPasswordDto } from "./dtos/reset-password.dto";
+import { UpdatePasswordDto } from "./dtos/update-password.dto";
 import { UpdateUserDto } from "./dtos/update-user.dto";
 import { PasswordReset } from "./entities/reset-password.entity";
 import { User } from "./entities/user.entity";
@@ -186,7 +187,7 @@ export class UsersService implements IUsersService {
 
     const { user } = passwordReset;
 
-    user.password = await hashDataBrypt(payload.newPassword);
+    user.password = await hashDataBrypt(payload.password);
 
     await this.userRepository.save(user);
     await this.passwordRepository.delete({ user: user });
@@ -202,7 +203,7 @@ export class UsersService implements IUsersService {
    * @throws {BadRequestException} - If both entered passwords do not match
    * @throws {BadRequestException} - If the new password is the same as the old one
    */
-  async updatePassword(userId: string, payload: ResetPasswordDto): Promise<void> {
+  async updatePassword(userId: string, payload: UpdatePasswordDto): Promise<void> {
     const user = await this.findOne(userId);
 
     const matches = await compareHashedDataBcrypt(payload.oldPassword, user.password);
