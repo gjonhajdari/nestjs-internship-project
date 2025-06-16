@@ -3,21 +3,26 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  UnprocessableEntityException,
 } from "@nestjs/common";
 
 import { DataSource, EntityManager } from "typeorm";
 import { ResourceType } from "../../common/enums/resource-type.enum";
 import { IResponseStatus } from "../../common/interfaces/ResponseStatus.interface";
 import { Comment } from "../comments/entities/comment.entity";
+import { Room } from "../rooms/entities/room.entity";
 import { RoomsService } from "../rooms/rooms.service";
 import { User } from "../user/entities/user.entity";
 import { catchKnownErrors } from "./../../utils/catchKnownErrors.util";
 import { CreateNoteDto } from "./dtos/create-note.dto";
+import { ExportNotesDto } from "./dtos/export-notes.dto";
 import { UpdateNoteDto } from "./dtos/update-note.dto";
 import { NoteVote } from "./entities/note-vote.entity";
 import { Note } from "./entities/note.entity";
+import { IExportedFile } from "./interfaces/exported-file.interface";
 import { IAddVoteNote, IRemoveVoteNote } from "./interfaces/notes-response.interface";
 import { INotesService } from "./interfaces/notes.service.interface";
+import { ParsingProvider } from "./providers/parsing.provider";
 import { NotesRepository } from "./repository/notes.repository";
 
 @Injectable()
@@ -26,6 +31,7 @@ export class NotesService implements INotesService {
     private readonly dataSource: DataSource,
     private readonly notesRepository: NotesRepository,
     private readonly roomsService: RoomsService,
+    private readonly parsingProvider: ParsingProvider,
   ) {}
 
   /**
@@ -115,6 +121,7 @@ export class NotesService implements INotesService {
       .leftJoinAndSelect("note.noteVotes", "noteVote")
       .leftJoinAndSelect("noteVote.user", "user")
       .where("note.room_id = :roomId", { roomId: room.id })
+      .orderBy("note.totalVotes", "DESC")
       .getMany();
 
     return notes;
@@ -313,5 +320,69 @@ export class NotesService implements INotesService {
         "An error occurred while removing the vote from the note",
       );
     }
+  }
+
+  /**
+   * Exports notes from a specific room in the requested file format.
+   *
+   * @param query - The export request containing room ID and file type
+   * @returns A Promise that resolves to an object that satisfies the IExportedFile interface
+   * @throws {UnprocessableEntityException} - If the room has no notes to export
+   * @throws {BadRequestException} - If the requested file type is unsupported
+   */
+  async exportNotes(query: ExportNotesDto): Promise<IExportedFile> {
+    const room = await this.roomsService.findById(query.roomId);
+    const notes = await this.findNotesWithVotesFromRoom(query.roomId);
+
+    if (!notes || notes.length === 0)
+      throw new UnprocessableEntityException("Room doesn't have any notes to export");
+
+    return this.exportData(room, notes, query.fileType);
+  }
+
+  /**
+   * Exports notes data in the specified format based on MIME type.
+   *
+   * @param room - The room from which notes are being exported
+   * @param notes - The notes to be exported
+   * @param fileType - The file type that determines the export format
+   * @returns An object containing the content as a Buffer, filename, and MIME type
+   */
+  private exportData(room: Room, notes: Note[], fileType: string): IExportedFile {
+    let content: string;
+    let mime: string;
+
+    switch (fileType) {
+      case "json":
+        content = this.parsingProvider.parseJson(room, notes);
+        mime = "application/json";
+        break;
+      case "csv":
+        content = this.parsingProvider.parseCSV(notes);
+        mime = "text/csv";
+        break;
+      case "xml":
+        content = this.parsingProvider.parseXML(room, notes);
+        mime = "application/xml";
+        break;
+      case "pdf":
+        content = this.parsingProvider.parsePDF(room, notes);
+        mime = "application/pdf";
+        break;
+      default:
+        throw new BadRequestException(`Unsupported file type: ${fileType}`);
+    }
+
+    const timestamp = new Date()
+      .toISOString()
+      .replace(/T/, "_")
+      .replace(/\..+/, "")
+      .replace(/:/g, "-");
+
+    return {
+      buffer: Buffer.from(content, fileType === "pdf" ? "base64" : "utf-8"),
+      filename: `notes-export-${timestamp}.${fileType}`,
+      mimeType: mime,
+    };
   }
 }
