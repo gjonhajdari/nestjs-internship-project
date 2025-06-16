@@ -34,11 +34,11 @@ export class CommentsGateway extends BaseWebsocketGateway {
   ) {
     const { id } = (socket as any).user;
     const { roomId, payload } = data;
-    const room = await this.roomsService.findById(roomId);
-    if (room.isActive === false) {
-      throw new BadRequestException();
-    }
     try {
+      const room = await this.roomsService.findById(roomId);
+      if (room.isActive === false) {
+        throw new BadRequestException();
+      }
       const newComment = await this.commentsService.createComment(id, payload);
       this.server.to(roomId).emit("comments/created", plainToInstance(Comment, newComment));
       const activity = await this.activitiesService.createActivity(
@@ -61,11 +61,11 @@ export class CommentsGateway extends BaseWebsocketGateway {
   ) {
     const { id } = (socket as any).user;
     const { roomId, commentId, payload } = data;
-    const room = await this.roomsService.findById(roomId);
-    if (room.isActive === false) {
-      throw new BadRequestException();
-    }
     try {
+      const room = await this.roomsService.findById(roomId);
+      if (room.isActive === false) {
+        throw new BadRequestException();
+      }
       const updatedComment = await this.commentsService.updateComment(id, commentId, payload);
       this.server
         .to(roomId)
@@ -90,13 +90,13 @@ export class CommentsGateway extends BaseWebsocketGateway {
   ) {
     const { id } = (socket as any).user;
     const { roomId, commentId } = data;
-    const room = await this.roomsService.findById(roomId);
-    if (room.isActive === false) {
-      throw new BadRequestException();
-    }
-
-    const comment = await this.commentsService.findById(commentId);
     try {
+      const room = await this.roomsService.findById(roomId);
+      if (room.isActive === false) {
+        throw new BadRequestException();
+      }
+
+      const comment = await this.commentsService.findById(commentId);
       const deletedComment = await this.commentsService.deleteComment(commentId);
       const activity = await this.activitiesService.createActivity(
         roomId,

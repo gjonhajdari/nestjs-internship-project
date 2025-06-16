@@ -34,11 +34,11 @@ export class NotesGateway extends BaseWebsocketGateway {
     const { id } = (socket as any).user;
     const user = await this.usersService.findOne(id);
     const { roomId } = data;
-    const room = await this.roomsService.findById(roomId);
-    if (room.isActive === false) {
-      throw new BadRequestException();
-    }
     try {
+      const room = await this.roomsService.findById(roomId);
+      if (room.isActive === false) {
+        throw new BadRequestException();
+      }
       const newNote = await this.notesService.createNote(data, user);
       const activity = await this.activitiesService.createActivity(
         roomId,
@@ -67,11 +67,11 @@ export class NotesGateway extends BaseWebsocketGateway {
     const { id } = (socket as any).user;
     const user = await this.usersService.findOne(id);
     const { roomId, noteId, updates } = data;
-    const room = await this.roomsService.findById(roomId);
-    if (room.isActive === false) {
-      throw new BadRequestException();
-    }
     try {
+      const room = await this.roomsService.findById(roomId);
+      if (room.isActive === false) {
+        throw new BadRequestException();
+      }
       const updatedNote = await this.notesService.updateNote(noteId, updates, user);
       const activity = await this.activitiesService.createActivity(
         roomId,
@@ -96,11 +96,11 @@ export class NotesGateway extends BaseWebsocketGateway {
     const { id } = (socket as any).user;
     const user = await this.usersService.findOne(id);
     const { roomId, noteId } = data;
-    const room = await this.roomsService.findById(roomId);
-    if (room.isActive === false) {
-      throw new BadRequestException();
-    }
     try {
+      const room = await this.roomsService.findById(roomId);
+      if (room.isActive === false) {
+        throw new BadRequestException();
+      }
       const deletedNote = await this.notesService.deleteNote(noteId);
       const activity = await this.activitiesService.createActivity(
         roomId,
@@ -125,11 +125,11 @@ export class NotesGateway extends BaseWebsocketGateway {
     const { id } = (socket as any).user;
     const user = await this.usersService.findOne(id);
     const { roomId, noteId } = data;
-    const room = await this.roomsService.findById(roomId);
-    if (room.isActive === false) {
-      throw new BadRequestException();
-    }
     try {
+      const room = await this.roomsService.findById(roomId);
+      if (room.isActive === false) {
+        throw new BadRequestException();
+      }
       const vote = await this.notesService.addVote(noteId, user);
       const activity = await this.activitiesService.createActivity(
         roomId,
@@ -153,11 +153,11 @@ export class NotesGateway extends BaseWebsocketGateway {
     const { id } = (socket as any).user;
     const user = await this.usersService.findOne(id);
     const { roomId, noteId } = data;
-    const room = await this.roomsService.findById(roomId);
-    if (room.isActive === false) {
-      throw new BadRequestException();
-    }
     try {
+      const room = await this.roomsService.findById(roomId);
+      if (room.isActive === false) {
+        throw new BadRequestException();
+      }
       const vote = await this.notesService.removeVote(noteId, user);
       const activity = await this.activitiesService.createActivity(
         roomId,

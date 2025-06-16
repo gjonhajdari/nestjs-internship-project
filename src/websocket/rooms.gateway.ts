@@ -26,11 +26,11 @@ export class RoomsGateway extends BaseWebsocketGateway {
   ) {
     const { roomId } = data;
     const userId = (socket as any).user;
-    const room = await this.roomsService.findById(roomId);
-    if (room.isActive === false) {
-      throw new BadRequestException();
-    }
     try {
+      const room = await this.roomsService.findById(roomId);
+      if (room.isActive === false) {
+        throw new BadRequestException();
+      }
       socket.join(roomId);
       this.server.to(roomId).emit("rooms/joined", { userId });
     } catch (error) {
@@ -54,18 +54,32 @@ export class RoomsGateway extends BaseWebsocketGateway {
 
   //TODO: add host guard
   @SubscribeMessage("rooms/archive")
-  async handleArchiveRoom(@MessageBody() data: { roomId: string }) {
+  async handleArchiveRoom(
+    @MessageBody() data: { roomId: string },
+    @ConnectedSocket() socket: Socket,
+  ) {
     const { roomId } = data;
-    const room = await this.roomsService.updateRoom(roomId, { isActive: false });
-    this.server.to(roomId).emit("rooms/archived", { roomId });
+    try {
+      const room = await this.roomsService.updateRoom(roomId, { isActive: false });
+      this.server.to(roomId).emit("rooms/archived", { roomId });
+    } catch (error) {
+      socket.emit("error", error.message);
+    }
   }
 
   //TODO: add host guard
   @SubscribeMessage("rooms/remove")
-  async handleRemoveUser(@MessageBody() data: { roomId: string; userId: string }) {
+  async handleRemoveUser(
+    @MessageBody() data: { roomId: string; userId: string },
+    @ConnectedSocket() socket: Socket,
+  ) {
     const { roomId, userId } = data;
-    const user = await this.roomsService.leaveRoom(userId, roomId);
-    this.server.to(roomId).emit("rooms/removed", { userId });
+    try {
+      const user = await this.roomsService.leaveRoom(userId, roomId);
+      this.server.to(roomId).emit("rooms/removed", { userId });
+    } catch (error) {
+      socket.emit("error", error.message);
+    }
   }
 
   @SubscribeMessage("rooms/leaveP")
@@ -75,7 +89,11 @@ export class RoomsGateway extends BaseWebsocketGateway {
   ) {
     const { roomId } = data;
     const userId = (socket as any).user;
-    const user = await this.roomsService.leaveRoom(userId, roomId);
-    this.server.to(roomId).emit("rooms/leftP", { userId });
+    try {
+      const user = await this.roomsService.leaveRoom(userId, roomId);
+      this.server.to(roomId).emit("rooms/leftP", { userId });
+    } catch (error) {
+      socket.emit("error", error.message);
+    }
   }
 }
