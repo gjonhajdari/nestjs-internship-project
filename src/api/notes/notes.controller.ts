@@ -257,7 +257,7 @@ export class NotesController implements INotesController {
   @ApiOperation({
     summary: "Export notes",
     description:
-      "Exports all notes from a specific room in the requested format (JSON, CSV, or Markdown). Returns a file download",
+      "Exports all notes from a specific room in the requested format (JSON, CSV, XML, or PDF). Returns a file to be downloaded.",
   })
   @ApiOkResponse({
     description: "A 200 response with the exported notes file",
