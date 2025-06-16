@@ -7,14 +7,14 @@ import {
 } from "@nestjs/websockets";
 import { plainToInstance } from "class-transformer";
 import { Socket } from "socket.io";
-import { ActivityType } from "src/common/enums/activity-type.enum";
-import { ResourceType } from "src/common/enums/resource-type.enum";
 import { ActivitiesService } from "../api/activities/activities.service";
 import { CommentsService } from "../api/comments/comments.service";
 import { CreateCommentDto } from "../api/comments/dtos/create-comment.dto";
 import { UpdateCommentDto } from "../api/comments/dtos/update-comment.dto";
 import { Comment } from "../api/comments/entities/comment.entity";
 import { RoomsService } from "../api/rooms/rooms.service";
+import { ActivityType } from "../common/enums/activity-type.enum";
+import { ResourceType } from "../common/enums/resource-type.enum";
 import { BaseWebsocketGateway } from "./base-websocket.gateway";
 
 @WebSocketGateway()

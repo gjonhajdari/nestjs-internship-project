@@ -75,7 +75,7 @@ export class RoomsGateway extends BaseWebsocketGateway {
   ) {
     const { roomId, userId } = data;
     try {
-      const user = await this.roomsService.leaveRoom(userId, roomId);
+      //const user = await this.roomsService.leaveRoom(userId, roomId);
       this.server.to(roomId).emit("rooms/removed", { userId });
     } catch (error) {
       socket.emit("error", error.message);
@@ -90,7 +90,7 @@ export class RoomsGateway extends BaseWebsocketGateway {
     const { roomId } = data;
     const userId = (socket as any).user;
     try {
-      const user = await this.roomsService.leaveRoom(userId, roomId);
+      //const user = await this.roomsService.leaveRoom(userId, roomId);
       this.server.to(roomId).emit("rooms/leftP", { userId });
     } catch (error) {
       socket.emit("error", error.message);
