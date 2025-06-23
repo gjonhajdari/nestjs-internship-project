@@ -155,29 +155,41 @@ export class NotesService implements INotesService {
   }
 
   /**
-   * Returns the note uuid with the highest total votes in a specified room
-   * If multiple notes share the highest vote count, the earliest created note is returned
+   * Returns all notes with the highest total votes in a specified room
+   * If multiple notes share the highest vote count, all of them are returned
    *
    * @param roomId - Unique room UUID
-   * @returns Promise that resolves to an object containing the UUID of the winning note
+   * @returns Promise that resolves to an array of objects, each containing
+   *          the UUID of a winning note
    *
-   * @throws {NotFoundException} - Thrown if no notes are found in the specified room
+   * @throws {NotFoundException} - Thrown if no notes with votes greater than zero are found in the specified room
    */
-  public async getCurrentNoteVoteWinner(roomId: string): Promise<{ uuid: string }> {
-    const winner = await this.notesRepository
+
+  public async getCurrentNoteVoteWinners(roomId: string): Promise<{ uuid: string }[]> {
+    const totalVotesResult = await this.notesRepository
       .createQueryBuilder("note")
       .leftJoin("note.room", "room")
       .where("room.uuid = :roomId", { roomId })
-      .andWhere("note.totalVotes > 0")
-      .orderBy("note.totalVotes", "DESC")
-      .addOrderBy("note.createdAt", "ASC")
-      .limit(1)
+      .select("MAX(note.totalVotes)", "totalVotes")
+      .getRawOne<{ totalVotes: number }>();
+
+    if (
+      !totalVotesResult ||
+      !totalVotesResult.totalVotes ||
+      totalVotesResult.totalVotes <= 0
+    ) {
+      throw new NotFoundException("No voted notes found in this room");
+    }
+
+    const winners = await this.notesRepository
+      .createQueryBuilder("note")
+      .leftJoin("note.room", "room")
+      .where("room.uuid = :roomId", { roomId })
+      .andWhere("note.totalVotes = :totalVotes", { totalVotes: totalVotesResult.totalVotes })
       .select(["note.uuid AS uuid"])
-      .getRawOne<{ uuid: string }>();
+      .getRawMany<{ uuid: string }>();
 
-    if (!winner) throw new NotFoundException("No voted notes found in this room");
-
-    return winner;
+    return winners;
   }
 
   /**

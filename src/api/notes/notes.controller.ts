@@ -326,18 +326,21 @@ export class NotesController implements INotesController {
   @Get("room/:roomId/current-winner")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: "Get the note with the highest votes in a room",
+    summary: "Get the notes with the highest votes in a room",
     description:
-      "Returns the note UUID with the highest vote count in the specified room. If no note has votes, returns 404.",
+      "Returns an array of note UUIDs that share the highest vote count in the specified room",
   })
   @ApiOkResponse({
-    description: "Winning note UUID returned successfully",
+    description: "Winning note UUID(s) returned successfully",
     schema: {
-      example: { uuid: "some-note-uuid" },
+      example: [
+        { uuid: "4e367c65-0046-4361-b5d1-2a440c9fa7d4" },
+        { uuid: "8be55f6b-d9a0-4c6c-8abf-834b6e1ad314" },
+      ],
     },
   })
   @ApiNotFoundResponse({
-    description: "No notes found with votes in the room or room does not exist",
+    description: "A 404 error if no notes with votes greater than zero are found",
     type: NotFoundResponse,
   })
   @ApiUnauthorizedResponse({
@@ -346,8 +349,8 @@ export class NotesController implements INotesController {
   })
   public async noteWinner(
     @Param("roomId", new ParseUUIDPipe()) roomId: string,
-  ): Promise<{ uuid: string }> {
-    return this.notesService.getCurrentNoteVoteWinner(roomId);
+  ): Promise<{ uuid: string }[]> {
+    return this.notesService.getCurrentNoteVoteWinners(roomId);
   }
 
   @Get(":noteId")
