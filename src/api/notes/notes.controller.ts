@@ -43,9 +43,15 @@ import { UnauthorizedResponse } from "../../common/interfaces/responses/unauthor
 import { User } from "../user/entities/user.entity";
 import { CreateNoteDto } from "./dtos/create-note.dto";
 import { ExportNotesDto } from "./dtos/export-notes.dto";
+import { NotesViewportDto } from "./dtos/notes-viewport.dto";
 import { UpdateNoteDto } from "./dtos/update-note.dto";
 import { Note } from "./entities/note.entity";
-import { IAddVoteNote, IRemoveVoteNote } from "./interfaces/notes-response.interface";
+import {
+  IAddVoteNote,
+  ICreateNote,
+  IRemoveVoteNote,
+  IUpdateNote,
+} from "./interfaces/notes-response.interface";
 import { INotesController } from "./interfaces/notes.controller.interface";
 import { NotesService } from "./notes.service";
 
@@ -57,11 +63,11 @@ import { NotesService } from "./notes.service";
 export class NotesController implements INotesController {
   constructor(private readonly notesService: NotesService) {}
 
-  @Get()
+  @Get("viewport")
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: "Get all notes from a specific room",
-    description:
-      "Retrieves all notes associated with the provided room ID. Returns an empty array if no notes exist",
+    summary: "Get all notes from a specific room by viewport",
+    description: "Retrieves all notes associated with the provided room Id.",
   })
   @ApiOkResponse({
     description: "A 200 response if the notes from the specific room are found successfully",
@@ -76,12 +82,16 @@ export class NotesController implements INotesController {
     description: "A 404 response if no room is found",
     type: NotFoundResponse,
   })
-  @HttpCode(HttpStatus.OK)
-  async findAll(@Query("roomId", new ParseUUIDPipe()) roomId: string): Promise<Note[]> {
-    return await this.notesService.findNotesWithVotesFromRoom(roomId);
+  public async findAll(
+    @Query("roomId", new ParseUUIDPipe()) roomId: string,
+    @Query() bounds: NotesViewportDto,
+  ): Promise<Partial<Note>[]> {
+    const notes = await this.notesService.getNotesInViewport(roomId, bounds);
+    return notes;
   }
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: "Create a new note",
     description: "Creates a new note in the specified room",
@@ -102,15 +112,15 @@ export class NotesController implements INotesController {
     description: "A 500 error if trying to create the note",
     type: InternalErrorResponse,
   })
-  @HttpCode(HttpStatus.CREATED)
-  async create(
+  public async create(
     @Body() body: CreateNoteDto,
     @GetCurrentUser() currentUser: User,
-  ): Promise<Note> {
+  ): Promise<ICreateNote> {
     return await this.notesService.createNote(body, currentUser);
   }
 
   @Patch(":noteId")
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Update note",
     description: "Updates an existing note's content or coordinates. Returns the updated note",
@@ -131,12 +141,11 @@ export class NotesController implements INotesController {
     description: "A 500 error if trying to update existing note",
     type: InternalErrorResponse,
   })
-  @HttpCode(HttpStatus.OK)
   async update(
     @Param("noteId", new ParseUUIDPipe()) noteId: string,
     @Body() body: UpdateNoteDto,
     @GetCurrentUser() currentUser: User,
-  ): Promise<Note> {
+  ): Promise<IUpdateNote> {
     return await this.notesService.updateNote(noteId, body, currentUser);
   }
 
@@ -168,10 +177,27 @@ export class NotesController implements INotesController {
     type: InternalErrorResponse,
   })
   @HttpCode(HttpStatus.OK)
-  async delete(
+  public async delete(
     @Param("noteId", new ParseUUIDPipe()) noteId: string,
   ): Promise<IResponseStatus> {
     return await this.notesService.deleteNote(noteId);
+  }
+
+  @ApiOperation({
+    summary: "Get all votes for a note",
+  })
+  @ApiOkResponse({
+    description: "A 200 response List of votes with user info",
+    type: DeletedResponse,
+  })
+  @ApiNotFoundResponse({
+    description: "A 404 error if the note doesn't exist",
+    type: NotFoundResponse,
+  })
+  @Get("votes")
+  @HttpCode(HttpStatus.OK)
+  async findVotes(@Query("noteId", new ParseUUIDPipe()) noteId: string) {
+    return this.notesService.findAllNoteVotes(noteId);
   }
 
   @Post(":noteId/vote")
@@ -207,7 +233,7 @@ export class NotesController implements INotesController {
     type: InternalErrorResponse,
   })
   @HttpCode(HttpStatus.CREATED)
-  async addVote(
+  public async addVote(
     @Param("noteId", new ParseUUIDPipe()) noteId: string,
     @GetCurrentUser() currentUser: User,
   ): Promise<IAddVoteNote> {
@@ -247,7 +273,7 @@ export class NotesController implements INotesController {
     type: InternalErrorResponse,
   })
   @HttpCode(HttpStatus.OK)
-  async removeVote(
+  public async removeVote(
     @Param("noteId", new ParseUUIDPipe()) noteId: string,
     @GetCurrentUser() currentUser: User,
   ): Promise<IRemoveVoteNote> {
@@ -279,7 +305,7 @@ export class NotesController implements INotesController {
     type: UnprocessableEntityResponse,
   })
   @Get("export")
-  async exportNotes(@Query() query: ExportNotesDto, @Res() res: Response) {
+  public async exportNotes(@Query() query: ExportNotesDto, @Res() res: Response) {
     const { buffer, filename, mimeType } = await this.notesService.exportNotes(query);
 
     res.set({
@@ -289,5 +315,10 @@ export class NotesController implements INotesController {
     });
 
     res.end(buffer);
+  }
+  @Get(":noteId")
+  @HttpCode(HttpStatus.OK)
+  async getOne(@Param("noteId", new ParseUUIDPipe()) noteId: string): Promise<Note> {
+    return this.notesService.findById(noteId);
   }
 }

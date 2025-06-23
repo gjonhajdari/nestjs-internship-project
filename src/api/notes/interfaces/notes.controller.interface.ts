@@ -1,16 +1,24 @@
 import { IResponseStatus } from "../../../common/interfaces/ResponseStatus.interface";
 import { User } from "../../user/entities/user.entity";
 import { CreateNoteDto } from "../dtos/create-note.dto";
+import { NotesViewportDto } from "../dtos/notes-viewport.dto";
 import { UpdateNoteDto } from "../dtos/update-note.dto";
 import { Note } from "../entities/note.entity";
-import { IAddVoteNote, IRemoveVoteNote } from "./notes-response.interface";
+import {
+  IAddVoteNote,
+  ICreateNote,
+  IRemoveVoteNote,
+  IUpdateNote,
+} from "./notes-response.interface";
 
 export interface INotesController {
-  findAll(roomId: string): Promise<Note[]>;
+  findAll(roomId: string, bounds: NotesViewportDto): Promise<Partial<Note>[]>;
 
-  create(body: CreateNoteDto, currentUser: User): Promise<Note>;
+  // findAll(roomId: string): Promise<Partial<Note>[]>;
 
-  update(noteId: string, body: UpdateNoteDto, currentUser: User): Promise<Note>;
+  create(body: CreateNoteDto, currentUser: User): Promise<ICreateNote>;
+
+  update(noteId: string, body: UpdateNoteDto, currentUser: User): Promise<IUpdateNote>;
 
   delete(noteId: string): Promise<IResponseStatus>;
 
