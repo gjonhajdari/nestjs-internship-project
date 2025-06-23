@@ -49,6 +49,7 @@ import { Note } from "./entities/note.entity";
 import {
   IAddVoteNote,
   ICreateNote,
+  INoteVote,
   IRemoveVoteNote,
   IUpdateNote,
 } from "./interfaces/notes-response.interface";
@@ -183,20 +184,24 @@ export class NotesController implements INotesController {
     return await this.notesService.deleteNote(noteId);
   }
 
-  @ApiOperation({
-    summary: "Get all votes for a note",
-  })
-  @ApiOkResponse({
-    description: "A 200 response List of votes with user info",
-    type: DeletedResponse,
-  })
-  @ApiNotFoundResponse({
-    description: "A 404 error if the note doesn't exist",
-    type: NotFoundResponse,
-  })
   @Get("votes")
   @HttpCode(HttpStatus.OK)
-  async findVotes(@Query("noteId", new ParseUUIDPipe()) noteId: string) {
+  @ApiOperation({
+    summary: "Get all votes for a specific note",
+    description:
+      "Returns a list of users who have voted on the note, including their UUID, first name, and last name.",
+  })
+  @ApiOkResponse({
+    description: "Votes retrieved successfully",
+    type: [Object],
+  })
+  @ApiNotFoundResponse({
+    description: "Note not found for the given ID",
+    type: NotFoundResponse,
+  })
+  public async findVotes(
+    @Query("noteId", new ParseUUIDPipe()) noteId: string,
+  ): Promise<INoteVote[]> {
     return this.notesService.findAllNoteVotes(noteId);
   }
 
@@ -204,14 +209,15 @@ export class NotesController implements INotesController {
   @ApiOperation({
     summary: "Add vote to note",
     description:
-      "Increments the vote count on the specified note by 1, returns a success, message & switched vote status",
+      "Increments the vote count on the specified note by one, if the user already voted for another note in the same room, the vote is switched.",
   })
   @ApiCreatedResponse({
-    description: "Vote added successfully",
+    description: "Vote added or switched successfully",
     schema: {
       example: {
         success: true,
-        message: "John added new vote!",
+        message: "John added a vote!",
+        voteSwitched: false,
       },
     },
   })
@@ -316,9 +322,52 @@ export class NotesController implements INotesController {
 
     res.end(buffer);
   }
+
+  @Get("room/:roomId/current-winner")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "Get the note with the highest votes in a room",
+    description:
+      "Returns the note UUID with the highest vote count in the specified room. If no note has votes, returns 404.",
+  })
+  @ApiOkResponse({
+    description: "Winning note UUID returned successfully",
+    schema: {
+      example: { uuid: "some-note-uuid" },
+    },
+  })
+  @ApiNotFoundResponse({
+    description: "No notes found with votes in the room or room does not exist",
+    type: NotFoundResponse,
+  })
+  @ApiUnauthorizedResponse({
+    description: "A 401 error if no bearer token is provided",
+    type: UnauthorizedResponse,
+  })
+  public async noteWinner(
+    @Param("roomId", new ParseUUIDPipe()) roomId: string,
+  ): Promise<{ uuid: string }> {
+    return this.notesService.getCurrentNoteVoteWinner(roomId);
+  }
+
   @Get(":noteId")
   @HttpCode(HttpStatus.OK)
-  async getOne(@Param("noteId", new ParseUUIDPipe()) noteId: string): Promise<Note> {
+  @ApiOperation({
+    summary: "Get a single note by UUID",
+    description: "Returns the note by the given UUID.",
+  })
+  @ApiOkResponse({
+    description: "A 200 response if the note is found",
+  })
+  @ApiUnauthorizedResponse({
+    description: "A 401 error if no bearer token is provided",
+    type: UnauthorizedResponse,
+  })
+  @ApiNotFoundResponse({
+    description: "A 404 error if the note is not found",
+    type: NotFoundResponse,
+  })
+  public async getOne(@Param("noteId", new ParseUUIDPipe()) noteId: string): Promise<Note> {
     return this.notesService.findById(noteId);
   }
 }

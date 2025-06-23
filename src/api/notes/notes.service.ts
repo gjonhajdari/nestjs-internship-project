@@ -155,6 +155,32 @@ export class NotesService implements INotesService {
   }
 
   /**
+   * Returns the note uuid with the highest total votes in a specified room
+   * If multiple notes share the highest vote count, the earliest created note is returned
+   *
+   * @param roomId - Unique room UUID
+   * @returns Promise that resolves to an object containing the UUID of the winning note
+   *
+   * @throws {NotFoundException} - Thrown if no notes are found in the specified room
+   */
+  public async getCurrentNoteVoteWinner(roomId: string): Promise<{ uuid: string }> {
+    const winner = await this.notesRepository
+      .createQueryBuilder("note")
+      .leftJoin("note.room", "room")
+      .where("room.uuid = :roomId", { roomId })
+      .andWhere("note.totalVotes > 0")
+      .orderBy("note.totalVotes", "DESC")
+      .addOrderBy("note.createdAt", "ASC")
+      .limit(1)
+      .select(["note.uuid AS uuid"])
+      .getRawOne<{ uuid: string }>();
+
+    if (!winner) throw new NotFoundException("No voted notes found in this room");
+
+    return winner;
+  }
+
+  /**
    * Gets an existing vote by a specific user in a specific room.
    * This method is used to check if the user has already voted in the room,
    * which helps enforce the rule that a user can only vote once per room.
