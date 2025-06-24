@@ -7,9 +7,9 @@ import {
   UnprocessableEntityException,
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { HostDetails } from "src/common/interfaces/HostDetails.interface";
 import { DataSource, EntityManager } from "typeorm";
 import { ResourceType } from "../../common/enums/resource-type.enum";
+import { HostDetails } from "../../common/interfaces/HostDetails.interface";
 import { IResponseStatus } from "../../common/interfaces/ResponseStatus.interface";
 import { jwtConstants } from "../auth/constants/constants";
 import { User } from "../user/entities/user.entity";

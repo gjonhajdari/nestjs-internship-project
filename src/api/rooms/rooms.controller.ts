@@ -23,10 +23,10 @@ import {
   ApiUnauthorizedResponse,
   ApiUnprocessableEntityResponse,
 } from "@nestjs/swagger";
-import { HostDetails } from "src/common/interfaces/HostDetails.interface";
 import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
 import { Roles } from "../../common/decorators/roles.decorator";
 import { RolesGuard } from "../../common/guards/roles.guard";
+import { HostDetails } from "../../common/interfaces/HostDetails.interface";
 import { IResponseStatus } from "../../common/interfaces/ResponseStatus.interface";
 import { BadRequestResponse } from "../../common/interfaces/responses/bad-request.response";
 import { DeletedResponse } from "../../common/interfaces/responses/deleted.response";
