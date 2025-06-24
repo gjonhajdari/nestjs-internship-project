@@ -7,6 +7,7 @@ import {
   UnprocessableEntityException,
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
+import { HostDetails } from "src/common/interfaces/HostDetails.interface";
 import { DataSource, EntityManager } from "typeorm";
 import { ResourceType } from "../../common/enums/resource-type.enum";
 import { IResponseStatus } from "../../common/interfaces/ResponseStatus.interface";
@@ -270,7 +271,7 @@ export class RoomsService implements IRoomsService {
    * @param roomId - the UUID of the room we are get the host of
    * @returns - an object of type partial user
    */
-  async findHost(roomId: string) {
+  async findHost(roomId: string): Promise<HostDetails> {
     const room = await this.findById(roomId);
 
     try {
