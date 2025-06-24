@@ -22,6 +22,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
   ApiUnprocessableEntityResponse,
+  PartialType,
 } from "@nestjs/swagger";
 import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
 import { Roles } from "../../common/decorators/roles.decorator";
@@ -106,6 +107,25 @@ export class RoomsController implements IRoomsController {
   ): Promise<{ room: Room; role: RoomRoles }[]> {
     const { uuid } = user;
     return await this.roomsService.findRooms(uuid, false);
+  }
+
+  @ApiOperation({
+    summary: "Get room's host",
+    description: "Retrieve host info for room",
+  })
+  @ApiOkResponse({
+    description: "A 200 response if host is found",
+    type: PartialType<User>,
+  })
+  @ApiUnprocessableEntityResponse({
+    description: "A 422 response if request can't be proccessed",
+  })
+  @ApiNotFoundResponse({
+    description: "A 404 response if room or host isn't found",
+  })
+  @Get("host/:roomId")
+  async getHost(@Param("roomId", new ParseUUIDPipe()) roomId: string) {
+    return await this.roomsService.findHost(roomId);
   }
 
   @ApiOperation({

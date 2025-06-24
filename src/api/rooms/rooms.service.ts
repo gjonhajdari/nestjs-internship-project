@@ -264,4 +264,33 @@ export class RoomsService implements IRoomsService {
       throw new UnprocessableEntityException("There was an error generating your code");
     return { inviteCode: code };
   }
+
+  /**
+   *
+   * @param roomId - the UUID of the room we are get the host of
+   * @returns - an object of type partial user
+   */
+  async findHost(roomId: string) {
+    const room = await this.findById(roomId);
+
+    try {
+      const host = await this.roomUsersRepository
+        .createQueryBuilder("roomUser")
+        .innerJoin("roomUser.user", "user")
+        .where("roomUser.roomId = :roomId", { roomId: room.id })
+        .andWhere("roomUser.role = :role", { role: RoomRoles.HOST })
+        .select([
+          "user.uuid as uuid",
+          'user.firstName AS "firstName"',
+          'user.lastName AS "lastName"',
+        ])
+        .getRawOne();
+
+      if (!host) throw new NotFoundException("Host not found");
+      return host;
+    } catch (error) {
+      if (error.status === 404) throw error;
+      throw new UnprocessableEntityException(error.message);
+    }
+  }
 }
