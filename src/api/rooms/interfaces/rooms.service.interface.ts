@@ -1,4 +1,4 @@
-import { HostDetails } from "src/common/interfaces/HostDetails.interface";
+import { HostDetails } from "../../../common/interfaces/HostDetails.interface";
 import { IResponseStatus } from "../../../common/interfaces/ResponseStatus.interface";
 import { CreateRoomDto } from "../dtos/create-room.dto";
 import { UpdateRoomDto } from "../dtos/update-room.dto";
