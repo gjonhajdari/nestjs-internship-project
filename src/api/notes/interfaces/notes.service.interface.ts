@@ -20,6 +20,8 @@ export interface INotesService {
 
   deleteNote(noteId: string): Promise<IResponseStatus>;
 
+  getCurrentNoteVoteWinners(roomId: string): Promise<{ uuid: string }[]>;
+
   addVote(noteId: string, currentUser: User): Promise<IAddVoteNote>;
 
   removeVote(noteId: string, currentUser: User): Promise<IRemoveVoteNote>;

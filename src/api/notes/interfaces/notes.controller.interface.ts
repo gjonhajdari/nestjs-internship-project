@@ -14,7 +14,7 @@ import {
 export interface INotesController {
   findAll(roomId: string, bounds: NotesViewportDto): Promise<Partial<Note>[]>;
 
-  // findAll(roomId: string): Promise<Partial<Note>[]>;
+  noteWinner(roomId: string): Promise<{ uuid: string }[]>;
 
   create(body: CreateNoteDto, currentUser: User): Promise<ICreateNote>;
 

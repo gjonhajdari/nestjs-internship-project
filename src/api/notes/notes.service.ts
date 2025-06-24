@@ -381,13 +381,16 @@ export class NotesService implements INotesService {
    *
    * @param noteId - The UUID of the note to add a vote to
    * @param currentUser - The user casting the vote
+   *
    * @returns A Promise resolving to an object indicating whether the vote was added or switched
+   *
    * @throws {NotFoundException} -If the note is not found
    * @throws {BadRequestException} - If the user has already voted for the same note
    * @throws {InternalServerErrorException} - If an error occurs during the vote operation
    */
   public async addVote(noteId: string, currentUser: User): Promise<IAddVoteNote> {
-    let voteSwitched = false;
+    let switchedFrom: string | null = null;
+    let addedTo: string | null = null;
 
     try {
       await this.dataSource.transaction(async (manager: EntityManager) => {
@@ -408,26 +411,23 @@ export class NotesService implements INotesService {
           }
 
           await noteRepo.decrement({ id: existingVote.note.id }, "totalVotes", 1);
+          switchedFrom = existingVote.note.uuid;
 
           existingVote.note = note;
-
           await voteRepo.save(existingVote);
-
           await noteRepo.increment({ id: note.id }, "totalVotes", 1);
-          voteSwitched = true;
+          addedTo = note.uuid;
         } else {
           const userVote = voteRepo.create({ user: currentUser, note: note, room: note.room });
           await voteRepo.save(userVote);
           await noteRepo.increment({ id: note.id }, "totalVotes", 1);
+          addedTo = note.uuid;
         }
       });
 
       return {
-        success: true,
-        message: voteSwitched
-          ? `${currentUser.firstName} switched their vote!`
-          : `${currentUser.firstName} added a vote!`,
-        voteSwitched,
+        switchedFrom,
+        addedTo,
       };
     } catch (error) {
       catchKnownErrors(error);
@@ -441,13 +441,17 @@ export class NotesService implements INotesService {
    *
    * @param noteId -The UUID of the note to remove a vote from
    * @param currentUser - The user removing their vote
-   * @returns A Promise resolving to an object containing a success message
+   *
+   * @returns A Promise resolving to an object containing the UUID of the note from which the vote was removed
+   *
    * @throws {NotFoundException} - If the note is not found or the user has not voted in the room
-   * @throws {BadRequestException} - If user information is missing
+   * @throws {BadRequestException} - If the user did not vote for the specified note
    * @throws {InternalServerErrorException} - If an error occurs during the vote removal process
    */
   public async removeVote(noteId: string, currentUser: User): Promise<IRemoveVoteNote> {
     try {
+      let removedFrom: string | null = null;
+
       await this.dataSource.transaction(async (manager: EntityManager) => {
         const voteRepo = manager.getRepository(NoteVote);
         const noteRepo = manager.getRepository(Note);
@@ -462,16 +466,21 @@ export class NotesService implements INotesService {
 
         if (!existingVote) throw new NotFoundException("You have not voted in this room!");
 
+        if (existingVote.note.uuid !== note.uuid) {
+          throw new BadRequestException("You did not vote for this note!");
+        }
+
         await voteRepo.remove(existingVote);
 
         if (note.totalVotes > 0) {
           await noteRepo.decrement({ id: existingVote.note.id }, "totalVotes", 1);
         }
+
+        removedFrom = existingVote.note.uuid;
       });
 
       return {
-        success: true,
-        message: `${currentUser.firstName} removed vote!`,
+        removedFrom,
       };
     } catch (error) {
       catchKnownErrors(error);

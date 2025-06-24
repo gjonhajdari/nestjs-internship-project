@@ -55,10 +55,10 @@ export interface INoteVote {
 }
 
 export interface IRemoveVoteNote {
-  success: boolean;
-  message: string;
+  removedFrom: string;
 }
 
-export interface IAddVoteNote extends IRemoveVoteNote {
-  voteSwitched: boolean;
+export interface IAddVoteNote {
+  switchedFrom: string;
+  addedTo: string;
 }

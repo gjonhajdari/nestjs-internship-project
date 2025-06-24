@@ -30,7 +30,6 @@ import {
   ApiUnprocessableEntityResponse,
 } from "@nestjs/swagger";
 import { Response } from "express";
-import { UnprocessableEntityResponse } from "src/common/interfaces/responses/unprocessable-entity.response";
 import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
 import { RolesGuard } from "../../common/guards/roles.guard";
 import { IResponseStatus } from "../../common/interfaces/ResponseStatus.interface";
@@ -40,6 +39,7 @@ import { ForbiddenResponse } from "../../common/interfaces/responses/forbidden.r
 import { InternalErrorResponse } from "../../common/interfaces/responses/internal-error.response";
 import { NotFoundResponse } from "../../common/interfaces/responses/not-found.response";
 import { UnauthorizedResponse } from "../../common/interfaces/responses/unauthorized.response";
+import { UnprocessableEntityResponse } from "../../common/interfaces/responses/unprocessable-entity.response";
 import { User } from "../user/entities/user.entity";
 import { CreateNoteDto } from "./dtos/create-note.dto";
 import { ExportNotesDto } from "./dtos/export-notes.dto";
@@ -215,15 +215,13 @@ export class NotesController implements INotesController {
     description: "Vote added or switched successfully",
     schema: {
       example: {
-        success: true,
-        message: "John added a vote!",
-        voteSwitched: false,
+        switchedFrom: null,
+        addedTo: "ce78f13f-8bd3-4e1f-94cd-f60a0eb90d90",
       },
     },
   })
   @ApiBadRequestResponse({
-    description:
-      "A 400 error if missing user or room information & if the user has already voted in the same room",
+    description: "A 400 error if the user has already voted in the same room",
     type: BadRequestResponse,
   })
   @ApiUnauthorizedResponse({
@@ -250,19 +248,18 @@ export class NotesController implements INotesController {
   @ApiOperation({
     summary: "Remove vote from note",
     description:
-      "Decrements the vote count on the specified note by 1, returns success & message",
+      "Decrements the vote count on the specified note by 1. The user must have previously voted for the same note in the room.",
   })
   @ApiOkResponse({
     description: "Vote removed successfully",
     schema: {
       example: {
-        success: true,
-        message: "John removed vote!",
+        removedFrom: "ce78f13f-8bd3-4e1f-94cd-f60a0eb90d90",
       },
     },
   })
   @ApiBadRequestResponse({
-    description: "A 400 error if missing user or room information",
+    description: "A 400 error if the user did not vote for the specified note.",
     type: BadRequestResponse,
   })
   @ApiUnauthorizedResponse({
