@@ -54,3 +54,5 @@ export interface IAddVoteNote {
   switchedFrom: string;
   addedTo: string;
 }
+
+export interface INoteWithAuthor extends INoteVote, IUpdateNote {}

@@ -28,6 +28,7 @@ import type {
   INoteViewportRaw,
   INoteVote,
   INoteVoteRaw,
+  INoteWithAuthor,
   IRemoveVoteNote,
   IUpdateNote,
 } from "./interfaces/notes-response.interface";
@@ -119,6 +120,21 @@ export class NotesService implements INotesService {
     if (!note) throw new NotFoundException("Note does not exist");
 
     return note;
+  }
+
+  public async findNoteByIdWithAuthor(noteId: string): Promise<INoteWithAuthor> {
+    const noteWithAuthor = await this.findById(noteId, ["author"]);
+
+    return {
+      uuid: noteWithAuthor.uuid,
+      content: noteWithAuthor.content,
+      color: noteWithAuthor.color,
+      totalVotes: noteWithAuthor.totalVotes,
+      xAxis: noteWithAuthor.xAxis,
+      yAxis: noteWithAuthor.yAxis,
+      firstName: noteWithAuthor.author.firstName,
+      lastName: noteWithAuthor.author.lastName,
+    };
   }
 
   /**

@@ -46,14 +46,15 @@ import { ExportNotesDto } from "./dtos/export-notes.dto";
 import { NotesViewportDto } from "./dtos/notes-viewport.dto";
 import { UpdateNoteDto } from "./dtos/update-note.dto";
 import { Note } from "./entities/note.entity";
-import {
+import type {
   IAddVoteNote,
   ICreateNote,
   INoteVote,
+  INoteWithAuthor,
   IRemoveVoteNote,
   IUpdateNote,
 } from "./interfaces/notes-response.interface";
-import { INotesController } from "./interfaces/notes.controller.interface";
+import type { INotesController } from "./interfaces/notes.controller.interface";
 import { NotesService } from "./notes.service";
 
 @ApiBearerAuth()
@@ -308,7 +309,10 @@ export class NotesController implements INotesController {
     type: UnprocessableEntityResponse,
   })
   @Get("export")
-  public async exportNotes(@Query() query: ExportNotesDto, @Res() res: Response) {
+  public async exportNotes(
+    @Query() query: ExportNotesDto,
+    @Res() res: Response,
+  ): Promise<void> {
     const { buffer, filename, mimeType } = await this.notesService.exportNotes(query);
 
     res.set({
@@ -367,7 +371,9 @@ export class NotesController implements INotesController {
     description: "A 404 error if the note is not found",
     type: NotFoundResponse,
   })
-  public async getOne(@Param("noteId", new ParseUUIDPipe()) noteId: string): Promise<Note> {
-    return this.notesService.findById(noteId);
+  public async getOne(
+    @Param("noteId", new ParseUUIDPipe()) noteId: string,
+  ): Promise<INoteWithAuthor> {
+    return this.notesService.findNoteByIdWithAuthor(noteId);
   }
 }
