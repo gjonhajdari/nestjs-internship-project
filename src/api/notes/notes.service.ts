@@ -65,11 +65,6 @@ export class NotesService implements INotesService {
       .leftJoin("note.author", "author")
       .select([
         "note.uuid AS uuid",
-        "note.content AS content",
-        "note.total_votes AS totalvotes",
-        "note.color AS color",
-        "author.first_name AS firstname",
-        "author.last_name AS lastname",
         "note.x_axis as xaxis",
         "note.y_axis as yaxis",
         "ROW_NUMBER() OVER (PARTITION BY note.x_axis, note.y_axis ORDER BY note.updated_at DESC) AS row_num",
@@ -98,11 +93,6 @@ export class NotesService implements INotesService {
 
     const result = notes.map((row) => ({
       uuid: row.uuid,
-      content: row.content,
-      totalVotes: row.totalvotes,
-      color: row.color,
-      firstName: row.firstname,
-      lastName: row.lastname,
       xAxis: row.xaxis,
       yAxis: row.yaxis,
     }));
@@ -170,15 +160,12 @@ export class NotesService implements INotesService {
       .createQueryBuilder("note")
       .leftJoin("note.room", "room")
       .where("room.uuid = :roomId", { roomId })
+      .andWhere("note.totalVotes > 0")
       .select("MAX(note.totalVotes)", "totalVotes")
       .getRawOne<{ totalVotes: number }>();
 
-    if (
-      !totalVotesResult ||
-      !totalVotesResult.totalVotes ||
-      totalVotesResult.totalVotes <= 0
-    ) {
-      throw new NotFoundException("No voted notes found in this room");
+    if (!totalVotesResult || !totalVotesResult.totalVotes) {
+      return [];
     }
 
     const winners = await this.notesRepository

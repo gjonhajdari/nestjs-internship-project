@@ -1,19 +1,11 @@
 import { NoteColor } from "../enums/note-color.enum";
 export interface INoteViewport {
   uuid: string;
-  content: string;
-  totalVotes: number;
-  color: NoteColor;
-  firstName: string;
-  lastName: string;
+  xAxis: number;
+  yAxis: number;
 }
 export interface INoteViewportRaw {
   uuid: string;
-  content: string;
-  totalvotes: number;
-  color: NoteColor;
-  firstname: string;
-  lastname: string;
   xaxis: number;
   yaxis: number;
 }
