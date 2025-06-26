@@ -214,7 +214,9 @@ export class RoomsService implements IRoomsService {
     const [roomUser, joinError] = await tryCatch(this.roomUsersRepository.save(join));
 
     if (joinError)
-      throw new InternalServerErrorException("There was an error processing your request");
+      throw new UnprocessableEntityException(
+        "There was an error processing your request to join room",
+      );
 
     return roomUser;
   }
