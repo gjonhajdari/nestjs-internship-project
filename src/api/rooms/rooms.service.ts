@@ -38,15 +38,16 @@ export class RoomsService implements IRoomsService {
    * @param roomId - The UUID of the room to find
    * @returns Promise that resolves to the room if found
    * @throws {NotFoundException} - If the room doesn't exist
-   * @throws {InternalServerErrorException} - If there was an error processing the request
+   * @throws {UnprocessableEntityException} - If there was an error processing the request
    */
   async findById(roomId: string): Promise<Room> {
     const [room, error] = await tryCatch(
       this.roomsRepository.findOne({ where: { uuid: roomId } }),
     );
 
-    if (error)
-      throw new InternalServerErrorException("There was an error processing your request");
+    if (error) {
+      throw new UnprocessableEntityException("There was an error processing your request");
+    }
 
     if (!room) {
       throw new NotFoundException("Room doesn't exist!");
@@ -263,5 +264,24 @@ export class RoomsService implements IRoomsService {
     if (error)
       throw new UnprocessableEntityException("There was an error generating your code");
     return { inviteCode: code };
+  }
+
+  /**
+   *
+   * @param roomId - the UUID of the room the user is in
+   * @param userId - the UUID of the user whos role is getting checked
+   * @returns - roomUsers or null
+   */
+  async getUserRole(roomId: string, userId: string) {
+    const room = await this.findById(roomId);
+    const user = await this.usersService.findOne(userId);
+    try {
+      const roomUser = await this.roomUsersRepository.findOne({
+        where: { roomId: room.id, userId: user.id },
+      });
+      return roomUser;
+    } catch (error) {
+      throw new UnprocessableEntityException(error.message);
+    }
   }
 }
