@@ -2,9 +2,9 @@ import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from "@
 import { ModuleRef, Reflector } from "@nestjs/core";
 import { WsException } from "@nestjs/websockets";
 import { Socket } from "socket.io";
-import { RoomUsers } from "src/api/rooms/entities/room-users.entity";
-import { RoomRoles } from "src/api/rooms/enums/room-roles.enum";
-import { RoomsService } from "src/api/rooms/rooms.service";
+import { RoomUsers } from "../../api/rooms/entities/room-users.entity";
+import { RoomRoles } from "../../api/rooms/enums/room-roles.enum";
+import { RoomsService } from "../../api/rooms/rooms.service";
 
 @Injectable()
 export class WsRolesGuard implements CanActivate {

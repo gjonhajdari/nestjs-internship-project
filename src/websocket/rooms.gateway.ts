@@ -6,11 +6,11 @@ import {
   WebSocketGateway,
 } from "@nestjs/websockets";
 import { Socket } from "socket.io";
-import { RoomRoles } from "src/api/rooms/enums/room-roles.enum";
-import { Roles } from "src/common/decorators/roles.decorator";
-import { WsRolesGuard } from "src/common/ws-guards/ws-roles.guard";
 import { ActivitiesService } from "../api/activities/activities.service";
+import { RoomRoles } from "../api/rooms/enums/room-roles.enum";
 import { RoomsService } from "../api/rooms/rooms.service";
+import { Roles } from "../common/decorators/roles.decorator";
+import { WsRolesGuard } from "../common/ws-guards/ws-roles.guard";
 import { BaseWebsocketGateway } from "./base-websocket.gateway";
 
 @WebSocketGateway()
