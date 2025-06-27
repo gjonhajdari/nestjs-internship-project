@@ -63,10 +63,9 @@ export class UsersService implements IUsersService {
       .where("room.uuid = :roomId", { roomId })
       .select([
         "user.uuid as uuid",
-        "user.firstName as firstName",
-        "user.lastName as lastName",
+        'user.firstName AS "firstName"',
+        'user.lastName AS "lastName"',
         "user.email as email",
-        "user.createdAt as createdAt",
         "roomUser.role as role",
       ])
       .addSelect("roomUser.role", "role")
