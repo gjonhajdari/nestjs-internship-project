@@ -242,6 +242,13 @@ export class NotesService implements INotesService {
           id: room.id,
         },
       },
+      relations: ["author"],
+      select: {
+        author: {
+          firstName: true,
+          lastName: true,
+        },
+      },
     });
   }
 
