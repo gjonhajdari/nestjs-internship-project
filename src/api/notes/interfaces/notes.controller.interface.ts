@@ -2,9 +2,7 @@ import { IResponseStatus } from "../../../common/interfaces/ResponseStatus.inter
 import { User } from "../../user/entities/user.entity";
 import { CreateNoteDto } from "../dtos/create-note.dto";
 import { ExportNotesDto } from "../dtos/export-notes.dto";
-import { NotesViewportDto } from "../dtos/notes-viewport.dto";
 import { UpdateNoteDto } from "../dtos/update-note.dto";
-import { Note } from "../entities/note.entity";
 
 import { Response } from "express";
 import {
@@ -17,7 +15,7 @@ import {
 } from "./notes-response.interface";
 
 export interface INotesController {
-  findAll(roomId: string, bounds: NotesViewportDto): Promise<Partial<Note>[]>;
+  // findAll(roomId: string, bounds: NotesViewportDto): Promise<Partial<Note>[]>;
 
   noteWinner(roomId: string): Promise<{ uuid: string }[]>;
 

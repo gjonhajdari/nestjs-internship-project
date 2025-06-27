@@ -2,14 +2,12 @@ import { IResponseStatus } from "../../../common/interfaces/ResponseStatus.inter
 import { User } from "../../user/entities/user.entity";
 import { CreateNoteDto } from "../dtos/create-note.dto";
 import { ExportNotesDto } from "../dtos/export-notes.dto";
-import { NotesViewportDto } from "../dtos/notes-viewport.dto";
 import { UpdateNoteDto } from "../dtos/update-note.dto";
 import { Note } from "../entities/note.entity";
 import { IExportedFile } from "./exported-file.interface";
 import {
   IAddVoteNote,
   ICreateNote,
-  INoteViewport,
   INoteVote,
   INoteWithAuthor,
   IRemoveVoteNote,
@@ -17,7 +15,7 @@ import {
 } from "./notes-response.interface";
 
 export interface INotesService {
-  getNotesInViewport(roomId: string, bounds: NotesViewportDto): Promise<INoteViewport[]>;
+  // getNotesInViewport(roomId: string, bounds: NotesViewportDto): Promise<INoteViewport[]>;
 
   findById(noteId: string, relations?: string[]): Promise<Note>;
 

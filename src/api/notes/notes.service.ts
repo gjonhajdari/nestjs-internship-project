@@ -16,7 +16,6 @@ import { User } from "../user/entities/user.entity";
 import { catchKnownErrors } from "./../../utils/catchKnownErrors.util";
 import { CreateNoteDto } from "./dtos/create-note.dto";
 import { ExportNotesDto } from "./dtos/export-notes.dto";
-import { NotesViewportDto } from "./dtos/notes-viewport.dto";
 import { UpdateNoteDto } from "./dtos/update-note.dto";
 import { NoteVote } from "./entities/note-vote.entity";
 import { Note } from "./entities/note.entity";
@@ -24,8 +23,6 @@ import type { IExportedFile } from "./interfaces/exported-file.interface";
 import type {
   IAddVoteNote,
   ICreateNote,
-  INoteViewport,
-  INoteViewportRaw,
   INoteVote,
   INoteVoteRaw,
   INoteWithAuthor,
@@ -44,61 +41,61 @@ export class NotesService implements INotesService {
     private readonly parsingProvider: ParsingProvider,
   ) {}
 
-  /**
-   * Retrieves all notes within a given viewport (bounding box) in a specific room
-   * Each note is returned with author information and vote count,
-   * and only the most recently updated note is returned for each (x, y) coordinate pair
-   *
-   * @param roomId - The UUID of the room from which to retrieve notes.
-   * @param bounds - The spatial bounds (xMin, xMax, yMin, yMax) defining the viewport to filter notes by location
-   * @returns A promise that resolves to an array of notes (`INoteViewport[]`) within the viewport
-   *
-   * @throws {NotFoundException} - Thrown if the specified room does not exist
-   */
-  public async getNotesInViewport(
-    roomId: string,
-    bounds: NotesViewportDto,
-  ): Promise<INoteViewport[]> {
-    const room = await this.roomsService.findById(roomId);
+  // /**
+  //  * Retrieves all notes within a given viewport (bounding box) in a specific room
+  //  * Each note is returned with author information and vote count,
+  //  * and only the most recently updated note is returned for each (x, y) coordinate pair
+  //  *
+  //  * @param roomId - The UUID of the room from which to retrieve notes.
+  //  * @param bounds - The spatial bounds (xMin, xMax, yMin, yMax) defining the viewport to filter notes by location
+  //  * @returns A promise that resolves to an array of notes (`INoteViewport[]`) within the viewport
+  //  *
+  //  * @throws {NotFoundException} - Thrown if the specified room does not exist
+  //  */
+  // public async getNotesInViewport(
+  //   roomId: string,
+  //   bounds: NotesViewportDto,
+  // ): Promise<INoteViewport[]> {
+  //   const room = await this.roomsService.findById(roomId);
 
-    const subQuery = this.notesRepository
-      .createQueryBuilder("note")
-      .leftJoin("note.author", "author")
-      .select([
-        "note.uuid AS uuid",
-        "note.x_axis as xaxis",
-        "note.y_axis as yaxis",
-        "ROW_NUMBER() OVER (PARTITION BY note.x_axis, note.y_axis ORDER BY note.updated_at DESC) AS row_num",
-      ])
-      .where("note.room_id = :roomId", { roomId: room.id })
-      .andWhere(
-        `ST_Intersects(
-           ST_SetSRID(ST_MakePoint(note.x_axis, note.y_axis), 4326),
-           ST_MakeEnvelope(:xMin, :yMin, :xMax, :yMax, 4326)
-         )`,
-        {
-          xMin: bounds.xMin,
-          yMin: bounds.yMin,
-          xMax: bounds.xMax,
-          yMax: bounds.yMax,
-        },
-      );
+  //   const subQuery = this.notesRepository
+  //     .createQueryBuilder("note")
+  //     .leftJoin("note.author", "author")
+  //     .select([
+  //       "note.uuid AS uuid",
+  //       "note.x_axis as xaxis",
+  //       "note.y_axis as yaxis",
+  //       "ROW_NUMBER() OVER (PARTITION BY note.x_axis, note.y_axis ORDER BY note.updated_at DESC) AS row_num",
+  //     ])
+  //     .where("note.room_id = :roomId", { roomId: room.id })
+  //     .andWhere(
+  //       `ST_Intersects(
+  //          ST_SetSRID(ST_MakePoint(note.x_axis, note.y_axis), 4326),
+  //          ST_MakeEnvelope(:xMin, :yMin, :xMax, :yMax, 4326)
+  //        )`,
+  //       {
+  //         xMin: bounds.xMin,
+  //         yMin: bounds.yMin,
+  //         xMax: bounds.xMax,
+  //         yMax: bounds.yMax,
+  //       },
+  //     );
 
-    const notes = await this.notesRepository
-      .createQueryBuilder()
-      .select("DISTINCT sub.*")
-      .from(`(${subQuery.getQuery()})`, "sub")
-      .setParameters(subQuery.getParameters())
-      .where("sub.row_num = 1")
-      .getRawMany<INoteViewportRaw>();
+  //   const notes = await this.notesRepository
+  //     .createQueryBuilder()
+  //     .select("DISTINCT sub.*")
+  //     .from(`(${subQuery.getQuery()})`, "sub")
+  //     .setParameters(subQuery.getParameters())
+  //     .where("sub.row_num = 1")
+  //     .getRawMany<INoteViewportRaw>();
 
-    const result = notes.map((row) => ({
-      uuid: row.uuid,
-      xAxis: row.xaxis,
-      yAxis: row.yaxis,
-    }));
-    return result;
-  }
+  //   const result = notes.map((row) => ({
+  //     uuid: row.uuid,
+  //     xAxis: row.xaxis,
+  //     yAxis: row.yaxis,
+  //   }));
+  //   return result;
+  // }
 
   /**
    * Retrieves a note by its unique UUID, optionally including specified related entities
@@ -122,8 +119,16 @@ export class NotesService implements INotesService {
     return note;
   }
 
+  /**
+   * Retrieves a note with author information by its unique UUID
+   *
+   * @param noteId - The UUID of the note to retrieve
+   * @returns A promise that resolves to the found note entity with author information
+   *
+   * @throws {NotFoundException} - Thrown if no note is found with the provided UUID
+   */
   public async findNoteByIdWithAuthor(noteId: string): Promise<INoteWithAuthor> {
-    const noteWithAuthor = await this.findById(noteId, ["author"]);
+    const noteWithAuthor = await this.findById(noteId, ["author", "room"]);
 
     return {
       uuid: noteWithAuthor.uuid,
@@ -134,6 +139,7 @@ export class NotesService implements INotesService {
       yAxis: noteWithAuthor.yAxis,
       firstName: noteWithAuthor.author.firstName,
       lastName: noteWithAuthor.author.lastName,
+      room: noteWithAuthor.room.uuid,
     };
   }
 
@@ -228,7 +234,7 @@ export class NotesService implements INotesService {
    * @returns Promise that resolves to an array of Note entities belonging to the specified room.
    * @throws {NotFoundException} - If no room is found with the given UUID
    */
-  private async findNotesFromRoom(roomId: string): Promise<Note[]> {
+  public async findNotesFromRoom(roomId: string): Promise<Note[]> {
     const room = await this.roomsService.findById(roomId);
     return await this.notesRepository.find({
       where: {
@@ -268,8 +274,9 @@ export class NotesService implements INotesService {
         xAxis: savedNote.xAxis,
         yAxis: savedNote.yAxis,
         totalVotes: savedNote.totalVotes,
-        author: { fullName: `${savedNote.author.firstName} ${savedNote.author.lastName}` },
-        room: { uuid: room.uuid },
+        firstName: savedNote.author.firstName,
+        lastName: savedNote.author.lastName,
+        room: savedNote.room.uuid,
       };
 
       return note;

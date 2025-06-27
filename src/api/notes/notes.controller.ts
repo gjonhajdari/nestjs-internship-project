@@ -43,7 +43,6 @@ import { UnprocessableEntityResponse } from "../../common/interfaces/responses/u
 import { User } from "../user/entities/user.entity";
 import { CreateNoteDto } from "./dtos/create-note.dto";
 import { ExportNotesDto } from "./dtos/export-notes.dto";
-import { NotesViewportDto } from "./dtos/notes-viewport.dto";
 import { UpdateNoteDto } from "./dtos/update-note.dto";
 import { Note } from "./entities/note.entity";
 import type {
@@ -65,11 +64,38 @@ import { NotesService } from "./notes.service";
 export class NotesController implements INotesController {
   constructor(private readonly notesService: NotesService) {}
 
-  @Get("viewport")
+  // @Get("viewport")
+  // @HttpCode(HttpStatus.OK)
+  // @ApiOperation({
+  //   summary: "Get all notes from a specific room by viewport",
+  //   description: "Retrieves all notes associated with the provided room Id.",
+  // })
+  // @ApiOkResponse({
+  //   description: "A 200 response if the notes from the specific room are found successfully",
+  //   type: Note,
+  //   isArray: true,
+  // })
+  // @ApiUnauthorizedResponse({
+  //   description: "A 401 error if no bearer token is provided",
+  //   type: UnauthorizedResponse,
+  // })
+  // @ApiNotFoundResponse({
+  //   description: "A 404 response if no room is found",
+  //   type: NotFoundResponse,
+  // })
+  // public async findAll(
+  //   @Query("roomId", new ParseUUIDPipe()) roomId: string,
+  //   @Query() bounds: NotesViewportDto,
+  // ): Promise<Partial<Note>[]> {
+  //   const notes = await this.notesService.getNotesInViewport(roomId, bounds);
+  //   return notes;
+  // }
+
+  @Get()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: "Get all notes from a specific room by viewport",
-    description: "Retrieves all notes associated with the provided room Id.",
+    summary: "Get all notes from a specific room",
+    description: "Retrieves all notes associated with the provided room Id",
   })
   @ApiOkResponse({
     description: "A 200 response if the notes from the specific room are found successfully",
@@ -84,11 +110,8 @@ export class NotesController implements INotesController {
     description: "A 404 response if no room is found",
     type: NotFoundResponse,
   })
-  public async findAll(
-    @Query("roomId", new ParseUUIDPipe()) roomId: string,
-    @Query() bounds: NotesViewportDto,
-  ): Promise<Partial<Note>[]> {
-    const notes = await this.notesService.getNotesInViewport(roomId, bounds);
+  public async findAll(@Query("roomId", new ParseUUIDPipe()) roomId: string): Promise<Note[]> {
+    const notes = await this.notesService.findNotesFromRoom(roomId);
     return notes;
   }
 

@@ -1,30 +1,12 @@
 import { NoteColor } from "../enums/note-color.enum";
-export interface INoteViewport {
-  uuid: string;
-  xAxis: number;
-  yAxis: number;
-}
+export interface INoteViewport extends Pick<IUpdateNote, "uuid" | "xAxis" | "yAxis"> {}
 export interface INoteViewportRaw {
   uuid: string;
   xaxis: number;
   yaxis: number;
 }
 
-export interface ICreateNote {
-  uuid: string;
-  content: string;
-  color: NoteColor;
-  xAxis: number;
-  yAxis: number;
-  totalVotes: number;
-  author: {
-    fullName: string;
-  };
-  room: {
-    uuid: string;
-  };
-}
-
+export interface ICreateNote extends INoteWithAuthor {}
 export interface IUpdateNote {
   uuid: string;
   content: string;
@@ -55,4 +37,6 @@ export interface IAddVoteNote {
   addedTo: string;
 }
 
-export interface INoteWithAuthor extends INoteVote, IUpdateNote {}
+export interface INoteWithAuthor extends INoteVote, IUpdateNote {
+  room: string;
+}
