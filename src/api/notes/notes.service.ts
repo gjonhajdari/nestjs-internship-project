@@ -335,9 +335,11 @@ export class NotesService implements INotesService {
       await this.dataSource.transaction(async (manager: EntityManager) => {
         const noteRepo = manager.getRepository(Note);
         const commentRepo = manager.getRepository(Comment);
+        const voteRepo = manager.getRepository(NoteVote);
 
+        await voteRepo.delete({ note });
+        await commentRepo.softDelete({ note });
         await noteRepo.softDelete({ uuid: noteId });
-        await commentRepo.softDelete({ note: note });
       });
 
       return {
