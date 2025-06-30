@@ -209,7 +209,9 @@ export class RoomsService implements IRoomsService {
     }
     const room = await this.findById(payload.roomId);
     const user = await this.usersService.findOne(userId);
+    const existing = await this.roomUsersRepository.findOne({ where: { user, room } });
 
+    if (existing) return existing;
     const join = this.roomUsersRepository.create({ user: user, room: room });
 
     const [roomUser, joinError] = await tryCatch(this.roomUsersRepository.save(join));
