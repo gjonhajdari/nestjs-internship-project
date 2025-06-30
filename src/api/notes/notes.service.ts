@@ -344,9 +344,9 @@ export class NotesService implements INotesService {
         const commentRepo = manager.getRepository(Comment);
         const voteRepo = manager.getRepository(NoteVote);
 
+        await voteRepo.delete({ note });
+        await commentRepo.softDelete({ note });
         await noteRepo.softDelete({ uuid: noteId });
-        await commentRepo.softDelete({ note: note });
-        await voteRepo.delete({ note: note });
       });
 
       return {
