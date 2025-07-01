@@ -312,15 +312,16 @@ export class NotesService implements INotesService {
 
     try {
       await this.notesRepository.update({ id: note.id }, safePayload);
-      const updatedNote = {
-        uuid: note.uuid,
-        content: note.content,
-        color: note.color,
-        xAxis: note.xAxis,
-        yAxis: note.yAxis,
-        totalVotes: note.totalVotes,
+      const updatedNote = await this.findById(noteId);
+
+      return {
+        uuid: updatedNote.uuid,
+        content: updatedNote.content,
+        color: updatedNote.color,
+        xAxis: updatedNote.xAxis,
+        yAxis: updatedNote.yAxis,
+        totalVotes: updatedNote.totalVotes,
       };
-      return updatedNote;
     } catch (error) {
       throw new InternalServerErrorException("An error occurred while updating the note");
     }
