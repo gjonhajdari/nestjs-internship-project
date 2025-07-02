@@ -16,6 +16,7 @@ import { User } from "../user/entities/user.entity";
 import { catchKnownErrors } from "./../../utils/catchKnownErrors.util";
 import { CreateNoteDto } from "./dtos/create-note.dto";
 import { ExportNotesDto } from "./dtos/export-notes.dto";
+import { NotesViewportDto } from "./dtos/notes-viewport.dto";
 import { UpdateNoteDto } from "./dtos/update-note.dto";
 import { NoteVote } from "./entities/note-vote.entity";
 import { Note } from "./entities/note.entity";
@@ -23,6 +24,8 @@ import type { IExportedFile } from "./interfaces/exported-file.interface";
 import type {
   IAddVoteNote,
   ICreateNote,
+  INoteViewport,
+  INoteViewportRaw,
   INoteVote,
   INoteVoteRaw,
   INoteWithAuthor,
@@ -41,61 +44,61 @@ export class NotesService implements INotesService {
     private readonly parsingProvider: ParsingProvider,
   ) {}
 
-  // /**
-  //  * Retrieves all notes within a given viewport (bounding box) in a specific room
-  //  * Each note is returned with author information and vote count,
-  //  * and only the most recently updated note is returned for each (x, y) coordinate pair
-  //  *
-  //  * @param roomId - The UUID of the room from which to retrieve notes.
-  //  * @param bounds - The spatial bounds (xMin, xMax, yMin, yMax) defining the viewport to filter notes by location
-  //  * @returns A promise that resolves to an array of notes (`INoteViewport[]`) within the viewport
-  //  *
-  //  * @throws {NotFoundException} - Thrown if the specified room does not exist
-  //  */
-  // public async getNotesInViewport(
-  //   roomId: string,
-  //   bounds: NotesViewportDto,
-  // ): Promise<INoteViewport[]> {
-  //   const room = await this.roomsService.findById(roomId);
+  /**
+   * Retrieves all notes within a given viewport (bounding box) in a specific room
+   * Each note is returned with author information and vote count,
+   * and only the most recently updated note is returned for each (x, y) coordinate pair
+   *
+   * @param roomId - The UUID of the room from which to retrieve notes.
+   * @param bounds - The spatial bounds (xMin, xMax, yMin, yMax) defining the viewport to filter notes by location
+   * @returns A promise that resolves to an array of notes (`INoteViewport[]`) within the viewport
+   *
+   * @throws {NotFoundException} - Thrown if the specified room does not exist
+   */
+  public async getNotesInViewport(
+    roomId: string,
+    bounds: NotesViewportDto,
+  ): Promise<INoteViewport[]> {
+    const room = await this.roomsService.findById(roomId);
 
-  //   const subQuery = this.notesRepository
-  //     .createQueryBuilder("note")
-  //     .leftJoin("note.author", "author")
-  //     .select([
-  //       "note.uuid AS uuid",
-  //       "note.x_axis as xaxis",
-  //       "note.y_axis as yaxis",
-  //       "ROW_NUMBER() OVER (PARTITION BY note.x_axis, note.y_axis ORDER BY note.updated_at DESC) AS row_num",
-  //     ])
-  //     .where("note.room_id = :roomId", { roomId: room.id })
-  //     .andWhere(
-  //       `ST_Intersects(
-  //          ST_SetSRID(ST_MakePoint(note.x_axis, note.y_axis), 4326),
-  //          ST_MakeEnvelope(:xMin, :yMin, :xMax, :yMax, 4326)
-  //        )`,
-  //       {
-  //         xMin: bounds.xMin,
-  //         yMin: bounds.yMin,
-  //         xMax: bounds.xMax,
-  //         yMax: bounds.yMax,
-  //       },
-  //     );
+    const subQuery = this.notesRepository
+      .createQueryBuilder("note")
+      .leftJoin("note.author", "author")
+      .select([
+        "note.uuid AS uuid",
+        "note.x_axis as xaxis",
+        "note.y_axis as yaxis",
+        "ROW_NUMBER() OVER (PARTITION BY note.x_axis, note.y_axis ORDER BY note.updated_at DESC) AS row_num",
+      ])
+      .where("note.room_id = :roomId", { roomId: room.id })
+      .andWhere(
+        `ST_Intersects(
+           ST_SetSRID(ST_MakePoint(note.x_axis, note.y_axis), 4326),
+           ST_MakeEnvelope(:xMin, :yMin, :xMax, :yMax, 4326)
+         )`,
+        {
+          xMin: bounds.xMin,
+          yMin: bounds.yMin,
+          xMax: bounds.xMax,
+          yMax: bounds.yMax,
+        },
+      );
 
-  //   const notes = await this.notesRepository
-  //     .createQueryBuilder()
-  //     .select("DISTINCT sub.*")
-  //     .from(`(${subQuery.getQuery()})`, "sub")
-  //     .setParameters(subQuery.getParameters())
-  //     .where("sub.row_num = 1")
-  //     .getRawMany<INoteViewportRaw>();
+    const notes = await this.notesRepository
+      .createQueryBuilder()
+      .select("DISTINCT sub.*")
+      .from(`(${subQuery.getQuery()})`, "sub")
+      .setParameters(subQuery.getParameters())
+      .where("sub.row_num = 1")
+      .getRawMany<INoteViewportRaw>();
 
-  //   const result = notes.map((row) => ({
-  //     uuid: row.uuid,
-  //     xAxis: row.xaxis,
-  //     yAxis: row.yaxis,
-  //   }));
-  //   return result;
-  // }
+    const result = notes.map((row) => ({
+      uuid: row.uuid,
+      xAxis: row.xaxis,
+      yAxis: row.yaxis,
+    }));
+    return result;
+  }
 
   /**
    * Retrieves a note by its unique UUID, optionally including specified related entities

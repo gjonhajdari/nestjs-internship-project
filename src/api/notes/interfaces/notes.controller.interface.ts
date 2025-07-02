@@ -5,6 +5,8 @@ import { ExportNotesDto } from "../dtos/export-notes.dto";
 import { UpdateNoteDto } from "../dtos/update-note.dto";
 
 import { Response } from "express";
+import { NotesViewportDto } from "../dtos/notes-viewport.dto";
+import { Note } from "../entities/note.entity";
 import {
   IAddVoteNote,
   ICreateNote,
@@ -15,7 +17,7 @@ import {
 } from "./notes-response.interface";
 
 export interface INotesController {
-  // findAll(roomId: string, bounds: NotesViewportDto): Promise<Partial<Note>[]>;
+  findAll(roomId: string, bounds: NotesViewportDto): Promise<Partial<Note>[]>;
 
   noteWinner(roomId: string): Promise<{ uuid: string }[]>;
 
