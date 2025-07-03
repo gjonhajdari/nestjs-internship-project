@@ -173,4 +173,23 @@ export class NotesGateway extends BaseWebsocketGateway {
       socket.emit("error", error.message);
     }
   }
+
+  @SubscribeMessage("notes/editing-start")
+  async handelEditStart(
+    @MessageBody() data: { roomId: string; noteId: string; userId: string; firstName: string },
+    @ConnectedSocket() socket: Socket,
+  ) {
+    const { roomId } = data;
+
+    this.server.to(roomId).emit("notes/editing-started", data);
+  }
+
+  @SubscribeMessage("notes/editing-stop")
+  async handelEditStop(
+    @MessageBody() data: { roomId: string; noteId: string; userId: string; firstName: string },
+    @ConnectedSocket() socket: Socket,
+  ) {
+    const { roomId } = data;
+    this.server.to(roomId).emit("notes/editing-stoped", data);
+  }
 }
