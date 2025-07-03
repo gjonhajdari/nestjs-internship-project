@@ -30,7 +30,6 @@ import {
   ApiUnprocessableEntityResponse,
 } from "@nestjs/swagger";
 import { Response } from "express";
-import { UnprocessableEntityResponse } from "src/common/interfaces/responses/unprocessable-entity.response";
 import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
 import { RolesGuard } from "../../common/guards/roles.guard";
 import { IResponseStatus } from "../../common/interfaces/ResponseStatus.interface";
@@ -40,13 +39,21 @@ import { ForbiddenResponse } from "../../common/interfaces/responses/forbidden.r
 import { InternalErrorResponse } from "../../common/interfaces/responses/internal-error.response";
 import { NotFoundResponse } from "../../common/interfaces/responses/not-found.response";
 import { UnauthorizedResponse } from "../../common/interfaces/responses/unauthorized.response";
+import { UnprocessableEntityResponse } from "../../common/interfaces/responses/unprocessable-entity.response";
 import { User } from "../user/entities/user.entity";
 import { CreateNoteDto } from "./dtos/create-note.dto";
 import { ExportNotesDto } from "./dtos/export-notes.dto";
 import { UpdateNoteDto } from "./dtos/update-note.dto";
 import { Note } from "./entities/note.entity";
-import { IAddVoteNote, IRemoveVoteNote } from "./interfaces/notes-response.interface";
-import { INotesController } from "./interfaces/notes.controller.interface";
+import type {
+  IAddVoteNote,
+  ICreateNote,
+  INoteVote,
+  INoteWithAuthor,
+  IRemoveVoteNote,
+  IUpdateNote,
+} from "./interfaces/notes-response.interface";
+import type { INotesController } from "./interfaces/notes.controller.interface";
 import { NotesService } from "./notes.service";
 
 @ApiBearerAuth()
@@ -57,11 +64,38 @@ import { NotesService } from "./notes.service";
 export class NotesController implements INotesController {
   constructor(private readonly notesService: NotesService) {}
 
+  // @Get("viewport")
+  // @HttpCode(HttpStatus.OK)
+  // @ApiOperation({
+  //   summary: "Get all notes from a specific room by viewport",
+  //   description: "Retrieves all notes associated with the provided room Id.",
+  // })
+  // @ApiOkResponse({
+  //   description: "A 200 response if the notes from the specific room are found successfully",
+  //   type: Note,
+  //   isArray: true,
+  // })
+  // @ApiUnauthorizedResponse({
+  //   description: "A 401 error if no bearer token is provided",
+  //   type: UnauthorizedResponse,
+  // })
+  // @ApiNotFoundResponse({
+  //   description: "A 404 response if no room is found",
+  //   type: NotFoundResponse,
+  // })
+  // public async findAll(
+  //   @Query("roomId", new ParseUUIDPipe()) roomId: string,
+  //   @Query() bounds: NotesViewportDto,
+  // ): Promise<Partial<Note>[]> {
+  //   const notes = await this.notesService.getNotesInViewport(roomId, bounds);
+  //   return notes;
+  // }
+
   @Get()
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Get all notes from a specific room",
-    description:
-      "Retrieves all notes associated with the provided room ID. Returns an empty array if no notes exist",
+    description: "Retrieves all notes associated with the provided room Id",
   })
   @ApiOkResponse({
     description: "A 200 response if the notes from the specific room are found successfully",
@@ -76,12 +110,13 @@ export class NotesController implements INotesController {
     description: "A 404 response if no room is found",
     type: NotFoundResponse,
   })
-  @HttpCode(HttpStatus.OK)
-  async findAll(@Query("roomId", new ParseUUIDPipe()) roomId: string): Promise<Note[]> {
-    return await this.notesService.findNotesWithVotesFromRoom(roomId);
+  public async findAll(@Query("roomId", new ParseUUIDPipe()) roomId: string): Promise<Note[]> {
+    const notes = await this.notesService.findNotesFromRoom(roomId);
+    return notes;
   }
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: "Create a new note",
     description: "Creates a new note in the specified room",
@@ -102,15 +137,15 @@ export class NotesController implements INotesController {
     description: "A 500 error if trying to create the note",
     type: InternalErrorResponse,
   })
-  @HttpCode(HttpStatus.CREATED)
-  async create(
+  public async create(
     @Body() body: CreateNoteDto,
     @GetCurrentUser() currentUser: User,
-  ): Promise<Note> {
+  ): Promise<ICreateNote> {
     return await this.notesService.createNote(body, currentUser);
   }
 
   @Patch(":noteId")
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Update note",
     description: "Updates an existing note's content or coordinates. Returns the updated note",
@@ -131,12 +166,11 @@ export class NotesController implements INotesController {
     description: "A 500 error if trying to update existing note",
     type: InternalErrorResponse,
   })
-  @HttpCode(HttpStatus.OK)
   async update(
     @Param("noteId", new ParseUUIDPipe()) noteId: string,
     @Body() body: UpdateNoteDto,
     @GetCurrentUser() currentUser: User,
-  ): Promise<Note> {
+  ): Promise<IUpdateNote> {
     return await this.notesService.updateNote(noteId, body, currentUser);
   }
 
@@ -168,30 +202,50 @@ export class NotesController implements INotesController {
     type: InternalErrorResponse,
   })
   @HttpCode(HttpStatus.OK)
-  async delete(
+  public async delete(
     @Param("noteId", new ParseUUIDPipe()) noteId: string,
   ): Promise<IResponseStatus> {
     return await this.notesService.deleteNote(noteId);
+  }
+
+  @Get("votes")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "Get all votes for a specific note",
+    description:
+      "Returns a list of users who have voted on the note, including their UUID, first name, and last name.",
+  })
+  @ApiOkResponse({
+    description: "Votes retrieved successfully",
+    type: [Object],
+  })
+  @ApiNotFoundResponse({
+    description: "Note not found for the given ID",
+    type: NotFoundResponse,
+  })
+  public async findVotes(
+    @Query("noteId", new ParseUUIDPipe()) noteId: string,
+  ): Promise<INoteVote[]> {
+    return this.notesService.findAllNoteVotes(noteId);
   }
 
   @Post(":noteId/vote")
   @ApiOperation({
     summary: "Add vote to note",
     description:
-      "Increments the vote count on the specified note by 1, returns a success, message & switched vote status",
+      "Increments the vote count on the specified note by one, if the user already voted for another note in the same room, the vote is switched.",
   })
   @ApiCreatedResponse({
-    description: "Vote added successfully",
+    description: "Vote added or switched successfully",
     schema: {
       example: {
-        success: true,
-        message: "John added new vote!",
+        switchedFrom: null,
+        addedTo: "ce78f13f-8bd3-4e1f-94cd-f60a0eb90d90",
       },
     },
   })
   @ApiBadRequestResponse({
-    description:
-      "A 400 error if missing user or room information & if the user has already voted in the same room",
+    description: "A 400 error if the user has already voted in the same room",
     type: BadRequestResponse,
   })
   @ApiUnauthorizedResponse({
@@ -207,7 +261,7 @@ export class NotesController implements INotesController {
     type: InternalErrorResponse,
   })
   @HttpCode(HttpStatus.CREATED)
-  async addVote(
+  public async addVote(
     @Param("noteId", new ParseUUIDPipe()) noteId: string,
     @GetCurrentUser() currentUser: User,
   ): Promise<IAddVoteNote> {
@@ -218,19 +272,18 @@ export class NotesController implements INotesController {
   @ApiOperation({
     summary: "Remove vote from note",
     description:
-      "Decrements the vote count on the specified note by 1, returns success & message",
+      "Decrements the vote count on the specified note by 1. The user must have previously voted for the same note in the room.",
   })
   @ApiOkResponse({
     description: "Vote removed successfully",
     schema: {
       example: {
-        success: true,
-        message: "John removed vote!",
+        removedFrom: "ce78f13f-8bd3-4e1f-94cd-f60a0eb90d90",
       },
     },
   })
   @ApiBadRequestResponse({
-    description: "A 400 error if missing user or room information",
+    description: "A 400 error if the user did not vote for the specified note.",
     type: BadRequestResponse,
   })
   @ApiUnauthorizedResponse({
@@ -247,7 +300,7 @@ export class NotesController implements INotesController {
     type: InternalErrorResponse,
   })
   @HttpCode(HttpStatus.OK)
-  async removeVote(
+  public async removeVote(
     @Param("noteId", new ParseUUIDPipe()) noteId: string,
     @GetCurrentUser() currentUser: User,
   ): Promise<IRemoveVoteNote> {
@@ -279,7 +332,10 @@ export class NotesController implements INotesController {
     type: UnprocessableEntityResponse,
   })
   @Get("export")
-  async exportNotes(@Query() query: ExportNotesDto, @Res() res: Response) {
+  public async exportNotes(
+    @Query() query: ExportNotesDto,
+    @Res() res: Response,
+  ): Promise<void> {
     const { buffer, filename, mimeType } = await this.notesService.exportNotes(query);
 
     res.set({
@@ -289,5 +345,58 @@ export class NotesController implements INotesController {
     });
 
     res.end(buffer);
+  }
+
+  @Get("room/:roomId/current-winner")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "Get the notes with the highest votes in a room",
+    description:
+      "Returns an array of note UUIDs that share the highest vote count in the specified room",
+  })
+  @ApiOkResponse({
+    description: "Winning note UUID(s) returned successfully",
+    schema: {
+      example: [
+        { uuid: "4e367c65-0046-4361-b5d1-2a440c9fa7d4" },
+        { uuid: "8be55f6b-d9a0-4c6c-8abf-834b6e1ad314" },
+      ],
+    },
+  })
+  @ApiNotFoundResponse({
+    description: "A 404 error if no notes with votes greater than zero are found",
+    type: NotFoundResponse,
+  })
+  @ApiUnauthorizedResponse({
+    description: "A 401 error if no bearer token is provided",
+    type: UnauthorizedResponse,
+  })
+  public async noteWinner(
+    @Param("roomId", new ParseUUIDPipe()) roomId: string,
+  ): Promise<{ uuid: string }[]> {
+    return this.notesService.getCurrentNoteVoteWinners(roomId);
+  }
+
+  @Get(":noteId")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "Get a single note by UUID",
+    description: "Returns the note by the given UUID.",
+  })
+  @ApiOkResponse({
+    description: "A 200 response if the note is found",
+  })
+  @ApiUnauthorizedResponse({
+    description: "A 401 error if no bearer token is provided",
+    type: UnauthorizedResponse,
+  })
+  @ApiNotFoundResponse({
+    description: "A 404 error if the note is not found",
+    type: NotFoundResponse,
+  })
+  public async getOne(
+    @Param("noteId", new ParseUUIDPipe()) noteId: string,
+  ): Promise<INoteWithAuthor> {
+    return this.notesService.findNoteByIdWithAuthor(noteId);
   }
 }

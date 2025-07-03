@@ -12,7 +12,7 @@ export class ParsingProvider {
    * @param data - The notes data to be parsed
    * @returns An object containing the room title, export date, and parsed notes
    */
-  parseJson(room: Room, data: Note[]): string {
+  parseJson(room: Room, data: Partial<Note>[]): string {
     const parsedNotes = data.map((el) => {
       return {
         content: el.content,
@@ -40,7 +40,7 @@ export class ParsingProvider {
    * @param notes - The notes to be converted to CSV format
    * @returns A string representing the notes in CSV format
    */
-  parseCSV(notes: Note[]): string {
+  parseCSV(notes: Partial<Note>[]): string {
     const headers = "Content,Author,Votes,X Axis,Y Axis";
 
     const rows = notes.map((note) => {
@@ -63,7 +63,7 @@ export class ParsingProvider {
    * @param notes - The notes to be converted to XML format
    * @returns A string representing the notes in XML format
    */
-  parseXML(room: Room, notes: Note[]): string {
+  parseXML(room: Room, notes: Partial<Note>[]): string {
     const escapedRoomTitle = this.escapeXml(room.title);
     const exportedAt = new Date().toISOString();
 
@@ -114,7 +114,7 @@ export class ParsingProvider {
    * @param notes - The notes to be converted to PDF format
    * @returns A Buffer containing the PDF data
    */
-  parsePDF(room: Room, notes: Note[]): string {
+  parsePDF(room: Room, notes: Partial<Note>[]): string {
     const doc = new jsPDF();
 
     // Set up the document

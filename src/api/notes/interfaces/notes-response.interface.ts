@@ -1,16 +1,42 @@
-import { User } from "../../user/entities/user.entity";
-import { Note } from "../entities/note.entity";
+import { NoteColor } from "../enums/note-color.enum";
+export interface INoteViewport extends Pick<IUpdateNote, "uuid" | "xAxis" | "yAxis"> {}
+export interface INoteViewportRaw {
+  uuid: string;
+  xaxis: number;
+  yaxis: number;
+}
 
+export interface ICreateNote extends INoteWithAuthor {}
 export interface IUpdateNote {
-  note: Note;
-  updatedBy: User;
+  uuid: string;
+  content: string;
+  color: NoteColor;
+  totalVotes: number;
+  xAxis: number;
+  yAxis: number;
+}
+
+export interface INoteVoteRaw {
+  uuid: string;
+  firstname: string;
+  lastname: string;
+}
+
+export interface INoteVote {
+  uuid: string;
+  firstName: string;
+  lastName: string;
 }
 
 export interface IRemoveVoteNote {
-  success: boolean;
-  message: string;
+  removedFrom: string;
 }
 
-export interface IAddVoteNote extends IRemoveVoteNote {
-  voteSwitched: boolean;
+export interface IAddVoteNote {
+  switchedFrom: string;
+  addedTo: string;
+}
+
+export interface INoteWithAuthor extends INoteVote, IUpdateNote {
+  room: string;
 }
