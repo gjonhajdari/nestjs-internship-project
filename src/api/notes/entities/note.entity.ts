@@ -9,10 +9,12 @@ import { NoteVote } from "./note-vote.entity";
 
 @Entity("notes")
 @Index("idx_notes_room_id", ["room"])
+@Index("idx_note_position", ["xAxis", "yAxis"])
 export class Note extends AuditEntity {
   @ManyToOne(
     () => Room,
     (room) => room.notes,
+    { nullable: false },
   )
   @JoinColumn({ name: "room_id" })
   @ApiProperty({
@@ -25,6 +27,7 @@ export class Note extends AuditEntity {
   @ManyToOne(
     () => User,
     (user) => user.notes,
+    { nullable: false },
   )
   @JoinColumn({ name: "author_id" })
   @ApiProperty({
@@ -70,7 +73,6 @@ export class Note extends AuditEntity {
     type: Number,
     description: "The X coordinate for the note on the display. It should be an integer.",
     example: 1000,
-    required: false,
   })
   xAxis?: number;
 
@@ -80,7 +82,6 @@ export class Note extends AuditEntity {
     type: Number,
     description: "The Y coordinate for the note on the display. It should be an integer.",
     example: 500,
-    required: false,
   })
   yAxis?: number;
 
