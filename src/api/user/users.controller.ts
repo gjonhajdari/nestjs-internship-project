@@ -30,7 +30,8 @@ import { DeletedResponse } from "../../common/interfaces/responses/deleted.respo
 import { EmailSentResponse } from "../../common/interfaces/responses/email-sent.response";
 import { NotFoundResponse } from "../../common/interfaces/responses/not-found.response";
 import { UnprocessableEntityResponse } from "../../common/interfaces/responses/unprocessable-entity.response";
-import { ForgotPasswordDto, ResetPasswordDto } from "./dtos/password-reset.dto";
+import { ForgotPasswordDto, ResetPasswordDto } from "./dtos/reset-password.dto";
+import { UpdatePasswordDto } from "./dtos/update-password.dto";
 import { UpdateUserDto } from "./dtos/update-user.dto";
 import { User } from "./entities/user.entity";
 import { IUsersController } from "./interfaces/users.controller.interface";
@@ -187,7 +188,7 @@ export class UsersController implements IUsersController {
   @Patch("me/password")
   async updateMyPassword(
     @GetCurrentUser() user: User,
-    @Body() body: ResetPasswordDto,
+    @Body() body: UpdatePasswordDto,
   ): Promise<void> {
     return await this.usersService.updatePassword(user.uuid, body);
   }
