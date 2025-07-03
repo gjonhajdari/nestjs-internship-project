@@ -2,7 +2,7 @@
 
 import { IResponseStatus } from "../../../common/interfaces/ResponseStatus.interface";
 import { RegisterDTO } from "../../auth/dtos/register.dto";
-import { ForgotPasswordDto, ResetPasswordDto } from "../dtos/password-reset.dto";
+import { ForgotPasswordDto, ResetPasswordDto } from "../dtos/reset-password.dto";
 import { UpdateUserDto } from "../dtos/update-user.dto";
 import { User } from "../entities/user.entity";
 
