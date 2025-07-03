@@ -15,4 +15,6 @@ export interface NotesEmitEvents {
   "notes/deleted": (note: IResponseStatus) => void;
   "notes/voted": (note) => void;
   "notes/removed": (note) => void;
+  "notes/editing-started": (note) => void;
+  "notes/editing-stoped": (note) => void;
 }
