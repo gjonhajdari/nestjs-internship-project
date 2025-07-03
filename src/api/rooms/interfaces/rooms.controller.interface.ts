@@ -1,3 +1,4 @@
+import { HostDetails } from "../../../common/interfaces/HostDetails.interface";
 import { IResponseStatus } from "../../../common/interfaces/ResponseStatus.interface";
 import { User } from "../../user/entities/user.entity";
 import { CreateRoomDto } from "../dtos/create-room.dto";
@@ -22,4 +23,6 @@ export interface IRoomsController {
   leave(user: User, roomId: string): Promise<IResponseStatus>;
 
   removeFromRoom(userId: string, roomId: string): Promise<IResponseStatus>;
+
+  getHost(stringId: string): Promise<HostDetails>;
 }

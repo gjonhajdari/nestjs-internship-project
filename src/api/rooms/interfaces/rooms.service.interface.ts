@@ -1,3 +1,4 @@
+import { HostDetails } from "../../../common/interfaces/HostDetails.interface";
 import { IResponseStatus } from "../../../common/interfaces/ResponseStatus.interface";
 import { CreateRoomDto } from "../dtos/create-room.dto";
 import { UpdateRoomDto } from "../dtos/update-room.dto";
@@ -19,4 +20,6 @@ export interface IRoomsService {
   joinRoom(userId: string, roomId: string): Promise<RoomUsers>;
 
   leaveRoom(userId: string, roomId: string): Promise<IResponseStatus>;
+
+  findHost(roomId: string): Promise<HostDetails>;
 }

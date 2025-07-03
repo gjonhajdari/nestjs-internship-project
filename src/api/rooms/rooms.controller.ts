@@ -26,6 +26,7 @@ import {
 import { GetCurrentUser } from "../../common/decorators/get-current-user.decorator";
 import { Roles } from "../../common/decorators/roles.decorator";
 import { RolesGuard } from "../../common/guards/roles.guard";
+import { HostDetails } from "../../common/interfaces/HostDetails.interface";
 import { IResponseStatus } from "../../common/interfaces/ResponseStatus.interface";
 import { BadRequestResponse } from "../../common/interfaces/responses/bad-request.response";
 import { DeletedResponse } from "../../common/interfaces/responses/deleted.response";
@@ -106,6 +107,32 @@ export class RoomsController implements IRoomsController {
   ): Promise<{ room: Room; role: RoomRoles }[]> {
     const { uuid } = user;
     return await this.roomsService.findRooms(uuid, false);
+  }
+
+  @ApiOperation({
+    summary: "Get room's host",
+    description: "Retrieve host info for room",
+  })
+  @ApiOkResponse({
+    description: "A 200 response if host is found",
+    schema: {
+      type: "object",
+      properties: {
+        uuid: { type: "string", format: "uuid" },
+        firstName: { type: "string" },
+        lastName: { type: "string" },
+      },
+    },
+  })
+  @ApiUnprocessableEntityResponse({
+    description: "A 422 response if request can't be proccessed",
+  })
+  @ApiNotFoundResponse({
+    description: "A 404 response if room or host isn't found",
+  })
+  @Get("host/:roomId")
+  async getHost(@Param("roomId", new ParseUUIDPipe()) roomId: string): Promise<HostDetails> {
+    return await this.roomsService.findHost(roomId);
   }
 
   @ApiOperation({
