@@ -72,6 +72,21 @@ export class RoomsGateway extends BaseWebsocketGateway {
   }
 
   @Roles(RoomRoles.HOST)
+  @SubscribeMessage("rooms/delete")
+  async handleDeleteRoom(
+    @MessageBody() data: { roomId: string },
+    @ConnectedSocket() socket: Socket,
+  ) {
+    const { roomId } = data;
+    try {
+      const deleted = await this.roomsService.deleteRoom(roomId);
+      this.server.to(roomId).emit("rooms/deleted", deleted);
+    } catch (error) {
+      socket.emit("error", error.message);
+    }
+  }
+
+  @Roles(RoomRoles.HOST)
   @SubscribeMessage("rooms/remove")
   async handleRemoveUser(
     @MessageBody() data: { roomId: string; userId: string },
