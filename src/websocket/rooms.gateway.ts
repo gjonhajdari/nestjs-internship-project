@@ -1,4 +1,4 @@
-import { BadRequestException } from "@nestjs/common";
+import { BadRequestException, UseGuards } from "@nestjs/common";
 import {
   ConnectedSocket,
   MessageBody,
@@ -7,10 +7,14 @@ import {
 } from "@nestjs/websockets";
 import { Socket } from "socket.io";
 import { ActivitiesService } from "../api/activities/activities.service";
+import { RoomRoles } from "../api/rooms/enums/room-roles.enum";
 import { RoomsService } from "../api/rooms/rooms.service";
+import { Roles } from "../common/decorators/roles.decorator";
+import { WsRolesGuard } from "../common/ws-guards/ws-roles.guard";
 import { BaseWebsocketGateway } from "./base-websocket.gateway";
 
 @WebSocketGateway()
+@UseGuards(WsRolesGuard)
 export class RoomsGateway extends BaseWebsocketGateway {
   constructor(
     private roomsService: RoomsService,
@@ -52,7 +56,7 @@ export class RoomsGateway extends BaseWebsocketGateway {
     this.server.to(roomId).emit("rooms/left", { userId: userId });
   }
 
-  //TODO: add host guard
+  @Roles(RoomRoles.HOST)
   @SubscribeMessage("rooms/archive")
   async handleArchiveRoom(
     @MessageBody() data: { roomId: string },
@@ -67,7 +71,7 @@ export class RoomsGateway extends BaseWebsocketGateway {
     }
   }
 
-  //TODO: add host guard
+  @Roles(RoomRoles.HOST)
   @SubscribeMessage("rooms/remove")
   async handleRemoveUser(
     @MessageBody() data: { roomId: string; userId: string },
