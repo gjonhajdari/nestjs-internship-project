@@ -16,5 +16,5 @@ export interface ICommentsService {
     payload: UpdateCommentDto,
   ): Promise<Comment>;
 
-  deleteComment(commentId: string): Promise<IResponseStatus>;
+  deleteComment(userId: string, commentId: string): Promise<IResponseStatus>;
 }

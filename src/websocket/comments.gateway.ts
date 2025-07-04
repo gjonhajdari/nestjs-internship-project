@@ -97,7 +97,7 @@ export class CommentsGateway extends BaseWebsocketGateway {
       }
 
       const comment = await this.commentsService.findById(commentId);
-      const deletedComment = await this.commentsService.deleteComment(commentId);
+      const deletedComment = await this.commentsService.deleteComment(id, commentId);
       const activity = await this.activitiesService.createActivity(
         roomId,
         id,
