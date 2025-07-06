@@ -11,5 +11,5 @@ export interface ICommentsController {
 
   update(user: User, commendId: string, body: UpdateCommentDto): Promise<Comment>;
 
-  delete(commentId: string): Promise<IResponseStatus>;
+  delete(user: User, commentId: string): Promise<IResponseStatus>;
 }

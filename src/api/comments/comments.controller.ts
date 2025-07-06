@@ -137,8 +137,9 @@ export class CommentsController implements ICommentsController {
   })
   @Delete(":commentId")
   async delete(
-    @Param("commentId", new ParseUUIDPipe()) commentid: string,
+    @GetCurrentUser() user: User,
+    @Param("commentId", new ParseUUIDPipe()) commentId: string,
   ): Promise<IResponseStatus> {
-    return this.commentsService.deleteComment(commentid);
+    return this.commentsService.deleteComment(user.uuid, commentId);
   }
 }

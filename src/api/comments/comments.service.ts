@@ -113,7 +113,6 @@ export class CommentsService implements ICommentsService {
     payload: UpdateCommentDto,
   ): Promise<Comment> {
     const comment = await this.findById(commentId, ["user"]);
-    console.log(comment);
 
     if (userId !== comment.user.uuid)
       throw new BadRequestException("Can't edit someone else's comment");
@@ -134,8 +133,11 @@ export class CommentsService implements ICommentsService {
    * @param commentId - The unique UUID of the comment
    * @throws {NotFoundException} - If no comment with the given UUID is found
    */
-  async deleteComment(commentId: string): Promise<IResponseStatus> {
-    const comment = await this.findById(commentId);
+  async deleteComment(userId: string, commentId: string): Promise<IResponseStatus> {
+    const comment = await this.findById(commentId, ["user"]);
+
+    if (userId !== comment.user.uuid)
+      throw new BadRequestException("Can't delete someone else's comment");
 
     const [replies, repliesError] = await tryCatch(
       this.commentsRepository.find({ where: { parent: { id: comment.id } } }),
