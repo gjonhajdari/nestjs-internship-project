@@ -10,5 +10,5 @@ export class UpdateRoomDto extends PartialType(CreateRoomDto) {
     description: "Is room active",
     example: "true",
   })
-  isActive: boolean;
+  isActive?: boolean;
 }
